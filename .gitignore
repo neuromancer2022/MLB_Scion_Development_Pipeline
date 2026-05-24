@@ -1,0 +1,86 @@
+# ============================================================
+# MLB Scion Development Pipeline — .gitignore
+# ============================================================
+
+# --- Model assets (large binaries — never commit) -----------
+# Use ** to match files in models/ AND any subdirectory (e.g. models/Tepper_Prob/)
+data/**/*.csv
+data/backtest/**/*.csv
+models/**/*.pkl
+models/**/*.json
+models/**/*STDSTATS*.csv
+models/**/*Insample*.csv
+# Also catch files placed directly in models/ root
+models/*.pkl
+models/*.json
+models/*STDSTATS*.csv
+models/*Insample*.csv
+# Keep the production-baseline CFG and gitkeep
+!models/MLB_Scion_CFG.txt
+!models/.gitkeep
+!models/experiments/.gitkeep
+
+# --- Runtime outputs (all gitignored in dev) ----------------
+results/experiments/
+results/backtests/
+results/logs/
+results/tempfiles/
+!results/experiments/.gitkeep
+!results/backtests/.gitkeep
+!results/logs/.gitkeep
+!results/tempfiles/.gitkeep
+
+# --- Legacy hidden output folders (fallback safety net) --------
+# Output now goes to results/ via env vars in run_scion.py.
+# These entries catch any files created if MLB_Scion.py is run directly.
+.MLB_scion_preds/
+.MLB_scion_logs/
+
+# --- Per-model intermediate prediction text files -----------
+*_PREDS.txt
+*_PREDS.TXT
+
+# --- Large data files ---------------------------------------
+data/sciondata/mlbsciondata.csv
+data/backtest/insample/
+data/backtest/outsample/
+!data/backtest/insample/.gitkeep
+!data/backtest/outsample/.gitkeep
+!data/sciondata/.gitkeep
+# mups files ARE tracked (small, version-controlled)
+!data/mups/mlbmups.csv
+
+# --- Jupyter notebook checkpoints ---------------------------
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# --- Python artefacts ---------------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# --- OS / editor junk ---------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.orig
+
+# --- Secrets ------------------------------------------------
+*.env
+.env
+secrets.yaml
+
+# --- Archived version CFG files (always track these) ------
+!configs/versions/
+!configs/versions/*

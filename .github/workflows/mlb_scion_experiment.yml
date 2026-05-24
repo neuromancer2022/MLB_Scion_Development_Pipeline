@@ -1,0 +1,56 @@
+name: MLB Scion Development — Experiment Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      experiment_config:
+        description: "Experiment config YAML path (relative to repo root)"
+        required: true
+        default: "configs/experiments/exp_001_pm150_agreethresh_0.75.yaml"
+      run_evaluate:
+        description: "Run backtest evaluation after predictions?"
+        required: false
+        default: "false"
+        type: boolean
+
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Restore model assets from secret or cache (see deployment pipeline
+      # workflow for full instructions on supplying models via GitHub Secrets
+      # or external object storage).
+      # - name: Restore model assets
+      #   run: echo "${{ secrets.MODELS_TARBALL }}" | base64 -d | tar -xz -C models/
+
+      # Restore sciondata and mups files
+      # - name: Restore data
+      #   run: |
+      #     echo "${{ secrets.SCIONDATA_B64 }}" | base64 -d > data/sciondata/mlbsciondata.csv
+      #     echo "${{ secrets.MUPS_B64 }}"       | base64 -d > data/mups/mlbmups.csv
+
+      - name: Run experiment
+        run: |
+          python src/run_experiment.py \
+            --config "${{ github.event.inputs.experiment_config }}"
+
+      - name: Upload experiment results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: experiment-results-${{ github.run_id }}
+          path: results/experiments/
+          retention-days: 90
