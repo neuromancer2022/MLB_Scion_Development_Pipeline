@@ -15,10 +15,10 @@ import MLB_dumpvar as MLB_dumpvar
 import MLB_globals as MLB_global
 
 # Define key global vars
-APP_VER = "V25.05 (Standard Edition)"
+APP_VER = "V26.05 (Standard Edition)"
 APP_NAME = "MLB dBase Update Tool" 
 APP_BANNER = "** " + APP_NAME + " " + APP_VER + " **"
-APP_OWNER = "Perceptronix Ltd (c) 2025" 
+APP_OWNER = "Perceptronix Ltd (c) 2026" 
 cwd = os.getcwd()
             
 GAME_ID_INDEX = 0  # relates to index of value in main dictionary
@@ -95,41 +95,29 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     fieldName=MLB_dbvar.dbvar_G_Date
     fieldValue=dump_df[MLB_dumpvar.dumpvar_date].iloc[dump_row_index]
     game_df[fieldName].values[0] = fieldValue
-    # G_Opening_MiddleMoneyLine
-    fieldName=MLB_dbvar.dbvar_G_Opening_MiddleMoneyLine
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_opening_mline].iloc[dump_row_index])
+    # G_Opening_TotalOver
+    fieldName=MLB_dbvar.dbvar_G_Opening_TotalOver
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_over_open].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)  #
-    # G_OpeningLine_Vig
-    fieldName=MLB_dbvar.dbvar_G_OpeningLine_Vig
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_ovig].iloc[dump_row_index])
+    # G_Opening_TotalOverLine
+    fieldName=MLB_dbvar.dbvar_G_Opening_TotalOverLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_over_open_odds].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)  #
-    # G_Closing_MiddleMoneyLine
-    fieldName=MLB_dbvar.dbvar_G_Closing_MiddleMoneyLine
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_closing_mline].iloc[dump_row_index])
+    # G_Closing_TotalOver
+    fieldName=MLB_dbvar.dbvar_G_Closing_TotalOver
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_over_close].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)  #
-    # G_ClosingLine_Vig
-    fieldName=MLB_dbvar.dbvar_G_ClosingLine_Vig
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_cvig].iloc[dump_row_index])
+    # G_Closing_TotalOverLine
+    fieldName=MLB_dbvar.dbvar_G_Closing_TotalOverLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_over_close_odds].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)  #
-    # G_Middle_MoneyLine (appears to be a duplicate of G_Opening_MiddleMoneyLine as opening_mline = middle_mline)
-    fieldName=MLB_dbvar.dbvar_G_Middle_MoneyLine
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_middle_mline].iloc[dump_row_index])
+    # G_Bookie_TotalOver
+    fieldName=MLB_dbvar.dbvar_G_Bookie_TotalOver
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_over_close].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)  #
-    # G_Opening_Total
-    fieldName=MLB_dbvar.dbvar_G_Opening_Total
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_opening_total_spread].iloc[dump_row_index])
-    game_df[fieldName].values[0] = float(fieldValue)  #
-    # G_Opening_TotalLine
-    fieldName=MLB_dbvar.dbvar_G_Opening_TotalLine
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_opening_total_line].iloc[dump_row_index])
-    game_df[fieldName].values[0] = float(fieldValue)  #
-    # G_Closing_Total
-    fieldName=MLB_dbvar.dbvar_G_Closing_Total
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_closing_total_spread].iloc[dump_row_index])
-    game_df[fieldName].values[0] = float(fieldValue)  #
-    # G_Closing_TotalLine
-    fieldName=MLB_dbvar.dbvar_G_Closing_TotalLine
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_closing_total_line].iloc[dump_row_index])
+    # G_Bookie_TotalOverLine
+    fieldName=MLB_dbvar.dbvar_G_Bookie_TotalOverLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_over_close_odds].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)  #
     # G_NightGame
     fieldName=MLB_dbvar.dbvar_G_NightGame
@@ -140,14 +128,22 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     fieldName=MLB_dbvar.dbvar_G_H_Id
     fieldValue=int(dump_df[MLB_dumpvar.dumpvar_hom_id].iloc[dump_row_index])
     game_df[fieldName].values[0] = int(fieldValue)  #
+    # G_Bookie_H_MoneyLine
+    fieldName=MLB_dbvar.dbvar_G_Bookie_H_MoneyLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_home_ml_close].iloc[dump_row_index])
+    game_df[fieldName].values[0] = float(fieldValue)  #
+    # G_H_Opening_MoneyLine
+    fieldName=MLB_dbvar.dbvar_G_H_Opening_MoneyLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_home_ml_open].iloc[dump_row_index])
+    game_df[fieldName].values[0] = float(fieldValue)  #
+    # G_H_Closing_MoneyLine
+    fieldName=MLB_dbvar.dbvar_G_H_Closing_MoneyLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_home_ml_close].iloc[dump_row_index])
+    game_df[fieldName].values[0] = float(fieldValue)  #
     # G_H_League
     fieldName=MLB_dbvar.dbvar_G_H_League
     fieldValue=int(dump_df[MLB_dumpvar.dumpvar_home_league].iloc[dump_row_index])
     game_df[fieldName].values[0] = int(fieldValue)  #
-    # H_Innings
-    fieldName=MLB_dbvar.dbvar_H_Innings
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_home_inn].iloc[dump_row_index])
-    game_df[fieldName].values[0] = float(fieldValue)  #
     # H_Runs_Gained
     fieldName=MLB_dbvar.dbvar_H_Runs_Gained
     fieldValue=float(dump_df[MLB_dumpvar.dumpvar_hom_runs].iloc[dump_row_index])
@@ -163,6 +159,10 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     # H_Runs_5InningsAllowed
     fieldName=MLB_dbvar.dbvar_H_Runs_5InningsAllowed
     fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_5th_inn_score].iloc[dump_row_index])
+    game_df[fieldName].values[0] = float(fieldValue)
+    # H_At_Bat
+    fieldName=MLB_dbvar.dbvar_H_At_Bat
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_hom_ab].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)
     # H_OutsPitched
     fieldName=MLB_dbvar.dbvar_H_OutsPitched
@@ -210,7 +210,7 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     game_df[fieldName].values[0] = float(fieldValue)
     # H_Duration
     fieldName=MLB_dbvar.dbvar_H_Duration
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_home_inn].iloc[dump_row_index])
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_hom_number_of_outs_pitched].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)
     # H_NP
     fieldName=MLB_dbvar.dbvar_H_NP
@@ -311,9 +311,17 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     fieldName=MLB_dbvar.dbvar_G_V_League
     fieldValue=int(dump_df[MLB_dumpvar.dumpvar_visitor_league].iloc[dump_row_index])
     game_df[fieldName].values[0] = int(fieldValue)  #
-    # V_Innings
-    fieldName=MLB_dbvar.dbvar_V_Innings
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_inn].iloc[dump_row_index])
+    # G_Bookie_V_MoneyLine
+    fieldName=MLB_dbvar.dbvar_G_Bookie_V_MoneyLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_ml_close].iloc[dump_row_index])
+    game_df[fieldName].values[0] = float(fieldValue)  #
+    # G_V_Opening_MoneyLine
+    fieldName=MLB_dbvar.dbvar_G_V_Opening_MoneyLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_ml_open].iloc[dump_row_index])
+    game_df[fieldName].values[0] = float(fieldValue)  #
+    # G_V_Closing_MoneyLine
+    fieldName=MLB_dbvar.dbvar_G_V_Closing_MoneyLine
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_ml_close].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)  #
     # V_Runs_Gained
     fieldName=MLB_dbvar.dbvar_V_Runs_Gained
@@ -330,6 +338,10 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     # V_Runs_5InningsAllowed
     fieldName=MLB_dbvar.dbvar_V_Runs_5InningsAllowed
     fieldValue=float(dump_df[MLB_dumpvar.dumpvar_hom_5th_inn_score].iloc[dump_row_index])
+    game_df[fieldName].values[0] = float(fieldValue)
+    # V_At_Bat
+    fieldName=MLB_dbvar.dbvar_V_At_Bat
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_ab].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)
     # V_OutsPitched
     fieldName=MLB_dbvar.dbvar_V_OutsPitched
@@ -373,7 +385,7 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     game_df[fieldName].values[0] = float(fieldValue)
     # V_Duration
     fieldName=MLB_dbvar.dbvar_V_Duration
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_inn].iloc[dump_row_index])
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_number_of_outs_pitched].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)
     # V_NP
     fieldName=MLB_dbvar.dbvar_V_NP
@@ -433,7 +445,7 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     game_df[fieldName].values[0] = float(fieldValue)
     # V_ReliefPitchers
     fieldName=MLB_dbvar.dbvar_V_ReliefPitchers
-    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_visitor_relief_pitchers].iloc[dump_row_index])
+    fieldValue=float(dump_df[MLB_dumpvar.dumpvar_vis_relief_pitchers].iloc[dump_row_index])
     game_df[fieldName].values[0] = float(fieldValue)
     # G_V_StartingPitcher_Id
     fieldName=MLB_dbvar.dbvar_G_V_StartingPitcher_Id
@@ -489,28 +501,22 @@ def updatePrimitiveFeatures(game_df, dump_df, dump_row_index):
     return game_df
 
 def _updateTeamLines(game_df):
-    #Assumption: Update_Primitive_Features() have seeded line primitives (opl/cll MiddleLines and vig)
-    #Init vars
-    _opmiddleLine = float(game_df[MLB_dbvar.dbvar_G_Opening_MiddleMoneyLine].values[0])
-    _opVig = float(game_df[MLB_dbvar.dbvar_G_OpeningLine_Vig].values[0])
-    _clmiddleLine = float(game_df[MLB_dbvar.dbvar_G_Closing_MiddleMoneyLine].values[0])
-    _clVig = float(game_df[MLB_dbvar.dbvar_G_ClosingLine_Vig].values[0])
+    #Assumption: Update_Primitive_Features() have seeded line primitives (opl/cll prices)
     #OPLs
-    _hPrice, _vPrice = MLB_global.ConvertMiddleLineToPrices(_opmiddleLine, _opVig)
-    _hProb = MLB_global.convertMoneyLinetoProb(_hPrice)
-    _vProb = MLB_global.convertMoneyLinetoProb(_vPrice)
-    game_df[MLB_dbvar.dbvar_G_H_Opening_MoneyLine].values[0] = float(_hPrice)
+    _hProb = MLB_global.convertMoneyLinetoProb(game_df[MLB_dbvar.dbvar_G_H_Opening_MoneyLine].values[0])
+    _vProb = MLB_global.convertMoneyLinetoProb(game_df[MLB_dbvar.dbvar_G_V_Opening_MoneyLine].values[0])
+    game_df[MLB_dbvar.dbvar_G_Bookie_H_Probability].values[0] = float(_hProb)
     game_df[MLB_dbvar.dbvar_G_H_OpeningProbabilityLine].values[0] = float(_hProb)
-    game_df[MLB_dbvar.dbvar_G_V_Opening_MoneyLine].values[0] = float(_vPrice)
+    game_df[MLB_dbvar.dbvar_G_Bookie_V_Probability].values[0] = float(_vProb)
     game_df[MLB_dbvar.dbvar_G_V_OpeningProbabilityLine].values[0] = float(_vProb)
     #CLLs
-    _hPrice, _vPrice = MLB_global.ConvertMiddleLineToPrices(_clmiddleLine, _clVig)
-    _hProb = MLB_global.convertMoneyLinetoProb(_hPrice)
-    _vProb = MLB_global.convertMoneyLinetoProb(_vPrice)
-    game_df[MLB_dbvar.dbvar_G_H_Closing_MoneyLine].values[0] = float(_hPrice)
+    _hProb = MLB_global.convertMoneyLinetoProb(game_df[MLB_dbvar.dbvar_G_H_Closing_MoneyLine].values[0])
+    _vProb = MLB_global.convertMoneyLinetoProb(game_df[MLB_dbvar.dbvar_G_V_Closing_MoneyLine].values[0])
     game_df[MLB_dbvar.dbvar_G_H_ClosingProbabilityLine].values[0] = float(_hProb)
-    game_df[MLB_dbvar.dbvar_G_V_Closing_MoneyLine].values[0] = float(_vPrice)
     game_df[MLB_dbvar.dbvar_G_V_ClosingProbabilityLine].values[0] = float(_vProb)
+    #DIFFS
+    game_df[MLB_dbvar.dbvar_G_H_CLL_OPL_Prob_Diff].values[0] = float(game_df[MLB_dbvar.dbvar_G_H_ClosingProbabilityLine].values[0] - game_df[MLB_dbvar.dbvar_G_H_OpeningProbabilityLine].values[0])
+    game_df[MLB_dbvar.dbvar_G_V_CLL_OPL_Prob_Diff].values[0] = float(game_df[MLB_dbvar.dbvar_G_V_ClosingProbabilityLine].values[0] - game_df[MLB_dbvar.dbvar_G_V_OpeningProbabilityLine].values[0]) 
 
     return game_df
 
@@ -660,22 +666,16 @@ def loadValidateMasterData(master_df, master_fname):
         
     return master_df
 
-def checkForDuplicateColHeadings(dumpfname, usrDumpCommaSep):
-    if usrDumpCommaSep:
-        _df = pd.read_csv(dumpfname, header=None, nrows=1)
-    else:  #tab separated assumed
-        _df = pd.read_csv(dumpfname, header=None, sep='\t', nrows=1)
+def checkForDuplicateColHeadings(dumpfname):
+    _df = pd.read_csv(dumpfname, header=None, nrows=1)
     return _df.iloc[0].is_unique
 
-def loadValidateDumpData(dump_df, dumpfname, usrDumpCommaSep):
+def loadValidateDumpData(dump_df, dumpfname):
     try:
         _continue = True
         # 1) Read data into a pd frame
-        if checkForDuplicateColHeadings(dumpfname, usrDumpCommaSep):
-            if usrDumpCommaSep:
-                dump_df = pd.read_csv(dumpfname, header=0, dayfirst=False)
-            else:  #tab separated assumed
-                dump_df = pd.read_csv(dumpfname, header=0, sep='\t', dayfirst=False)
+        if checkForDuplicateColHeadings(dumpfname):
+            dump_df = pd.read_csv(dumpfname, header=0, dayfirst=False)
         else:
             print ("\nColumn headings are NOT unique! Please correct column headers and try again!\n")
             _continue = False
@@ -735,30 +735,43 @@ def loadValidateDumpData(dump_df, dumpfname, usrDumpCommaSep):
                         print("\t\tvalidating feature [" + MLB_dumpvar.dumpvar_vis_sp_id + "] ---> {0:.2f}% instances were equal to zero.".format(_percZeroSP))
                         stdout.flush()
             
-                        # 8) Check number of instances where opl = cll
+                        # 8) Check number of instances where hom opl = hom cll
                         _dumpCopy_df = dump_df.copy()
-                        _seriesOPL = _dumpCopy_df[MLB_dumpvar.dumpvar_opening_mline]
-                        _seriesCLL = _dumpCopy_df[MLB_dumpvar.dumpvar_closing_mline]
+                        _seriesOPL = _dumpCopy_df[MLB_dumpvar.dumpvar_home_ml_open]
+                        _seriesCLL = _dumpCopy_df[MLB_dumpvar.dumpvar_home_ml_close]
                         _seriesCLL = _seriesCLL.eq(_seriesOPL, fill_value=0)
                         _oplcllMatches = _seriesCLL.sum()
                         if not num_rows:
                             _oplcllMatchTotals = 0
                         else:
                             _oplcllMatchTotals = _oplcllMatches / num_rows * 100
-                        print("\t\tvalidating features [opening_mline, closing_mline] --->" + " {0:.2f}% instances where these features have equal values.".format(_oplcllMatchTotals))
+                        print("\t\tvalidating features [home_ml_open, home_ml_close] --->" + " {0:.2f}% instances where these features have equal values.".format(_oplcllMatchTotals))
+                        stdout.flush()
+            
+                        # 9) Check number of instances where vis opl = vis cll
+                        _dumpCopy_df = dump_df.copy()
+                        _seriesOPL = _dumpCopy_df[MLB_dumpvar.dumpvar_vis_ml_open]
+                        _seriesCLL = _dumpCopy_df[MLB_dumpvar.dumpvar_vis_ml_close]
+                        _seriesCLL = _seriesCLL.eq(_seriesOPL, fill_value=0)
+                        _oplcllMatches = _seriesCLL.sum()
+                        if not num_rows:
+                            _oplcllMatchTotals = 0
+                        else:
+                            _oplcllMatchTotals = _oplcllMatches / num_rows * 100
+                        print("\t\tvalidating features [vis_ml_open, vis_ml_close] --->" + " {0:.2f}% instances where these features have equal values.".format(_oplcllMatchTotals))
                         stdout.flush()
 
-                        # 9) Check number of instances where opening_total_spread = closing_total_spread
+                        # 10) Check number of instances where opening_total_spread = closing_total_spread
                         _dumpCopy_df = dump_df.copy()
-                        _seriesOPL = _dumpCopy_df[MLB_dumpvar.dumpvar_opening_total_spread]
-                        _seriesCLL = _dumpCopy_df[MLB_dumpvar.dumpvar_closing_total_spread]
+                        _seriesOPL = _dumpCopy_df[MLB_dumpvar.dumpvar_over_open]
+                        _seriesCLL = _dumpCopy_df[MLB_dumpvar.dumpvar_over_close]
                         _seriesCLL = _seriesCLL.eq(_seriesOPL, fill_value=0)
                         _oplcllMatches = _seriesCLL.sum()
                         if not num_rows:
                             _oplcllMatchTotals = 0
                         else:
                             _oplcllMatchTotals = _oplcllMatches / num_rows * 100
-                        print("\t\tvalidating features [opening_total_spread, closing_total_spread] --->" + " {0:.2f}% instances where these features have equal values.".format(_oplcllMatchTotals))
+                        print("\t\tvalidating features [total_over_open, total_over_close] --->" + " {0:.2f}% instances where these features have equal values.".format(_oplcllMatchTotals))
                         stdout.flush()
                     
                         # 10) Convert date to correct format
@@ -799,7 +812,6 @@ if __name__ == "__main__":
     parser.add_argument("usrMasterDB_Fname", help="CSV file containing current MLB flat file database")
     parser.add_argument("usrDump_Fname", help="text file or CSV file of games containing latest data dump")
     parser.add_argument("usrResults_Fname", help="CSV file containing updated MLB flat file database")
-    parser.add_argument("usrDumpCommaDelim", help="True/False flag indicating whether the dump file is comma separated. If False then the assumption is that it is TAB separated")
     
     args = parser.parse_args()  # if incorrect operation entered, program will bomb here
     
@@ -807,13 +819,7 @@ if __name__ == "__main__":
     usrMasterDBFname = args.usrMasterDB_Fname
     usrDumpFname = args.usrDump_Fname
     usrResultsFname = args.usrResults_Fname
-    usrDumpCommaSep = args.usrDumpCommaDelim
 
-    if usrDumpCommaSep == "True":
-        usrDumpCommaSep = True
-    else:
-        usrDumpCommaSep = False
-       
     # update user input file with full absolute path
     Full_usrMastrDBFname = os.path.join(cwd, usrMasterDBFname)
     Full_usrDumpFname = os.path.join(cwd, usrDumpFname)
@@ -830,7 +836,7 @@ if __name__ == "__main__":
         #2 Load and validate Dump txt or csv file
         _success = True
         print("Loading and validating " + usrDumpFname + ":")
-        DUMP_games_df, _success = loadValidateDumpData(DUMP_games_df, Full_usrDumpFname, usrDumpCommaSep)
+        DUMP_games_df, _success = loadValidateDumpData(DUMP_games_df, Full_usrDumpFname)
         print("Dump validation completed.\n")  
         
         if _success:
