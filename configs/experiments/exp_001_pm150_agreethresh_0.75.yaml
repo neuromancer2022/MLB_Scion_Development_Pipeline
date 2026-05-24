@@ -1,0 +1,46 @@
+# ============================================================
+# Experiment Config Example
+# EXP-001: Raise agreement threshold on PM150 ensemble
+#           from 0.71 → 0.75 to tighten signal quality.
+#           Hypothesis: fewer plays but higher hit rate.
+# ============================================================
+# Copy this file and rename for each experiment:
+#   configs/experiments/exp_002_modelthresh_0.55.yaml
+#
+# The only parameter that changes vs the base config is
+# whatever you are testing. Keep everything else identical
+# so results are attributable to a single variable.
+# ============================================================
+
+# --- System paths -------------------------------------------
+# Use a dedicated experiment model folder if testing new pkl files,
+# otherwise point at the main models/ directory.
+system_path: "models/"
+config_fname: "MLB_Scion_CFG.txt"
+
+# --- Experiment metadata ------------------------------------
+# These are read by scripts/run_experiment.py and written into
+# the results filename so outputs are self-documenting.
+experiment:
+  id:          "EXP-001"
+  description: "PM150 agree threshold 0.71 → 0.75"
+  author:      "JT"
+  date:        "2025-10-01"
+
+  # The specific CFG.txt parameters being changed in this experiment.
+  # These override the values in models/MLB_Scion_CFG.txt at runtime.
+  # Add only the parameters you are changing — everything else is
+  # read from the CFG.txt file as normal.
+  cfg_overrides:
+    SYS_PROB_BASE_AGREETHRESH: 0.75        # was 0.71
+
+# --- Input data paths ---------------------------------------
+input:
+  sciondata_file: "data/sciondata/mlbsciondata.csv"
+  mups_file:      "data/backtest/outsample/mlbmups_backtest.csv"
+
+# --- Output paths -------------------------------------------
+output:
+  predictions_dir: "results/experiments"
+  logs_dir:        "results/logs"
+  tempfiles_dir:   "results/tempfiles"
