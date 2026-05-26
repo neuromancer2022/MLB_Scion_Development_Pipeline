@@ -75,7 +75,6 @@ def main():
         master_file,       # usrMasterDB_Fname  — existing mlbsciondata.csv master
         primitives_file,   # usrDump_Fname      — raw scraper primitives dump
         sciondata_file,    # usrResults_Fname   — output updated master
-        comma_flag,        # usrDumpCommaDelim  — True/False
     ]
 
     print(f"[run_dbase] Master DB : {master_file}")
