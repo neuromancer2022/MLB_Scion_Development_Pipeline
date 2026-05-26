@@ -106,6 +106,7 @@ ACTION_LINE_HF = "HomFave"
 ACTION_LINE_HD = "HomDog"
 ACTION_LINE_VF = "VisFave"
 ACTION_LINE_VD = "VisDog"
+ACTION_LINE_TIE= "Tie"
 ACTION_LINE_POS = "+"
 ACTION_LINE_NEG = "-"
 ACTION_LINE_ZERO = "0"
@@ -127,6 +128,7 @@ TEXT_HIGHLIGHT_DELIMITER3 = "^"
 DEFAULT_CONF_PROB = 0.50
 NN_DP_PRECISION = 9
 DROP_ATTRIB = 2
+RESULTS_SAVE_FACTOR = 3
 
 #System Messages (NOTE: OPP variables discontinued)
 messageGameDataSuccess = "Game data generated. "
@@ -285,21 +287,62 @@ def calcTotalBases(hits, runs2b, runs3b, homeruns):
     return float(hits+runs2b+(2*runs3b)+(3*homeruns))
 
 def calcRatio(x, y, zeroToMidPoint=False):
-    if y == 0:
+    """x / y, with fallback for near-zero denominators.
+
+    Returns:
+      - x / y  when |y| >= 1e-6
+      - 1.0    when |y| < 1e-6 and zeroToMidPoint=True
+      - 0.00   when |y| < 1e-6 and zeroToMidPoint=False
+
+    The |y| < 1e-6 zero-tolerance (tightened from the original `if y == 0`)
+    catches floating-point residue that the exact-equality check missed.
+
+    SEMANTIC LIMITATION - read before adding new call sites:
+
+    When |y| < 1e-6 and |x| > 0, the true value of x/y is mathematically
+    +/- infinity, but this function returns 0.00 (or 1.0). That fallback
+    is INFORMATION-LOSING and silently wrong for some call sites:
+
+      - Run_Pythag (FIXED at call site, not here): using this function for
+        R = calcRatio(Runs_Gained, Runs_Allowed) returns 0 when RA=0,
+        which mislabels a perfectly-dominant team (no runs allowed) as
+        worst-Pythag (Pythag=0). Cascades into Pythag_Luck_Factor as a
+        false 'maximally lucky' signal. FIX: use closed-form
+            Pythag = RG^2 / (RG^2 + RA^2)
+        directly, bypassing calcRatio entirely. Well-defined as 1.0
+        when RA=0 and RG>0. See pythag.py in the data-quality pipeline
+        for the drop-in pattern.
+
+      - Other MEDIUM-risk call sites (rare edge cases, no semantic
+        inversion like Pythag had - left to call-site fixes when
+        convenient):
+            EarnedRunAvg          = ER / IP  (IP=0 with ER>0 -> 0)
+            MenOnBase_Efficiency  = Runs / MOB  (MOB=0 with Runs>0 -> 0)
+            MenOnBaseTBRatio      = TotalBases / MOB
+            WalkStrikeoutRatio    = Walks / Strikeouts  (K=0 with BB>0 -> 0)
+
+    For LOW-risk call sites (NP, OutsPitched, AtBats, accumulated career
+    totals etc.) the denominator is never plausibly zero in real data,
+    so the fallback semantics are immaterial.
+    """
+    if abs(y) < 1e-6:
         if zeroToMidPoint:
             return 1.0
         return 0.00
-    else:
-        return float(x / y)
-
+    return float(x / y)
+    
 def calcProbRatio(x, y, zeroToMidPoint=False):
-    sum = float(x + y)
-    if not sum or not x:
+    """V/(V+H) share with fallback to 0.5 (or 0.0) when undefined.
+    Drops the legacy 'or not x' clause - V=0 is a legitimate share of 0,
+    not a missing value. Tightens the zero check to catch floating-point
+    cancellation residue on signed centred-at-zero variables.
+    """
+    denom = float(x + y)
+    if abs(denom) < 1e-6:       # catches cancellation residue, not just exact 0.0
         if zeroToMidPoint:
-            return 0.5
+            return 0.5          # neutral share - H and V indistinguishable
         return 0.00
-    else:
-        return float(x / sum)
+    return float(x / denom)     # includes the V=0 case (returns 0.0, not 0.5)
     
 def calcAddFeatures(x, y):
     if x == MLB_dbvar.NO_DATA or y == MLB_dbvar.NO_DATA:
@@ -410,4 +453,3 @@ def getNumStars(numStars):
         return 5
     else:
         return 0
-        
