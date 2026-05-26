@@ -11,12 +11,12 @@ import shlex #for splitting strings by white space but preserving words within q
 import MLB_dbvar as MLB_dbvar
 
 # Define key global vars
-APP_VER = "V25.08b2 (Standard Edition)"
-APP_VER_SHORT = "V25_08b2SE"
+APP_VER = "V26.06a (Standard Edition)"
+APP_VER_SHORT = "V26_06a2SE"
 APP_NAME = "MLB Scion" 
 APP_NAME_SHORT = "Scion" 
 APP_BANNER = "** " + APP_NAME + " " + APP_VER + " **"
-APP_OWNER = "Perceptronix Ltd (c) 2025"
+APP_OWNER = "Perceptronix Ltd (c) 2026"
 
 MASK_ON = 1
 EPSILON = 0.00001 #this is to avoid divide by zero errors with iqr and log calculations; see https://blogs.sas.com/content/iml/2011/04/27/log-transformations-how-to-handle-negative-data-values.html
@@ -210,34 +210,6 @@ def setColType(df, col_list, col_type):
     except Exception:
         raise
     return df
-  
-def getModelTypeName(typeNo):
-    return ModelTypes(typeNo).name
-
-def hasModelTypeValue(usrValue):
-    validValues = set(item.value for item in ModelTypes)
-    return usrValue in validValues
-
-def hasModelTypeName(usrName):
-    validNames = set(item.name for item in ModelTypes)
-    return usrName in validNames
-
-def getTaskTypeName(taskNo):
-    return TaskTypes(taskNo).name
-
-def hasTaskTypeValue(usrValue):
-    validValues = set(item.value for item in TaskTypes)
-    return usrValue in validValues
-
-def hasTaskTypeName(usrName):
-    validNames = set(item.name for item in TaskTypes)
-    return usrName in validNames
-
-def isOppSide(price1, price2):
-    if (price1 < 0 and price2 > 0) or (price1 > 0 and price2 < 0):
-        return True
-    else:
-        return False
     
 def convertProbtoMoneyLine(probValue):
     probValue = float(probValue)
@@ -267,13 +239,6 @@ def calcPriceDiff(bookiePrice, modelPrice):
     else:
         priceDiff = math.fabs(modelPrice-bookiePrice)
     return round(priceDiff,2)
-
-def validTeamPrice(teamPrice):
-    _teamPrice = abs(teamPrice)
-    if _teamPrice >=100:
-        return True
-    else:
-        return False
 
 #This formula is as per the MLB strategy spreadsheet
 # =IF(HOMPRICE<=0,IF(HOMPRICE=-100,100,IF(ABS(HOMPRICE+(VIG/100*ABS(HOMPRICE)))<100,100,ABS(HOMPRICE+(VIG/100*ABS(HOMPRICE))))),-1*HOMPRICE-(VIG/100*ABS(HOMPRICE)))
@@ -378,22 +343,63 @@ def calcTotalBases(hits, runs2b, runs3b, homeruns):
     return float(hits+runs2b+(2*runs3b)+(3*homeruns))
 
 def calcRatio(x, y, zeroToMidPoint=False):
-    if y == 0:
+    """x / y, with fallback for near-zero denominators.
+
+    Returns:
+      - x / y  when |y| >= 1e-6
+      - 1.0    when |y| < 1e-6 and zeroToMidPoint=True
+      - 0.00   when |y| < 1e-6 and zeroToMidPoint=False
+
+    The |y| < 1e-6 zero-tolerance (tightened from the original `if y == 0`)
+    catches floating-point residue that the exact-equality check missed.
+
+    SEMANTIC LIMITATION - read before adding new call sites:
+
+    When |y| < 1e-6 and |x| > 0, the true value of x/y is mathematically
+    +/- infinity, but this function returns 0.00 (or 1.0). That fallback
+    is INFORMATION-LOSING and silently wrong for some call sites:
+
+      - Run_Pythag (FIXED at call site, not here): using this function for
+        R = calcRatio(Runs_Gained, Runs_Allowed) returns 0 when RA=0,
+        which mislabels a perfectly-dominant team (no runs allowed) as
+        worst-Pythag (Pythag=0). Cascades into Pythag_Luck_Factor as a
+        false 'maximally lucky' signal. FIX: use closed-form
+            Pythag = RG^2 / (RG^2 + RA^2)
+        directly, bypassing calcRatio entirely. Well-defined as 1.0
+        when RA=0 and RG>0. See pythag.py in the data-quality pipeline
+        for the drop-in pattern.
+
+      - Other MEDIUM-risk call sites (rare edge cases, no semantic
+        inversion like Pythag had - left to call-site fixes when
+        convenient):
+            EarnedRunAvg          = ER / IP  (IP=0 with ER>0 -> 0)
+            MenOnBase_Efficiency  = Runs / MOB  (MOB=0 with Runs>0 -> 0)
+            MenOnBaseTBRatio      = TotalBases / MOB
+            WalkStrikeoutRatio    = Walks / Strikeouts  (K=0 with BB>0 -> 0)
+
+    For LOW-risk call sites (NP, OutsPitched, AtBats, accumulated career
+    totals etc.) the denominator is never plausibly zero in real data,
+    so the fallback semantics are immaterial.
+    """
+    if abs(y) < 1e-6:
         if zeroToMidPoint:
             return 1.0
         return 0.00
-    else:
-        return float(x / y)
-
+    return float(x / y)
+    
 def calcProbRatio(x, y, zeroToMidPoint=False):
-    sum = float(x + y)
-    if not sum or not x:
+    """V/(V+H) share with fallback to 0.5 (or 0.0) when undefined.
+    Drops the legacy 'or not x' clause - V=0 is a legitimate share of 0,
+    not a missing value. Tightens the zero check to catch floating-point
+    cancellation residue on signed centred-at-zero variables.
+    """
+    denom = float(x + y)
+    if abs(denom) < 1e-6:       # catches cancellation residue, not just exact 0.0
         if zeroToMidPoint:
-            return 0.5
+            return 0.5          # neutral share - H and V indistinguishable
         return 0.00
-    else:
-        return float(x / sum)
-        
+    return float(x / denom)     # includes the V=0 case (returns 0.0, not 0.5)
+    
 def calcAddFeatures(x, y):
     if x == MLB_dbvar.NO_DATA or y == MLB_dbvar.NO_DATA:
         return 0.00
@@ -503,8 +509,3 @@ def getNumStars(numStars):
         return 5
     else:
         return 0
-        
-def annotateWithStars(textStr, numStars):
-    _starStr = genStarStr(numStars)
-    _starString = _starStr + " " + textStr + " " + _starStr
-    return _starString
