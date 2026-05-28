@@ -177,10 +177,30 @@ class scionDGEN:
         return self._h_sp_id
     def getVisSPId(self):
         return self._v_sp_id
-    def getInitialMiddleLine(self):
-        return self._original_opmidl
-    def getInitialMiddleLineVig(self):
-        return self._ovig
+    def getInitialVisOpenML(self):
+        return self._v_ml_open
+    def getInitialVisCloseML(self):
+        return self._v_ml_close
+    def getInitialHomeOpenML(self):
+        return self._h_ml_open
+    def getInitialHomeCloseML(self):
+        return self._h_ml_close
+    def getInitialVisOpenProb(self):
+        return self._v_oprob
+    def getInitialVisCloseProb(self):
+        return self._v_cprob
+    def getInitialHomeOpenProb(self):
+        return self._h_oprob
+    def getInitialHomeCloseProb(self):
+        return self._h_cprob
+    def getInitialVisProbDiff(self):
+        return self._v_cll_opl_prob_diff
+    def getInitialHomeProbDiff(self):
+        return self._h_cll_opl_prob_diff
+    def getInitialOpenTotal(self):
+        return self._total_over_open
+    def getInitialCloseTotal(self):
+        return self._total_over_close
     def getLookAheadStatus(self):
         return self._lookahead_active
     def getHomeSPNullStatus(self):
@@ -193,18 +213,6 @@ class scionDGEN:
         self._vis_SP_isNull = featureStatus
     def _getCurrent_GameDate(self):
         return self._game_date
-    def _getCurrent_H_OMIDL(self):
-        return self._currentgame_df[MLB_dbvar.dbvar_G_Opening_MiddleMoneyLine].values[0]   
-    def _getCurrent_H_OVIG(self):
-        return self._currentgame_df[MLB_dbvar.dbvar_G_OpeningLine_Vig].values[0]             
-    def _getCurrent_H_Bookie_ML(self):
-        return self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_H_MoneyLine].values[0]   
-    def _getCurrent_H_Bookie_Prob(self):
-        return self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_H_Probability].values[0] 
-    def _getCurrent_V_Bookie_ML(self):
-        return self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_V_MoneyLine].values[0]   
-    def _getCurrent_V_Bookie_Prob(self):
-        return self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_V_Probability].values[0] 
 
     #NB The following CLT check function is for Prev1 vars
     def _checkIsOverCLT(self, game_df):
@@ -218,20 +226,22 @@ class scionDGEN:
                 is_over = MLB_dbvar.G_LOSE
         return is_over
     
-    def _setCurrent_BookieMoneyLines(self, middleLine, vigLine):
-        self._currentgame_df[MLB_dbvar.dbvar_G_Opening_MiddleMoneyLine].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_Middle_MoneyLine].values[0] = float(middleLine)
-        self._currentgame_df[MLB_dbvar.dbvar_G_OpeningLine_Vig].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_ClosingLine_Vig].values[0] = float(vigLine)
-        self._currentgame_df[MLB_dbvar.dbvar_G_H_Opening_MoneyLine].values[0], self._currentgame_df[MLB_dbvar.dbvar_G_V_Opening_MoneyLine].values[0]  = MLB_global.ConvertMiddleLineToPrices(middleLine, vigLine)
-        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_H_Probability].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_H_OpeningProbabilityLine].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_H_ClosingProbabilityLine].values[0] = MLB_global.convertMoneyLinetoProb(self._currentgame_df[MLB_dbvar.dbvar_G_H_Opening_MoneyLine].values[0])
-        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_H_MoneyLine].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_H_Closing_MoneyLine].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_H_Opening_MoneyLine].values[0]
-        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_V_Probability].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_V_OpeningProbabilityLine].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_V_ClosingProbabilityLine].values[0] = MLB_global.convertMoneyLinetoProb(self._currentgame_df[MLB_dbvar.dbvar_G_V_Opening_MoneyLine].values[0])
-        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_V_MoneyLine].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_V_Closing_MoneyLine].values[0] = self._currentgame_df[MLB_dbvar.dbvar_G_V_Opening_MoneyLine].values[0]
-    
-    def _setCurrentBookieTotal(self, totalValue):
-        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_Total].values[0] = float(totalValue)
-    
-    def _setCurrentBookieTotalLine(self, totalMoneyLine):
-        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_TotalLine].values[0] = float(totalMoneyLine)
+    def _setCurrent_MUPsMoneyLines(self, mupsObj):
+        # Assumption: we're reading lines from mupsObj as if spanning, then the line in mupsObj is what is being updated and not those associated with dGEN obj
+        self._currentgame_df[MLB_dbvar.dbvar_G_H_Opening_MoneyLine].values[0] = x = float(mupsObj.getCurrentMUPHomeMLOpen())
+        self._currentgame_df[MLB_dbvar.dbvar_G_H_OpeningProbabilityLine].values[0] = op = MLB_global.convertMoneyLinetoProb(x)
+        self._currentgame_df[MLB_dbvar.dbvar_G_H_Closing_MoneyLine].values[0] = x = float(mupsObj.getCurrentMUPHomeMLClose())
+        self._currentgame_df[MLB_dbvar.dbvar_G_H_ClosingProbabilityLine].values[0] = cl = MLB_global.convertMoneyLinetoProb(x)
+        self._currentgame_df[MLB_dbvar.dbvar_G_H_CLL_OPL_Prob_Diff].values[0] = float(cl - op)
+        self._currentgame_df[MLB_dbvar.dbvar_G_V_Opening_MoneyLine].values[0] = x = float(mupsObj.getCurrentMUPVisMLOpen())
+        self._currentgame_df[MLB_dbvar.dbvar_G_V_OpeningProbabilityLine].values[0] = op = MLB_global.convertMoneyLinetoProb(x)
+        self._currentgame_df[MLB_dbvar.dbvar_G_V_Closing_MoneyLine].values[0] = x = float(mupsObj.getCurrentMUPVisMLClose())
+        self._currentgame_df[MLB_dbvar.dbvar_G_V_ClosingProbabilityLine].values[0] = cl = MLB_global.convertMoneyLinetoProb(x)
+        self._currentgame_df[MLB_dbvar.dbvar_G_V_CLL_OPL_Prob_Diff].values[0] = float(cl - op)
+        self._currentgame_df[MLB_dbvar.dbvar_G_Opening_TotalOver].values[0] = float(mupsObj.getCurrentMUPOverOpen())
+        self._currentgame_df[MLB_dbvar.dbvar_G_Opening_TotalOverLine].values[0] = MLB_dbvar.NO_DATA
+        self._currentgame_df[MLB_dbvar.dbvar_G_Closing_TotalOver].values[0] = float(mupsObj.getCurrentMUPOverClose())
+        self._currentgame_df[MLB_dbvar.dbvar_G_Closing_TotalOverLine].values[0] = MLB_dbvar.NO_DATA
     
     def _getCurrentSPBOBSORatio(self, h_or_v):
         _spBOB = _spSO = _spBOBSOratio = 0.0
@@ -330,7 +340,7 @@ class scionDGEN:
     def _initGameData(self, modelCfg, mupsObj):
         #Assumption 1: dGENobj initialised with ORIGINAL game primitives from MUPs (eg H and V ids, SP ids, date, middle line, total)
         #Assumption 2: modelCfg has valid window size for current task
-        #Assumption 3: mupsObj contains middleline (including span updates) and also home probabilities generated from Boys Program
+        #Assumption 3: mupsObj contains bookie lines (including span updates) and also home probabilities generated from Boys Program
         try:
             #a. copy dataframe from master (Id much prefer we have a dict and then add to the dataframe BUT leave for NEXT iteration)
             self._currentgame_df = self.masterDB.copyMasterStructure()
@@ -346,8 +356,7 @@ class scionDGEN:
                 self._currentgame_df[MLB_dbvar.dbvar_G_V_Id].values[0] = tID = self.getVisId()
                 self._currentgame_df[MLB_dbvar.dbvar_G_V_StartingPitcher_Id].values[0] = self.getVisSPId()
                 self._updateVisDistanceTravelledAttrib() #to ensure we have values for V_Nextx_DistanceTravelled when echoing opponent
-                self._setCurrent_BookieMoneyLines(mupsObj.getCurrentMUPBOOKIEML(), mupsObj.getCurrentMUPBookieVig())
-                self._setCurrentBookieTotal(float(mupsObj.getCurrentMUPBOOKIETOTAL()))
+                self._setCurrent_MUPsMoneyLines(mupsObj)
                 #b. set window_size for current model (VERY important otherwise the default will be used)
                 self._window_size = int(modelCfg.getCurrentTaskModelWindowSize())
                 #c. Update probabilities from Boys Program
@@ -1092,7 +1101,8 @@ class scionDGEN:
             opp_strength = MLB_dbvar.STR_MIDPOINT
         
         return opp_division, opp_same_div, opp_leagdiv, opp_same_leagdiv, opp_strength, opp_strength_game_id, opp_distance_travelled
- 
+    
+    # LOOK AHEAD IS DISABLED FOR THIS VERSION
     def _buildLASummary(self, tHomeV, rStr, oStr, tSameDiv):
         #Build lookahead summary H/V_S/W_Y/N
         if tHomeV == MLB_dbvar.YES_HOME:
@@ -1109,6 +1119,7 @@ class scionDGEN:
             lookahead_summary += "N"
         return lookahead_summary  
     
+    # LOOK AHEAD IS DISABLED FOR THIS VERSION
     def _echoOpponentOnLookaheadFields(self, home_or_vis, fileHandle):
         # This function simply copies information about the current opponent on the H or V look ahead fields
         # Assumption 1: self._currentgame_df is the game to be updated
@@ -1200,6 +1211,7 @@ class scionDGEN:
             self._currentgame_df[MLB_dbvar.dbvar_G_V_Lookahead_Strength].values[0] = lookahead_weighted_strength  
             
     # NOTE: THE FOLLOWING IS DIFFERENT TO dGEN
+    # LOOK AHEAD IS DISABLED FOR THIS VERSION
     def _getEchoOpponentLookaheadStatus(self, home_or_vis):
         #This function returns True if we need to echo lookahead, else returns false
         #Assumption: self._lookahead_games and self._lookahead_games have already been populated before this func is called
@@ -1215,7 +1227,8 @@ class scionDGEN:
                 echoLookaheadStatus = True
         
         return echoLookaheadStatus
-        
+    
+    # LOOK AHEAD IS DISABLED FOR THIS VERSION
     def _populateLookAheadFields(self, h_or_v, fileHandle):
         #This is a huge inefficient function that needs significant redesign BUT not now!!!
         # Assumption 1: self._currentgame_df is the game to be updated
