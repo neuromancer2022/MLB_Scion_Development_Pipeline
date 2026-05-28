@@ -2132,8 +2132,8 @@ class scionDGEN:
         Formula in closed form: RG^2 / (RG^2 + RA^2)
             where RG = avg Runs_Gained per game, RA = avg Runs_Allowed.
 
-        Mathematically identical to R^2 / (R^2 + 1) where R = RG / RA,
-        for RA > 0. The closed form is preferred because it sidesteps
+        Mathematically identical to R^2 / (R^2 + 1) where R = RG / RA, for RA > 0. 
+        The closed form is preferred because it sidesteps
         MLB_global.calcRatio()'s zero-denominator behaviour:
 
             R = calcRatio(RG, RA)   when RA = 0 returns 0.0 (not +inf)
@@ -2155,40 +2155,41 @@ class scionDGEN:
         """
         #1. HOME pythag
         fieldName=MLB_dbvar.dbvar_H_Run_Pythag
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Gained].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Allowed].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_Run_Pythag_Sum
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Gained_Sum].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Allowed_Sum].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_Run_Pythag_5G
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Gained_5G].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Allowed_5G].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_Run_Pythag_20G
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Gained_20G].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Allowed_20G].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_Run_Pythag_YTD
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Gained_YTD].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_H_Runs_Allowed_YTD].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
+
         fieldName=MLB_dbvar.dbvar_H_Pythag_Luck_Factor
         fieldValue = self._currentgame_df[MLB_dbvar.dbvar_H_WinLoss_Strength].values[0] - self._currentgame_df[MLB_dbvar.dbvar_H_Run_Pythag].values[0]
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
@@ -2204,40 +2205,41 @@ class scionDGEN:
 
         #2. VIS pythag
         fieldName=MLB_dbvar.dbvar_V_Run_Pythag
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Gained].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Allowed].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_Run_Pythag_Sum
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Gained_Sum].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Allowed_Sum].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_Run_Pythag_5G
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Gained_5G].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Allowed_5G].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_Run_Pythag_20G
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Gained_20G].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Allowed_20G].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_Run_Pythag_YTD
-        # Closed-form Pythag: RG^2 / (RG^2 + RA^2). See method docstring.
+        # Closed-form Pythag: RG^2 / (RG^2 + RA^2).
         _rg = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Gained_YTD].values[0]
         _ra = self._currentgame_df[MLB_dbvar.dbvar_V_Runs_Allowed_YTD].values[0]
         _den = _rg * _rg + _ra * _ra
         fieldValue = 0.5 if _den < 1e-12 else (_rg * _rg) / _den
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
+        
         fieldName=MLB_dbvar.dbvar_V_Pythag_Luck_Factor
         fieldValue = self._currentgame_df[MLB_dbvar.dbvar_V_WinLoss_Strength].values[0] - self._currentgame_df[MLB_dbvar.dbvar_V_Run_Pythag].values[0]
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
@@ -2409,18 +2411,54 @@ class scionDGEN:
 
     def _updatePitchDependents(self):
         #1. HOME.
-        fieldName=MLB_dbvar.dbvar_H_FIP
-        fieldValue =  (13 * self._currentgame_df[MLB_dbvar.dbvar_H_HomeRuns_Allowed].values[0] + 3 * (self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed].values[0]) - 2 * self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched].values[0] / 3) + 3.12
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_H_FIP_5G
-        fieldValue =  (13 * self._currentgame_df[MLB_dbvar.dbvar_H_HomeRuns_Allowed_5G].values[0] + 3 * (self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed_5G].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed_5G].values[0]) - 2 * self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained_5G].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_5G].values[0] / 3) + 3.12
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_H_FIP_YTD
-        fieldValue =  (13 * self._currentgame_df[MLB_dbvar.dbvar_H_HomeRuns_Allowed_YTD].values[0] + 3 * (self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed_YTD].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed_YTD].values[0]) - 2 * self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained_YTD].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_YTD].values[0] / 3) + 3.12
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_H_FIP_YTD_HV
-        fieldValue =  (13 * self._currentgame_df[MLB_dbvar.dbvar_H_HomeRuns_Allowed_YTD_HV].values[0] + 3 * (self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed_YTD_HV].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed_YTD_HV].values[0]) - 2 * self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained_YTD_HV].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_YTD_HV].values[0] / 3) + 3.12
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
+        # ── H_FIP (10-game window) ─────────────────────────────────────
+        fieldName = MLB_dbvar.dbvar_H_FIP
+        fieldValue = MLB_global.computeFIP(
+            hr_allowed   = self._currentgame_df[MLB_dbvar.dbvar_H_HomeRuns_Allowed].values[0],
+            walks_allowed= self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed].values[0],
+            hbp_allowed  = self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed].values[0],
+            k_gained     = self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained].values[0],
+            outs_pitched = self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched].values[0],
+            min_ip = 3.0   # 10-game window: 5 IP minimum is plenty
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── H_FIP_5G (5-game window) ───────────────────────────────────
+        fieldName = MLB_dbvar.dbvar_H_FIP_5G
+        fieldValue = MLB_global.computeFIP(
+            hr_allowed   = self._currentgame_df[MLB_dbvar.dbvar_H_HomeRuns_Allowed_5G].values[0],
+            walks_allowed= self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed_5G].values[0],
+            hbp_allowed  = self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed_5G].values[0],
+            k_gained     = self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained_5G].values[0],
+            outs_pitched = self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_5G].values[0],
+            min_ip = 3.0   # 5-game window: 3 IP minimum
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── H_FIP_YTD (12-month window) ────────────────────────────────
+        fieldName = MLB_dbvar.dbvar_H_FIP_YTD
+        fieldValue = MLB_global.computeFIP(
+            hr_allowed   = self._currentgame_df[MLB_dbvar.dbvar_H_HomeRuns_Allowed_YTD].values[0],
+            walks_allowed= self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed_YTD].values[0],
+            hbp_allowed  = self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed_YTD].values[0],
+            k_gained     = self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained_YTD].values[0],
+            outs_pitched = self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_YTD].values[0],
+            min_ip = 3.0  # 12-month window: 20 IP minimum
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── H_FIP_YTD_HV (12-month home-only window) ───────────────────
+        fieldName = MLB_dbvar.dbvar_H_FIP_YTD_HV
+        fieldValue = MLB_global.computeFIP(
+            hr_allowed   = self._currentgame_df[MLB_dbvar.dbvar_H_HomeRuns_Allowed_YTD_HV].values[0],
+            walks_allowed= self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed_YTD_HV].values[0],
+            hbp_allowed  = self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed_YTD_HV].values[0],
+            k_gained     = self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained_YTD_HV].values[0],
+            outs_pitched = self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_YTD_HV].values[0],
+            min_ip = 3.0  # 12-month HV-only: stricter due to smaller sample
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+
         fieldName=MLB_dbvar.dbvar_H_K_Minus_BB_Pct
         fieldValue =  (self._currentgame_df[MLB_dbvar.dbvar_H_StrikeoutsGained].values[0] - self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_HitsAllowed].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed].values[0] +self._currentgame_df[MLB_dbvar.dbvar_H_HitsByPitch_Allowed].values[0] ) + 100
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
@@ -2467,28 +2505,87 @@ class scionDGEN:
         fieldName=MLB_dbvar.dbvar_H_BallpenOuts_YTD
         fieldValue = self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_YTD].values[0] - self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_InningsPitched_YTD].values[0]
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_H_BallpenERA_Approx
-        fieldValue = 27 * (self._currentgame_df[MLB_dbvar.dbvar_H_EarnedRuns].values[0] - self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Score_YTD].values[0]) / self._currentgame_df[MLB_dbvar.dbvar_H_BallpenOuts].values[0]
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_H_BallpenERA_Approx_5G
-        fieldValue = 27 * (self._currentgame_df[MLB_dbvar.dbvar_H_EarnedRuns_5G].values[0] - self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Score_5G].values[0]) / self._currentgame_df[MLB_dbvar.dbvar_H_BallpenOuts_5G].values[0]
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_H_BallpenERA_Approx_YTD
-        fieldValue = 27 * (self._currentgame_df[MLB_dbvar.dbvar_H_EarnedRuns_YTD].values[0] - self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Score_YTD].values[0]) / self._currentgame_df[MLB_dbvar.dbvar_H_BallpenOuts_YTD].values[0]
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
+        
+        # ── H_BallpenERA_Approx (10-game window team_er, YTD sp_er) ────
+        # Base variant uses _YTD SP score because no 10-game SP_Score field
+        # exists in the dGEN.py schema. This is by design, not a bug.
+        fieldName = MLB_dbvar.dbvar_H_BallpenERA_Approx
+        fieldValue = MLB_global.computeBullpenERA(
+            team_er      = self._currentgame_df[MLB_dbvar.dbvar_H_EarnedRuns].values[0],
+            sp_er        = self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Score_YTD].values[0],
+            bullpen_outs = self._currentgame_df[MLB_dbvar.dbvar_H_BallpenOuts].values[0],
+            min_outs = 3
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── H_BallpenERA_Approx_5G (5-game window) ─────────────────────
+        fieldName = MLB_dbvar.dbvar_H_BallpenERA_Approx_5G
+        fieldValue = MLB_global.computeBullpenERA(
+            team_er      = self._currentgame_df[MLB_dbvar.dbvar_H_EarnedRuns_5G].values[0],
+            sp_er        = self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Score_5G].values[0],
+            bullpen_outs = self._currentgame_df[MLB_dbvar.dbvar_H_BallpenOuts_5G].values[0],
+            min_outs = 3
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── H_BallpenERA_Approx_YTD (12-month window) ──────────────────
+        fieldName = MLB_dbvar.dbvar_H_BallpenERA_Approx_YTD
+        fieldValue = MLB_global.computeBullpenERA(
+            team_er      = self._currentgame_df[MLB_dbvar.dbvar_H_EarnedRuns_YTD].values[0],
+            sp_er        = self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Score_YTD].values[0],
+            bullpen_outs = self._currentgame_df[MLB_dbvar.dbvar_H_BallpenOuts_YTD].values[0],
+            min_outs = 5
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
         #2. VIS
-        fieldName=MLB_dbvar.dbvar_V_FIP
-        fieldValue =  (13 * self._currentgame_df[MLB_dbvar.dbvar_V_HomeRuns_Allowed].values[0] + 3 * (self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed].values[0]) - 2 * self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched].values[0] / 3) + 3.12
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_FIP_5G
-        fieldValue =  (13 * self._currentgame_df[MLB_dbvar.dbvar_V_HomeRuns_Allowed_5G].values[0] + 3 * (self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed_5G].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed_5G].values[0]) - 2 * self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained_5G].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_5G].values[0] / 3) + 3.12
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_FIP_YTD
-        fieldValue =  (13 * self._currentgame_df[MLB_dbvar.dbvar_V_HomeRuns_Allowed_YTD].values[0] + 3 * (self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed_YTD].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed_YTD].values[0]) - 2 * self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained_YTD].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_YTD].values[0] / 3) + 3.12
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_FIP_YTD_HV
-        fieldValue =  (13 * self._currentgame_df[MLB_dbvar.dbvar_V_HomeRuns_Allowed_YTD_HV].values[0] + 3 * (self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed_YTD_HV].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed_YTD_HV].values[0]) - 2 * self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained_YTD_HV].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_YTD_HV].values[0] / 3) + 3.12
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
+        # ── V_FIP (10-game window) ─────────────────────────────────────
+        fieldName = MLB_dbvar.dbvar_V_FIP
+        fieldValue = MLB_global.computeFIP(
+            hr_allowed   = self._currentgame_df[MLB_dbvar.dbvar_V_HomeRuns_Allowed].values[0],
+            walks_allowed= self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed].values[0],
+            hbp_allowed  = self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed].values[0],
+            k_gained     = self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained].values[0],
+            outs_pitched = self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched].values[0],
+            min_ip = 3.0   # 10-game window: 5 IP minimum is plenty
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── V_FIP_5G (5-game window) ───────────────────────────────────
+        fieldName = MLB_dbvar.dbvar_V_FIP_5G
+        fieldValue = MLB_global.computeFIP(
+            hr_allowed   = self._currentgame_df[MLB_dbvar.dbvar_V_HomeRuns_Allowed_5G].values[0],
+            walks_allowed= self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed_5G].values[0],
+            hbp_allowed  = self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed_5G].values[0],
+            k_gained     = self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained_5G].values[0],
+            outs_pitched = self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_5G].values[0],
+            min_ip = 3.0   # 5-game window: 3 IP minimum
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── V_FIP_YTD (12-month window) ────────────────────────────────
+        fieldName = MLB_dbvar.dbvar_V_FIP_YTD
+        fieldValue = MLB_global.computeFIP(
+            hr_allowed   = self._currentgame_df[MLB_dbvar.dbvar_V_HomeRuns_Allowed_YTD].values[0],
+            walks_allowed= self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed_YTD].values[0],
+            hbp_allowed  = self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed_YTD].values[0],
+            k_gained     = self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained_YTD].values[0],
+            outs_pitched = self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_YTD].values[0],
+            min_ip = 3.0  # 12-month window: 20 IP minimum
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── V_FIP_YTD_HV (12-month home-only window) ───────────────────
+        fieldName = MLB_dbvar.dbvar_V_FIP_YTD_HV
+        fieldValue = MLB_global.computeFIP(
+            hr_allowed   = self._currentgame_df[MLB_dbvar.dbvar_V_HomeRuns_Allowed_YTD_HV].values[0],
+            walks_allowed= self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed_YTD_HV].values[0],
+            hbp_allowed  = self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed_YTD_HV].values[0],
+            k_gained     = self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained_YTD_HV].values[0],
+            outs_pitched = self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_YTD_HV].values[0],
+            min_ip = 3.0  # 12-month HV-only: stricter due to smaller sample
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+
         fieldName=MLB_dbvar.dbvar_V_K_Minus_BB_Pct
         fieldValue =  (self._currentgame_df[MLB_dbvar.dbvar_V_StrikeoutsGained].values[0] - self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed].values[0]) / (self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_HitsAllowed].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed].values[0] +self._currentgame_df[MLB_dbvar.dbvar_V_HitsByPitch_Allowed].values[0] ) + 100
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
@@ -2535,24 +2632,37 @@ class scionDGEN:
         fieldName=MLB_dbvar.dbvar_V_BallpenOuts_YTD
         fieldValue = self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_YTD].values[0] - self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_InningsPitched_YTD].values[0]
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_BallpenOuts
-        fieldValue = self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched].values[0] - (self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_InningsPitched_YTD].values[0] * 3)
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_BallpenOuts_5G
-        fieldValue = self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_5G].values[0] - (self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_InningsPitched_5G].values[0] * 3)
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_BallpenOuts_YTD
-        fieldValue = self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_YTD].values[0] - (self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_InningsPitched_YTD].values[0] * 3)
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_BallpenERA_Approx
-        fieldValue = 27 * (self._currentgame_df[MLB_dbvar.dbvar_V_EarnedRuns].values[0] - self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Score_YTD].values[0]) / self._currentgame_df[MLB_dbvar.dbvar_V_BallpenOuts].values[0]
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_BallpenERA_Approx_5G
-        fieldValue = 27 * (self._currentgame_df[MLB_dbvar.dbvar_V_EarnedRuns_5G].values[0] - self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Score_5G].values[0]) / self._currentgame_df[MLB_dbvar.dbvar_V_BallpenOuts_5G].values[0]
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
-        fieldName=MLB_dbvar.dbvar_V_BallpenERA_Approx_YTD
-        fieldValue = 27 * (self._currentgame_df[MLB_dbvar.dbvar_V_EarnedRuns_YTD].values[0] - self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Score_YTD].values[0]) / self._currentgame_df[MLB_dbvar.dbvar_V_BallpenOuts_YTD].values[0]
-        self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
+        # ── V_BallpenERA_Approx (10-game window team_er, YTD sp_er) ────
+        # Base variant uses _YTD SP score because no 10-game SP_Score field
+        # exists in the dGEN.py schema. This is by design, not a bug.
+        fieldName = MLB_dbvar.dbvar_V_BallpenERA_Approx
+        fieldValue = MLB_global.computeBullpenERA(
+            team_er      = self._currentgame_df[MLB_dbvar.dbvar_V_EarnedRuns].values[0],
+            sp_er        = self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Score_YTD].values[0],
+            bullpen_outs = self._currentgame_df[MLB_dbvar.dbvar_V_BallpenOuts].values[0],
+            min_outs = 3
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── V_BallpenERA_Approx_5G (5-game window) ─────────────────────
+        fieldName = MLB_dbvar.dbvar_V_BallpenERA_Approx_5G
+        fieldValue = MLB_global.computeBullpenERA(
+            team_er      = self._currentgame_df[MLB_dbvar.dbvar_V_EarnedRuns_5G].values[0],
+            sp_er        = self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Score_5G].values[0],
+            bullpen_outs = self._currentgame_df[MLB_dbvar.dbvar_V_BallpenOuts_5G].values[0],
+            min_outs = 3
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue
+        
+        # ── V_BallpenERA_Approx_YTD (12-month window) ──────────────────
+        fieldName = MLB_dbvar.dbvar_V_BallpenERA_Approx_YTD
+        fieldValue = MLB_global.computeBullpenERA(
+            team_er      = self._currentgame_df[MLB_dbvar.dbvar_V_EarnedRuns_YTD].values[0],
+            sp_er        = self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Score_YTD].values[0],
+            bullpen_outs = self._currentgame_df[MLB_dbvar.dbvar_V_BallpenOuts_YTD].values[0],
+            min_outs = 5
+        )
+        self._currentgame_df[fieldName].values[0] = fieldValue       
     
     def _updateRatioAttribs(self):
         #1. Calculate H ratios
@@ -3041,42 +3151,34 @@ class scionDGEN:
         #1. HOME WHIP
         fieldName=MLB_dbvar.dbvar_H_WalksHitsAllowedPerInning
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_SP_HitsAllowed].values[0], self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_WalksHitsAllowedPerInning_5G
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed_5G].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_SP_HitsAllowed_5G].values[0], self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_5G].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_WalksHitsAllowedPerInning_YTD
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_H_WalksAllowed_YTD].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_SP_HitsAllowed_YTD].values[0], self._currentgame_df[MLB_dbvar.dbvar_H_OutsPitched_YTD].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_StartingPitcher_WalkHitsAllowedPerInning_All
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_BaseOnBalls_All].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Hits_All].values[0], self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_InningsPitched_All].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_StartingPitcher_WalkHitsAllowedPerInning_YTD
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_BaseOnBalls_YTD].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Hits_YTD].values[0], self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_InningsPitched_YTD].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_StartingPitcher_WalkHitsAllowedPerInning_5G
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_BaseOnBalls_5G].values[0] + self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_Hits_5G].values[0], self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_InningsPitched_5G].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_StartingPitcher_WalkHitsAllowedPerInningImpact_YTD
-        # Impact = SP_WHIP / Team_WHIP. The '+ SP_BB' term in the original
-        # was copy-paste residue from the WHIP pattern and is removed.
+        # Impact = SP_WHIP / Team_WHIP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_WalkHitsAllowedPerInning_YTD].values[0], self._currentgame_df[MLB_dbvar.dbvar_H_WalksHitsAllowedPerInning_YTD].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_StartingPitcher_WalkHitsAllowedPerInningImpact_5G
-        # Impact = SP_WHIP / Team_WHIP. The '+ SP_BB' term in the original
-        # was copy-paste residue from the WHIP pattern and is removed.
+        # Impact = SP_WHIP / Team_WHIP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_WalkHitsAllowedPerInning_5G].values[0], self._currentgame_df[MLB_dbvar.dbvar_H_WalksHitsAllowedPerInning_5G].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_H_StartingPitcher_WalkHitsAllowedPerInning_Ratio
@@ -3088,42 +3190,34 @@ class scionDGEN:
         #2. VIS WHIP
         fieldName=MLB_dbvar.dbvar_V_WalksHitsAllowedPerInning
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_SP_HitsAllowed].values[0], self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_WalksHitsAllowedPerInning_5G
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed_5G].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_SP_HitsAllowed_5G].values[0], self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_5G].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_WalksHitsAllowedPerInning_YTD
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_V_WalksAllowed_YTD].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_SP_HitsAllowed_YTD].values[0], self._currentgame_df[MLB_dbvar.dbvar_V_OutsPitched_YTD].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_StartingPitcher_WalkHitsAllowedPerInning_All
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_BaseOnBalls_All].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Hits_All].values[0], self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_InningsPitched_All].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_StartingPitcher_WalkHitsAllowedPerInning_YTD
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_BaseOnBalls_YTD].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Hits_YTD].values[0], self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_InningsPitched_YTD].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_StartingPitcher_WalkHitsAllowedPerInning_5G
         # WHIP = (BB + Hits) / IP. Single calcRatio avoids the operator-precedence bug
-        # that gave BB + (Hits/IP) instead of (BB + Hits)/IP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_BaseOnBalls_5G].values[0] + self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_Hits_5G].values[0], self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_InningsPitched_5G].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_StartingPitcher_WalkHitsAllowedPerInningImpact_YTD
-        # Impact = SP_WHIP / Team_WHIP. The '+ SP_BB' term in the original
-        # was copy-paste residue from the WHIP pattern and is removed.
+        # Impact = SP_WHIP / Team_WHIP. 
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_WalkHitsAllowedPerInning_YTD].values[0], self._currentgame_df[MLB_dbvar.dbvar_V_WalksHitsAllowedPerInning_YTD].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_StartingPitcher_WalkHitsAllowedPerInningImpact_5G
-        # Impact = SP_WHIP / Team_WHIP. The '+ SP_BB' term in the original
-        # was copy-paste residue from the WHIP pattern and is removed.
+        # Impact = SP_WHIP / Team_WHIP.
         fieldValue = MLB_global.calcRatio(self._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_WalkHitsAllowedPerInning_5G].values[0], self._currentgame_df[MLB_dbvar.dbvar_V_WalksHitsAllowedPerInning_5G].values[0])
         self._currentgame_df[fieldName].values[0] = float(fieldValue)  #
         fieldName=MLB_dbvar.dbvar_V_StartingPitcher_WalkHitsAllowedPerInning_Ratio

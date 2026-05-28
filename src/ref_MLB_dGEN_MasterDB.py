@@ -53,6 +53,18 @@ class scionMASTERDB:
         try:
             #Read data into a pd frame
             self._masterdb_df = pd.read_csv(self.masterdbfname, header=0, parse_dates=[MLB_dbvar.dbvar_G_Date], dayfirst=False)
+            # Defensive sanitization: pandas auto-renames duplicate CSV column
+            # headers to '<name>.1'. We detect any such pandas-disambiguated
+            # duplicates (e.g. the historical 'H_StrikeoutsGained_20G.1' bug) and
+            # drop the empty .1 sibling, keeping the first occurrence (real data).
+            # If the CSV is clean this block is a silent no-op; if it regresses
+            # the WARNING is loud enough to catch on the next dGEN load.
+            _dup_cols = [c for c in self._masterdb_df.columns
+                         if c.endswith('.1') and c[:-2] in self._masterdb_df.columns]
+            if _dup_cols:
+                self._masterdb_df = self._masterdb_df.drop(columns=_dup_cols)
+                print("WARNING: masterDB load dropped " + str(len(_dup_cols)) +
+                      " CSV-duplicate column(s): " + str(_dup_cols))
         except:
             print("\nscionMASTERDB._loadMASTERDB(): unexpected error loading the master database file " + self.masterdbfname,end="\n")
             raise
