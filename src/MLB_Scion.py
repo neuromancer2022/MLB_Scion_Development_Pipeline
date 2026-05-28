@@ -79,7 +79,7 @@ def _errorReport():
     print ("*** format_tb:")
     print (traceback.format_tb(exc_traceback))
     print ("*** tb_lineno:", exc_traceback.tb_lineno)
-    sys.exit(0)
+    sys.exit(1)
 
 def float_to_str(f):
     """
@@ -729,9 +729,11 @@ def updatePredsWithdGEN(dgenObj, predsObj, sysCfgObj):
     
     return predsObj
 
-def processBookieMiddleLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData):
-    #Assumption 1: gameData stores the original Middle Line (so we can roll back to it if we span in other direction)
-    #Assumption 2: MUPs object stores the revised MiddleLine
+def processBookieHomeLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData):
+    # THIS WILL NEED REDESIGNING TO TAKE ACCOUNT OF HOM_ML AND PROB DIFF FROM ORIGINAL OPENING PROB (SO WE EXTEND THE CLOSE)
+    #Assumption 1: gameData stores the original HOM Lines (so we can roll back to it if we span in other direction)
+    #Assumption 2: MUPs object stores the revised HOM and VIS Lines
+    #Assumption 3: Vis Lines are NOT altered in any way and there it is assumed there is no requirement to do so.
     #0. Init vars
     game_span_processed = False
     bookieHMiddleLine = mupsDB.getCurrentMUPBOOKIEML()
@@ -938,7 +940,7 @@ if __name__ == "__main__":
                         predsObj.storeSummaryPreds()
                         predsObj.storePredsAsMarkdown()
                         #3.15 Process span
-                        game_span_processed, game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData = processBookieMiddleLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData)
+                        game_span_processed, game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData = processBookieHomeLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData)
                 else:
                     #we still want to store information about skipped games so create id and update verbose dataframe
                     _predId = predsObj._createPredId()
