@@ -5,6 +5,7 @@ from datetime import datetime, date, time, timedelta
 import time
 import pandas as pd
 import math
+import numpy as np
 from pathlib import Path
 import enum
 import shlex #for splitting strings by white space but preserving words within quotes
@@ -381,6 +382,11 @@ def calcRatio(x, y, zeroToMidPoint=False):
     totals etc.) the denominator is never plausibly zero in real data,
     so the fallback semantics are immaterial.
     """
+    # If either input is NaN, the share is undefined, so return the neutral
+    if pd.isna(x) or pd.isna(y):
+        if zeroToMidPoint:
+            return 1.0
+        return 0
     if abs(y) < 1e-6:
         if zeroToMidPoint:
             return 1.0
@@ -388,18 +394,67 @@ def calcRatio(x, y, zeroToMidPoint=False):
     return float(x / y)
     
 def calcProbRatio(x, y, zeroToMidPoint=False):
-    """V/(V+H) share with fallback to 0.5 (or 0.0) when undefined.
-    Drops the legacy 'or not x' clause - V=0 is a legitimate share of 0,
+    """X/(X+Y) share with fallback to 0.5 (or 0.0) when undefined.
+    Drops the legacy 'or not x' clause - X=0 is a legitimate share of 0,
     not a missing value. Tightens the zero check to catch floating-point
     cancellation residue on signed centred-at-zero variables.
     """
+    # If either input is NaN, the share is undefined, so return the neutral
+    if pd.isna(x) or pd.isna(y):
+        return 0.5   # neutral share fallback
+    # We have valid values so....
     denom = float(x + y)
     if abs(denom) < 1e-6:       # catches cancellation residue, not just exact 0.0
         if zeroToMidPoint:
             return 0.5          # neutral share - H and V indistinguishable
         return 0.00
     return float(x / denom)     # includes the V=0 case (returns 0.0, not 0.5)
-    
+
+def divByZeroCatch(numerator, denominator, min_denominator=1e-6):
+    """Safe division. Returns NaN if denominator is too close to
+    zero or if inputs/result are not finite."""
+    if pd.isna(numerator) or pd.isna(denominator):
+        return np.nan
+    if abs(denominator) < min_denominator:
+        return np.nan
+    result = numerator / denominator
+    if not np.isfinite(result):
+        return np.nan
+    return result
+ 
+def computeFIP(hr_allowed, walks_allowed, hbp_allowed, k_gained,
+               outs_pitched, min_ip=5.0):
+    """Compute Fielding-Independent Pitching with defensive guards.
+    Returns NaN if any input is invalid, IP < min_ip, or result is
+    not finite. min_ip default = 5 (suitable for 10G window); use
+    10 for YTD_HV which has a smaller home-only sample size."""
+    inputs = [hr_allowed, walks_allowed, hbp_allowed, k_gained, outs_pitched]
+    if any(pd.isna(v) for v in inputs):
+        return np.nan
+    ip = outs_pitched / 3.0
+    if ip < min_ip:
+        return np.nan
+    fip = (13 * hr_allowed + 3 * (walks_allowed + hbp_allowed)
+           - 2 * k_gained) / ip + 3.12
+    if not np.isfinite(fip):
+        return np.nan
+    return fip
+ 
+def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3):
+    """Compute approximate bullpen ERA with defensive guards.
+    Returns NaN if bullpen_outs < min_outs or inputs are NaN.
+    No numerator flooring (v5: BallpenOuts is now correct).
+    The base variant may return small negatives due to 10G/YTD window mix."""
+    if any(pd.isna(v) for v in [team_er, sp_er, bullpen_outs]):
+        return np.nan
+    if bullpen_outs < min_outs:
+        return np.nan
+    bullpen_er = team_er - sp_er   # no flooring (v5)
+    era = 27 * bullpen_er / bullpen_outs
+    if not np.isfinite(era):
+        return np.nan
+    return era
+
 def calcAddFeatures(x, y):
     if x == MLB_dbvar.NO_DATA or y == MLB_dbvar.NO_DATA:
         return 0.00

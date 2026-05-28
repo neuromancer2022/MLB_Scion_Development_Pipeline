@@ -22,22 +22,17 @@ class scionMUP:
         self._mup_nightgame_attrib = "NIGHTGAME"
         self._mup_vid_attrib = "VIS_ID"
         self._mup_hid_attrib = "HOM_ID"
-        self._mup_vis_opp_next_1_id_attrib = "VIS_OPP_NEXT_1_ID"
-        self._mup_vis_opp_next_1_ha_attrib = "VIS_OPP_NEXT_1_HA"
-        self._mup_vis_opp_next_2_id_attrib = "VIS_OPP_NEXT_2_ID"
-        self._mup_vis_opp_next_2_ha_attrib = "VIS_OPP_NEXT_2_HA"
-        self._mup_vis_opp_next_3_id_attrib = "VIS_OPP_NEXT_3_ID"
-        self._mup_vis_opp_next_3_ha_attrib = "VIS_OPP_NEXT_3_HA"
         self._mup_vis_sp_id_attrib = "VIS_SP_ID"
-        self._mup_vis_force_la_echo = "VIS_FORCE_ECHO"
-        self._mup_hom_opp_next_1_id_attrib = "HOM_OPP_NEXT_1_ID"
-        self._mup_hom_opp_next_1_ha_attrib = "HOM_OPP_NEXT_1_HA"
-        self._mup_hom_opp_next_2_id_attrib = "HOM_OPP_NEXT_2_ID"
-        self._mup_hom_opp_next_2_ha_attrib = "HOM_OPP_NEXT_2_HA"
-        self._mup_hom_opp_next_3_id_attrib = "HOM_OPP_NEXT_3_ID"
-        self._mup_hom_opp_next_3_ha_attrib = "HOM_OPP_NEXT_3_HA"
         self._mup_hom_sp_id_attrib = "HOM_SP_ID"
-        self._mup_hom_force_la_echo = "HOM_FORCE_ECHO"
+        self._mup_vis_ml_open_attrib = "vis_ml_open"
+        self._mup_vis_ml_close_attrib = "vis_ml_close"
+        self._mup_hom_ml_open_attrib = "home_ml_open"
+        self._mup_hom_ml_close_attrib = "home_ml_close"
+        self._mup_over_open_attrib = "over_open"
+        self._mup_over_open_odds_attrib = "over_open_odds"
+        self._mup_over_close_attrib = "over_close"
+        self._mup_over_close_odds_attrib = "over_close_odds"
+        self._mup_over_open_attrib = "under_open"
         self._mup_bookietotal_attrib = "BOOKIE_TOTAL"
         self._mup_bookieml_attrib = "BOOKIE_H_MIDDLE_LINE"
         self._mup_bookiemlspan_attrib = "BOOKIEHLINE_SPAN_CENTS"
@@ -47,16 +42,65 @@ class scionMUP:
         self._mup_bpnull_attrib = "BPHP_NULL"
         self._mup_bpnoline_attrib = "BPHP_NOLINE"
         self._mup_comments_attrib = "COMMENTS"
-        self._mup_cols = [  self._mup_date_attrib,	self._mup_nightgame_attrib, self._mup_vid_attrib,	self._mup_hid_attrib,	self._mup_vis_opp_next_1_id_attrib,	self._mup_vis_opp_next_1_ha_attrib,	self._mup_vis_opp_next_2_id_attrib,	
-                            self._mup_vis_opp_next_2_ha_attrib,	self._mup_vis_opp_next_3_id_attrib,	self._mup_vis_opp_next_3_ha_attrib,	self._mup_vis_sp_id_attrib, self._mup_vis_force_la_echo,	self._mup_hom_opp_next_1_id_attrib,	
-                            self._mup_hom_opp_next_1_ha_attrib,	self._mup_hom_opp_next_2_id_attrib,	self._mup_hom_opp_next_2_ha_attrib,	self._mup_hom_opp_next_3_id_attrib,	self._mup_hom_opp_next_3_ha_attrib,	self._mup_hom_sp_id_attrib,
-                            self._mup_hom_force_la_echo,	self._mup_bookieml_attrib,	self._mup_bookiemlspan_attrib,	self._mup_bookietotal_attrib,	self._mup_bookievig_attrib, self._mup_comments_attrib, self._mup_bpdefense_attrib, self._mup_bpoffense_attrib, self._mup_bpnull_attrib, self._mup_bpnoline_attrib ]
-        self._mup_int_cols = [  self._mup_nightgame_attrib, self._mup_vid_attrib,	self._mup_hid_attrib,	self._mup_vis_opp_next_1_id_attrib,	self._mup_vis_opp_next_1_ha_attrib,	self._mup_vis_opp_next_2_id_attrib,	
-                            self._mup_vis_opp_next_2_ha_attrib,	self._mup_vis_opp_next_3_id_attrib,	self._mup_vis_opp_next_3_ha_attrib,	self._mup_vis_force_la_echo, self._mup_vis_sp_id_attrib, self._mup_hom_opp_next_1_id_attrib,	
-                            self._mup_hom_opp_next_1_ha_attrib,	self._mup_hom_opp_next_2_id_attrib,	self._mup_hom_opp_next_2_ha_attrib,	self._mup_hom_opp_next_3_id_attrib,	self._mup_hom_opp_next_3_ha_attrib,	self._mup_hom_sp_id_attrib,
-                            self._mup_hom_force_la_echo ]
-        self._mup_float_cols = [self._mup_bookieml_attrib,	self._mup_bookiemlspan_attrib,	self._mup_bookietotal_attrib,	self._mup_bookievig_attrib, self._mup_bpdefense_attrib, self._mup_bpoffense_attrib, self._mup_bpnull_attrib, self._mup_bpnoline_attrib]
-        self._mup_str_cols = [self._mup_comments_attrib]
+
+        self._mup_cols =    [  
+                                self._mup_date_attrib,
+                                self._mup_nightgame_attrib,
+                                self._mup_vid_attrib,
+                                self._mup_hid_attrib,
+                                self._mup_vis_sp_id_attrib,
+                                self._mup_hom_sp_id_attrib,
+                                self._mup_vis_ml_open_attrib,
+                                self._mup_vis_ml_close_attrib,
+                                self._mup_hom_ml_open_attrib,
+                                self._mup_hom_ml_close_attrib,
+                                self._mup_over_open_attrib,
+                                self._mup_over_open_odds_attrib,
+                                self._mup_over_close_attrib,
+                                self._mup_over_close_odds_attrib,
+                                self._mup_over_open_attrib,
+                                self._mup_bookietotal_attrib,
+                                self._mup_bookieml_attrib,
+                                self._mup_bookiemlspan_attrib,
+                                self._mup_bookievig_attrib,
+                                self._mup_bpdefense_attrib,
+                                self._mup_bpoffense_attrib,
+                                self._mup_bpnull_attrib,
+                                self._mup_bpnoline_attrib,
+                                self._mup_comments_attrib
+                            ]
+        
+        self._mup_int_cols =    [  
+                                    self._mup_nightgame_attrib,
+                                    self._mup_vid_attrib,
+                                    self._mup_hid_attrib,
+                                    self._mup_vis_sp_id_attrib,
+                                    self._mup_hom_sp_id_attrib,
+                                ]
+        
+        self._mup_float_cols =  [  
+                                    self._mup_vis_ml_open_attrib,
+                                    self._mup_vis_ml_close_attrib,
+                                    self._mup_hom_ml_open_attrib,
+                                    self._mup_hom_ml_close_attrib,
+                                    self._mup_over_open_attrib,
+                                    self._mup_over_open_odds_attrib,
+                                    self._mup_over_close_attrib,
+                                    self._mup_over_close_odds_attrib,
+                                    self._mup_over_open_attrib,
+                                    self._mup_bookietotal_attrib,
+                                    self._mup_bookieml_attrib,
+                                    self._mup_bookiemlspan_attrib,
+                                    self._mup_bookievig_attrib,
+                                    self._mup_bpdefense_attrib,
+                                    self._mup_bpoffense_attrib,
+                                    self._mup_bpnull_attrib,
+                                    self._mup_bpnoline_attrib,
+                                ]
+        
+        self._mup_str_cols =    [  
+                                    self._mup_comments_attrib
+                                ]
         self._mup_df = pd.DataFrame()
         self.current_mup_dict = {}
         self._mup_vis_sname_attrib = "VIS_SNAME" #this will be added to dict only
@@ -154,7 +198,8 @@ class scionMUP:
         except Exception:
             print("\nscionMUPS.getMUPDict(): Unexpected error encountered when converting a matchup into a dictionary!")
             raise
-
+    
+    #getters
     def getCurrentMUPDate(self):
         #return datetime.strptime(self.current_mup_dict[self._mup_date_attrib], MLB_dbvar.dbvar_MLB_Date_Format).date()
         return self.current_mup_dict[self._mup_date_attrib]
@@ -172,6 +217,22 @@ class scionMUP:
         return str(self.current_mup_dict[self._mup_vis_sname_attrib])
     def getCurrentMUPVisSPId(self):
         return int(self.current_mup_dict[self._mup_vis_sp_id_attrib])
+    def getCurrentMUPVisMLOpen(self):
+        return int(self.current_mup_dict[self._mup_vis_ml_open_attrib])
+    def getCurrentMUPVisMLClose(self):
+        return int(self.current_mup_dict[self._mup_vis_ml_close_attrib])
+    def getCurrentMUPHomeMLOpen(self):
+        return int(self.current_mup_dict[self._mup_hom_ml_open_attrib])
+    def getCurrentMUPHomeMLClose(self):
+        return int(self.current_mup_dict[self._mup_hom_ml_close_attrib])
+    def getCurrentMUPOverOpen(self):
+        return int(self.current_mup_dict[self._mup_over_open_attrib])
+    def getCurrentMUPOverClose(self):
+        return int(self.current_mup_dict[self._mup_over_close_attrib])
+    def getCurrentMUPOverOpenOdds(self):
+        return int(self.current_mup_dict[self._mup_over_open_odds_attrib])
+    def getCurrentMUPOverCloseOdds(self):
+        return int(self.current_mup_dict[self._mup_over_close_odds_attrib])
     def getCurrentMUPBOOKIEML(self):
         return float(self.current_mup_dict[self._mup_bookieml_attrib])
     def setCurrentMUPBookieML(self, opl):
@@ -182,45 +243,13 @@ class scionMUP:
         self.current_mup_dict[self._mup_bookievig_attrib] = float(ovig)
     def getCurrentMUPBOOKIESPAN(self):
         return float(self.current_mup_dict[self._mup_bookiemlspan_attrib])
+    def setCurrentMUPBOOKIETOTAL(self, opt):
+        self.current_mup_dict[self._mup_bookietotal_attrib] = float(opt)
     def getCurrentMUPBOOKIETOTAL(self):
         #check if NO_DATA and if so, set to the median
         if self.current_mup_dict[self._mup_bookietotal_attrib] == MLB_dbvar.NO_DATA:
             self.setCurrentMUPBOOKIETOTAL(MLB_global.OPT_MEDIAN)
         return float(self.current_mup_dict[self._mup_bookietotal_attrib])
-    def setCurrentMUPBOOKIETOTAL(self, opt):
-        self.current_mup_dict[self._mup_bookietotal_attrib] = float(opt)
-    def getCurrentMUPVisLA1Id(self):
-        return int(self.current_mup_dict[self._mup_vis_opp_next_1_id_attrib])
-    def getCurrentMUPVisLA2Id(self):
-        return int(self.current_mup_dict[self._mup_vis_opp_next_2_id_attrib])
-    def getCurrentMUPVisLA3Id(self):
-        return int(self.current_mup_dict[self._mup_vis_opp_next_3_id_attrib])
-    def getCurrentMUPVisLA1HA(self):
-        return int(self.current_mup_dict[self._mup_vis_opp_next_1_ha_attrib])
-    def getCurrentMUPVisLA2HA(self):
-        return int(self.current_mup_dict[self._mup_vis_opp_next_2_ha_attrib])
-    def getCurrentMUPVisLA3HA(self):
-        return int(self.current_mup_dict[self._mup_vis_opp_next_3_ha_attrib])
-    def getCurrentMUPVisLAECHO(self):
-        return int(self.current_mup_dict[self._mup_vis_force_la_echo])
-    def getCurrentMUPVisSPId(self):
-        return int(self.current_mup_dict[self._mup_vis_sp_id_attrib])
-    def getCurrentMUPHomeLA1Id(self):
-        return int(self.current_mup_dict[self._mup_hom_opp_next_1_id_attrib])
-    def getCurrentMUPHomeLA2Id(self):
-        return int(self.current_mup_dict[self._mup_hom_opp_next_2_id_attrib])
-    def getCurrentMUPHomeLA3Id(self):
-        return int(self.current_mup_dict[self._mup_hom_opp_next_3_id_attrib])
-    def getCurrentMUPHomeLA1HA(self):
-        return int(self.current_mup_dict[self._mup_hom_opp_next_1_ha_attrib])
-    def getCurrentMUPHomeLA2HA(self):
-        return int(self.current_mup_dict[self._mup_hom_opp_next_2_ha_attrib])
-    def getCurrentMUPHomeLA3HA(self):
-        return int(self.current_mup_dict[self._mup_hom_opp_next_3_ha_attrib])
-    def getCurrentMUPHomeLAECHO(self):
-        return int(self.current_mup_dict[self._mup_hom_force_la_echo])
-    def getCurrentMUPHomSPId(self):
-        return int(self.current_mup_dict[self._mup_hom_sp_id_attrib])
     def getCurrentMUPOvig(self):
         return int(self.current_mup_dict[self._mup_bookievig_attrib])
     def getCurrentMUPBPDefense(self):
@@ -233,6 +262,30 @@ class scionMUP:
         return float(self.current_mup_dict[self._mup_bpnoline_attrib])
     def getCurrentMUPComments(self):
         return str(self.current_mup_dict[self._mup_comments_attrib])
+    
+    #setters
+    def setCurrentMUPVisMLOpen(self, newValue):
+        self.current_mup_dict[self._mup_vis_ml_open_attrib] = float(newValue)
+    def setCurrentMUPVisMLClose(self, newValue):
+        self.current_mup_dict[self._mup_vis_ml_close_attrib] = float(newValue)
+    def setCurrentMUPHomeMLOpen(self, newValue):
+        self.current_mup_dict[self._mup_hom_ml_open_attrib] = float(newValue)
+    def setCurrentMUPHomeMLClose(self, newValue):
+        self.current_mup_dict[self._mup_hom_ml_close_attrib] = float(newValue)
+    def setCurrentMUPOverOpen(self, newValue):
+        self.current_mup_dict[self._mup_over_open_attrib] = float(newValue)
+    def setCurrentMUPOverClose(self, newValue):
+        self.current_mup_dict[self._mup_over_close_attrib] = float(newValue)
+    def setCurrentMUPOverOpenOdds(self, newValue):
+        self.current_mup_dict[self._mup_over_open_odds_attrib] = float(newValue)
+    def setCurrentMUPOverCloseOdds(self, newValue):
+        self.current_mup_dict[self._mup_over_close_odds_attrib] = float(newValue)
+    def setCurrentMUPBookieML(self, opl):
+        self.current_mup_dict[self._mup_bookieml_attrib] = float(opl)
+    def setCurrentMUPBookieVig(self, ovig):
+        self.current_mup_dict[self._mup_bookievig_attrib] = float(ovig)
+    def setCurrentMUPBOOKIETOTAL(self, opt):
+        self.current_mup_dict[self._mup_bookietotal_attrib] = float(opt)
     
     def getOriginalMUPBOOKIEML(self, row_index):
         #Assumes data has been loaded into _mup_df
@@ -394,47 +447,26 @@ class scionMUP:
     def mup_hom_sp_id_attrib(self):
         return self._mup_hom_sp_id_attrib
     @property
-    def mup_vis_opp_next_1_id_attrib(self):
-        return self._mup_vis_opp_next_1_id_attrib
+    def mup_vis_ml_open_attrib(self):
+        return self._mup_vis_ml_open_attrib
     @property
-    def mup_vis_opp_next_1_ha_attrib(self):
-        return self._mup_vis_opp_next_1_ha_attrib
+    def mup_vis_ml_close_attrib(self):
+        return self._mup_vis_ml_close_attrib
     @property
-    def mup_vis_opp_next_2_id_attrib(self):
-        return self._mup_vis_opp_next_2_id_attrib
+    def mup_hom_ml_open_attrib(self):
+        return self._mup_hom_ml_open_attrib
     @property
-    def mup_vis_opp_next_2_ha_attrib(self):
-        return self._mup_vis_opp_next_2_ha_attrib
+    def mup_hom_ml_close_attrib(self):
+        return self._mup_hom_ml_close_attrib
     @property
-    def mup_vis_opp_next_3_id_attrib(self):
-        return self._mup_vis_opp_next_3_id_attrib
+    def mup_over_open_attrib(self):
+        return self._mup_over_open_attrib
     @property
-    def mup_vis_opp_next_3_ha_attrib(self):
-        return self._mup_vis_opp_next_3_ha_attrib
+    def mup_over_close_attrib(self):
+        return self._mup_over_close_odds_attrib
     @property
-    def mup_vis_force_la_echo(self):
-        return self._mup_vis_force_la_echo
-    @property
-    def mup_hom_opp_next_1_id_attrib(self):
-        return self._mup_hom_opp_next_1_id_attrib
-    @property
-    def mup_hom_opp_next_1_ha_attrib(self):
-        return self._mup_hom_opp_next_1_ha_attrib
-    @property
-    def mup_hom_opp_next_2_id_attrib(self):
-        return self._mup_hom_opp_next_2_id_attrib
-    @property
-    def mup_hom_opp_next_2_ha_attrib(self):
-        return self._mup_hom_opp_next_2_ha_attrib
-    @property
-    def mup_hom_opp_next_3_id_attrib(self):
-        return self._mup_hom_opp_next_3_id_attrib
-    @property
-    def mup_hom_opp_next_3_ha_attrib(self):
-        return self._mup_hom_opp_next_3_ha_attrib
-    @property
-    def mup_hom_force_la_echo(self):
-        return self._mup_hom_force_la_echo
+    def mup_over_open_odds_attrib(self):
+        return self._mup_over_open_odds_attrib
     @property
     def mup_bookieml_attrib(self):
         return self._mup_bookieml_attrib
