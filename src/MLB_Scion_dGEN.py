@@ -4495,7 +4495,7 @@ class scionDGEN:
         #d. populate lookback fields
         self._populateLookbackFields(h_or_v, fileHandle)
         #e. populate lookahead fields (WE CAN ONLY USE GAMES WITHIN THE SAME SEASON)
-        if self._lookahead_active:
+        if self._lookahead_active == MLB_global.YES:
             self._populateLookAheadFields(h_or_v, fileHandle)
         #f. calculate window-based statistics (ensure flags are correctly set before each call _calcFeatureStats)
         self._writeWindowEntryBanner(fileHandle)
