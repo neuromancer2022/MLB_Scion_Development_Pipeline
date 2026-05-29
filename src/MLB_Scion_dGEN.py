@@ -218,7 +218,7 @@ class scionDGEN:
     def _checkIsOverCLT(self, game_df):
         is_over = MLB_dbvar.G_TIE
         actual_total = float(game_df[MLB_dbvar.dbvar_G_V_Runs].values[0] + game_df[MLB_dbvar.dbvar_G_H_Runs].values[0])
-        clt = float(game_df[MLB_dbvar.dbvar_G_Closing_Total].values[0])
+        clt = float(game_df[MLB_dbvar.dbvar_G_Bookie_TotalOver].values[0])
         if actual_total > clt:
             is_over = MLB_dbvar.G_WIN
         else:
