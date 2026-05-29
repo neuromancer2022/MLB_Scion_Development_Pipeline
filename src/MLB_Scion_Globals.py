@@ -126,8 +126,8 @@ ACTION_LINE_POS = "+"
 ACTION_LINE_NEG = "-"
 ACTION_LINE_ZERO = "0"
 MODEL_PRED_SEPARATOR = " "
-MODEL_PROBENS1 = "V113PM210_2023"
-MODEL_PROBENS2 = "V113PM150_2023"
+MODEL_PROBENS1 = "PM150"
+MODEL_PROBENS2 = "PM210"
 MODEL_TOTALENS = "TOTALENS"
 MODEL_PROBENS = [MODEL_PROBENS1, MODEL_PROBENS2]
 HISTORY_LENGTHS = [5,10, 20, 365]
@@ -151,7 +151,7 @@ NN_DP_PRECISION = 9
 DROP_ATTRIB = 2
 
 #System Messages (NOTE: OPP variables discontinued)
-messageGameSkipMissingOPLOPTOVIG = "Game skipped - one or more of the following missing: BOOKIE H MIDDLE LINE, VIG, BOOKIE TOTAL. "
+messageGameSkipMissingOPLOPTOVIG = "Game skipped - Bookie line information missing. "
 messageGameDataSuccess = "Game data generated. "
 messageGameSkipDateOutOfRange = "Game skipped - The date range for the matchup is outside of the limits of the master database. "
 messageGameSkipMissingGame = "Game skipped - cannot find the game data for this game. "
@@ -166,7 +166,7 @@ messageOPLAdjusted = "Moneyline is a SPAN value. "
 messageGameHomePitcherNoData = "H_SP is Null, team-based avg used. "
 messageGameVisPitcherNoData = "V_SP is Null, team-based avg used. "
 #Ensemble play determination messages
-messageScionNoVFPlay = "VF plays are NOT supported. "
+messageScionNoVFPlay = "VF plays are disabled. "
 messageScionEnsNoFavePlay = "Fave plays are disallowed. "
 messageScionEns1Play = "Play determined by Ens1 only. "
 messageScionEns2Play = "Play determined by Ens2 only. "
@@ -304,6 +304,13 @@ def ConvertMiddleLineToPrices(mLine, centVig, mLineType=None):
             _visPrice = -100
     
     return _homePrice, _visPrice
+
+def validTeamPrice(teamPrice):
+    _teamPrice = abs(teamPrice)
+    if _teamPrice >=100:
+        return True
+    else:
+        return False
 
 def punctuateComment(strComment):
     _punct = ". "
