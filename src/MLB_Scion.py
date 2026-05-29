@@ -142,11 +142,11 @@ def getG2Position(probThresh, bookieHMLine, bookieVMLine, modelProb):
 def getEnsBPFeatureDP(modelCfg):
     bpvardp = 10 #default
     ens = modelCfg.getCurrentTaskModelEnsemble()
-    if ens == MLB_global.MODEL_PROBENS1: #V113PM210
-        bpvardp = int(modelCfg.getSysProbPM210BPVarDP())
+    if ens == MLB_global.MODEL_PROBENS1: #PM150
+        bpvardp = int(modelCfg.getSysProbBPVarDP())
     else:
-        if ens == MLB_global.MODEL_PROBENS2: #V113PM150
-            bpvardp = int(modelCfg.getSysProbBPVarDP())
+        if ens == MLB_global.MODEL_PROBENS2: #PM210
+            bpvardp = int(modelCfg.getSysProbPM210BPVarDP())
     
     return bpvardp
 
