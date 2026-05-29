@@ -211,6 +211,34 @@ def setColType(df, col_list, col_type):
     except Exception:
         raise
     return df
+  
+def getModelTypeName(typeNo):
+    return ModelTypes(typeNo).name
+
+def hasModelTypeValue(usrValue):
+    validValues = set(item.value for item in ModelTypes)
+    return usrValue in validValues
+
+def hasModelTypeName(usrName):
+    validNames = set(item.name for item in ModelTypes)
+    return usrName in validNames
+
+def getTaskTypeName(taskNo):
+    return TaskTypes(taskNo).name
+
+def hasTaskTypeValue(usrValue):
+    validValues = set(item.value for item in TaskTypes)
+    return usrValue in validValues
+
+def hasTaskTypeName(usrName):
+    validNames = set(item.name for item in TaskTypes)
+    return usrName in validNames
+
+def isOppSide(price1, price2):
+    if (price1 < 0 and price2 > 0) or (price1 > 0 and price2 < 0):
+        return True
+    else:
+        return False
     
 def convertProbtoMoneyLine(probValue):
     probValue = float(probValue)
