@@ -1,0 +1,23 @@
+pattern_id,game_date,matchup,home_open_ml,home_close_ml,implied_prob_max_move,home_open_implied,home_close_implied,bet_side,bet_bucket,won,profit
+777590,2025-06-08,KC @ CWS,130,-120.000000,0.110672,0.434783,0.545455,Home,Home_Fave,False,-120.000000
+776666,2025-08-20,TEX @ KC,110,-142.000000,0.110672,0.476190,0.586777,Home,Home_Fave,False,-142.000000
+776360,2025-09-12,HOU @ ATL,112,-134.000000,0.106003,0.471698,0.572650,Home,Home_Fave,False,-134.000000
+824283,2026-05-04,BOS @ DET,-197,-116.000000,0.128093,0.663300,0.537037,Home,Home_Fave,False,-116.000000
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Games flagged by cllopldiff_tau=0.1 pp
+# ############################################################################
+# pattern_id: unique game identifier
+# game_date: YYYY-MM-DD
+# matchup: VIS @ HOM
+# home_open_ml: home opening moneyline
+# home_close_ml: home closing moneyline
+# implied_prob_max_move: absolute change in implied probability (pp)
+# home_open_implied: home opening implied probability
+# home_close_implied: home closing implied probability
+# bet_side: Home or Vis (or empty if no bet)
+# bet_bucket: fave/dog bucket for this bet
+# won: True if bet won
+# profit: USD profit on this game
+# ############################################################################

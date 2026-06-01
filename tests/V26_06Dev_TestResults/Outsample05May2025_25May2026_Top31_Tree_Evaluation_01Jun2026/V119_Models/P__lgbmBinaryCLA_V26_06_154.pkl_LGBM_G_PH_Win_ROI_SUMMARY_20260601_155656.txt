@@ -1,0 +1,70 @@
+============================================================================
+  Sports ROI Report  -  2026-06-01 15:56:56
+============================================================================
+
+RUN SETTINGS
+----------------------------------------------------------------------------
+  preds_csv                           /Users/jt/github/sports_model_eval_pipeline/results/preds/P__lgbmBinaryCLA_V26_06_154.pkl_LGBM_G_PH_Win_PREDS.csv
+  run_timestamp                       2026-06-01 15:56:56
+  roi.preds_csv                       results/preds/P__lgbmBinaryCLA_V26_06_*_PREDS.csv
+  roi.log_csv                         
+  roi.output_dir                      results/roi/
+  roi.bet_mode                        all
+  roi.min_confidence                  0.55
+  roi.edge_threshold                  0.02
+  roi.stake_per_bet                   100
+  roi.price_source                    closing
+  roi.cllopldiff_tau                  0.1
+  roi.produce_dual_report             True
+  roi.apply_devig                     False
+  roi.audit_trail                     True
+
+OVERALL PERFORMANCE
+----------------------------------------------------------------------------
+  total_games_in_input              1678
+  line_movement_threshold (tau)     10.0% (cllopldiff_tau=0.1)
+  games_flagged_by_line_movement    4
+
+  --- subset: full ---
+    n_bets                      1678
+    wins                         886
+    win_pct                   0.5280    (52.80%)
+    avg_moneyline_taken      -103.25
+    break_even_win_pct        0.5080    (50.80%)
+    invested              $  208,781.22
+    returned              $  199,945.00
+    profit                $   -8,836.22
+    ROI                        -4.23%
+    avg_implied_vig            +2.31%
+
+  --- subset: surprise_free ---
+    n_bets                      1674
+    wins                         886
+    win_pct                   0.5293    (52.93%)
+    avg_moneyline_taken      -103.19
+    break_even_win_pct        0.5078    (50.78%)
+    invested              $  208,269.22
+    returned              $  199,945.00
+    profit                $   -8,324.22
+    ROI                        -4.00%
+    avg_implied_vig            +2.31%
+
+PERFORMANCE BY BUCKET
+----------------------------------------------------------------------------
+  --- subset: full ---
+  bucket         bets  wins    win%      profit     ROI%   avg_ML  BE_win%  share%
+  Home_Fave       764   415  54.32% $ -3,229.00   -3.29%  -128.4   56.22%   45.5%
+  Home_Dog         94    55  58.51% $ +1,780.00  +18.64%   +10.8   90.25%    5.6%
+  Vis_Fave        667   345  51.72% $ -6,722.22   -7.84%  -128.6   56.25%   39.7%
+  Vis_Dog         153    71  46.41% $   -665.00   -4.32%   +62.7   61.46%    9.1%
+
+  --- subset: surprise_free ---
+  bucket         bets  wins    win%      profit     ROI%   avg_ML  BE_win%  share%
+  Home_Fave       760   415  54.61% $ -2,717.00   -2.78%  -128.4   56.22%   45.4%
+  Home_Dog         94    55  58.51% $ +1,780.00  +18.64%   +10.8   90.25%    5.6%
+  Vis_Fave        667   345  51.72% $ -6,722.22   -7.84%  -128.6   56.25%   39.8%
+  Vis_Dog         153    71  46.41% $   -665.00   -4.32%   +62.7   61.46%    9.1%
+
+============================================================================
+  END
+============================================================================

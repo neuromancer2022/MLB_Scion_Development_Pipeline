@@ -1,0 +1,33 @@
+model_num,pkl_file,is_priority,default_threshold_used,stored_oof_threshold,testset_youden_j_threshold,testset_youden_j_value,test_auc,test_accuracy_default,test_accuracy_youden,sens_default,spec_default,sens_youden,spec_youden
+20,M20.pkl,True,0.500000,,0.451500,0.057400,0.526100,0.526702,0.537173,0.514602,0.539804,0.742195,0.315158
+21,M21.pkl,True,0.500000,,0.496600,0.073500,0.532800,0.529319,0.536649,0.518630,0.540894,0.545821,0.526718
+22,M22.pkl,True,0.500000,,0.476000,0.068500,0.528300,0.522513,0.539267,0.517623,0.527808,0.660624,0.407852
+23,M23.pkl,True,0.500000,,0.507800,0.056400,0.528000,0.525654,0.526178,0.516616,0.535442,0.477341,0.579062
+24,M24.pkl,True,0.500000,,0.533600,0.088900,0.532600,0.528796,0.539791,0.554884,0.500545,0.426989,0.661941
+25,M25.pkl,True,0.500000,,0.488100,0.059300,0.523300,0.518325,0.532461,0.508560,0.528899,0.600201,0.459106
+26,M26.pkl,True,0.500000,,0.482600,0.054000,0.525100,0.525131,0.531937,0.515609,0.535442,0.650554,0.403490
+27,M27.pkl,True,0.500000,,0.481400,0.055900,0.527200,0.519895,0.534031,0.531722,0.507088,0.680765,0.375136
+28,M28.pkl,True,0.500000,,0.481200,0.057200,0.520400,0.523560,0.534031,0.530715,0.515812,0.664653,0.392585
+29,M29.pkl,True,0.500000,,0.497200,0.066800,0.529100,0.532461,0.534031,0.552870,0.510360,0.574018,0.490731
+30,M30.pkl,True,0.500000,,0.465800,0.061000,0.528700,0.520942,0.538220,0.514602,0.527808,0.736153,0.323882
+31,M31.pkl,True,0.500000,,0.503200,0.057300,0.524800,0.522513,0.527225,0.518630,0.526718,0.504532,0.551799
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Threshold report across all evaluated models (n=12)
+# ############################################################################
+# model_num: model number from the basename<N>.pkl sequence
+# pkl_file: pkl filename that was evaluated
+# is_priority: True if model met the precision/recall threshold criterion at the default 0.5 cut
+# default_threshold_used: decision threshold built into the model (0.5 for LGBMClassifier.predict)
+# stored_oof_threshold: Youden's J threshold computed from OOF training-set predictions at training time (loaded from sibling *_threshold.json). NaN if not available
+# testset_youden_j_threshold: Youden's J threshold computed fresh on this test set (V26.05 addition). Optimistic vs OOF threshold since selection-evaluation overlap
+# testset_youden_j_value: Youden's J value (TPR-FPR) at the testset_youden_j_threshold. Range [0,1]; 0=no separation, 1=perfect
+# test_auc: ROC AUC on the test set - discrimination quality independent of any threshold
+# test_accuracy_default: overall accuracy at the default 0.5 cut
+# test_accuracy_youden: overall accuracy at the test-set Youden-optimal cut
+# sens_default: sensitivity (recall on positive/Win class) at default 0.5 cut
+# spec_default: specificity (recall on negative/Loss class) at default 0.5 cut
+# sens_youden: sensitivity at test-set Youden cut
+# spec_youden: specificity at test-set Youden cut
+# ############################################################################

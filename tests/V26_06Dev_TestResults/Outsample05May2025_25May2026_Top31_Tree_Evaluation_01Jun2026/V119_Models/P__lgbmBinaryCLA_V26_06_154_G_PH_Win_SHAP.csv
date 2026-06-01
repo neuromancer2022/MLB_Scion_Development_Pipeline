@@ -1,0 +1,51 @@
+feature,mean_abs_shap,mean_signed_shap,mean_abs_shap_pos_class,mean_abs_shap_neg_class,class_asymmetry_pos_minus_neg
+G_Bookie_H_Probability,4.463616878,-0.227357196,4.397803630,4.535160135,-0.137356506
+G_VHRatio_ClosingProbabilityLine_HV,1.125813317,0.011585836,1.120673519,1.131400609,-0.010727090
+G_VHRatio_MenOnBase_Strength_YTD,1.048286422,-0.010121162,1.042374661,1.054712889,-0.012338228
+G_VHRatio_StartingPitcher_StrikeoutsImpact_YTD,0.826524192,-0.008636437,0.833484047,0.818958380,0.014525668
+G_VHRatio_StartingPitcher_Strikes_Ratio_5G,0.468402028,-0.029369814,0.480474305,0.455278683,0.025195622
+G_VHRatio_StartingPitcher_StrikesImpact_YTD,0.459666680,0.059465255,0.446893594,0.473551850,-0.026658256
+V_MenOnBase_Strength_YTD,0.458114351,-0.089623166,0.465974346,0.449570029,0.016404318
+V_StartingPitcher_StrikeoutAccuracy_YTD,0.444461195,-0.260569462,0.449726498,0.438737471,0.010989027
+G_VHRatio_StartingPitcher_StrikeoutAccuracy_5G,0.430701346,0.040563640,0.429990466,0.431474119,-0.001483653
+G_VHRatio_K_Minus_BB_Pct_20G,0.430055684,-0.026772888,0.429739741,0.430399136,-0.000659395
+G_VHRatio_K_Per_9_YTD,0.427917858,-0.109551723,0.425758470,0.430265252,-0.004506782
+G_VHRatio_OPS_YTD,0.403484826,0.041564244,0.406757406,0.399927320,0.006830085
+G_VHRatio_OutsPitched_YTD,0.368695485,0.117737385,0.372621659,0.364427480,0.008194180
+H_Run_Differential_Per_Game_YTD,0.366606110,0.064876663,0.372092671,0.360641864,0.011450807
+G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_5G,0.350986782,0.004055669,0.355227386,0.346376971,0.008850416
+V_Run_Differential_Per_Game_20G,0.345483793,-0.053630122,0.326106229,0.366548457,-0.040442228
+G_VHRatio_K_Minus_BB_Pct_5G,0.343314362,0.018424015,0.340647504,0.346213409,-0.005565906
+G_VHRatio_Runs_5InningsAllowed_YTD,0.330053323,0.018894217,0.331194846,0.328812413,0.002382432
+G_VHRatio_Run_Pythag_20G,0.329709586,-0.000906777,0.332031050,0.327186006,0.004845044
+G_VHRatio_BallpenOuts_YTD,0.327449655,0.013524500,0.331800182,0.322720351,0.009079831
+G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_YTD,0.320541254,0.017075531,0.324137589,0.316631805,0.007505784
+G_VHRatio_FIP,0.297116601,0.000494559,0.297085340,0.297150584,-0.000065244
+G_H_CLL_OPL_Prob_Diff,0.292617461,-0.019734990,0.296946821,0.287911167,0.009035654
+G_VHRatio_K_Minus_BB_Pct_YTD,0.291585187,-0.038766400,0.282322880,0.301653913,-0.019331033
+G_VHRatio_Weighted_Offense_Index_YTD,0.285879158,0.019191287,0.291164993,0.280133114,0.011031879
+G_VHRatio_TotalDistanceTravelled_3G,0.281389684,-0.028202698,0.276335317,0.286884107,-0.010548790
+V_Run_Differential_Per_Game_YTD,0.279665280,-0.018661300,0.278199908,0.281258235,-0.003058327
+G_VHRatio_MenOnBase_Allowed_20G,0.269285824,0.020254238,0.270228827,0.268260720,0.001968107
+G_VHRatio_wOBA_YTD,0.254533802,-0.011875516,0.249595628,0.259901917,-0.010306289
+G_VHRatio_EarnedRuns,0.249019925,0.044666742,0.263240601,0.233561130,0.029679472
+G_VHRatio_K_Per_9_20G,0.213956228,0.026676115,0.215433267,0.212350591,0.003082676
+G_VHRatio_Run_Pythag,0.207270758,-0.013621062,0.207217898,0.207328219,-0.000110320
+G_VHRatio_FIP_YTD_HV,0.201582765,-0.020369640,0.206289409,0.196466338,0.009823071
+G_VHRatio_MenOnBase_Strength_20G,0.198609714,-0.037817730,0.198246243,0.199004829,-0.000758586
+G_VHRatio_FIP_YTD,0.197104789,0.059897505,0.193665692,0.200843310,-0.007177617
+H_EarnedRuns_YTD,0.150848481,-0.015787268,0.152847087,0.148675867,0.004171220
+H_Run_Differential_Per_Game_20G,0.132378138,0.010305340,0.132554342,0.132186593,0.000367749
+G_VHRatio_DaysRest,0.000000000,0.000000000,0.000000000,0.000000000,0.000000000
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Per-model SHAP (priority model 154)
+# ############################################################################
+# feature: feature column name
+# mean_abs_shap: canonical SHAP importance - average absolute SHAP value across sampled test rows. Higher = more influential overall
+# mean_signed_shap: average directional SHAP contribution. Positive = on average pushes toward Win=+1; negative = toward Loss=-1; near zero = directionally balanced
+# mean_abs_shap_pos_class: mean |SHAP| over sampled rows where TRUE label = +1 (wins). How much the feature is engaged when predicting actual wins
+# mean_abs_shap_neg_class: mean |SHAP| over sampled rows where TRUE label = -1 (losses). How much the feature is engaged when predicting actual losses
+# class_asymmetry_pos_minus_neg: pos_class - neg_class. Positive = feature mostly contributes to win predictions; negative = mostly to loss predictions; near zero = balanced contributor
+# ############################################################################

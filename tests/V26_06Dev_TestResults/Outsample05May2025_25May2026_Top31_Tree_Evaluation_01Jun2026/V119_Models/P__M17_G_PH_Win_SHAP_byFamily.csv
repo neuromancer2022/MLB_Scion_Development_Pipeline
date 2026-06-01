@@ -1,0 +1,17 @@
+family,patterns,num_features,sum_mean_abs_shap,avg_mean_abs_shap,features_matched
+bookmaker_probability,^G_Bookie_H_Probability$|^G_Ivan_BP_.*,1,41.262802371,41.262802371,G_Bookie_H_Probability
+rolling_YTD,.*_YTD$,18,31.171141939,1.731730108,H_Run_Differential_Per_Game_YTD;H_EarnedRuns_YTD;V_Run_Differential_Per_Game_YTD;V_MenOnBase_Strength_YTD;V_StartingPitcher_StrikeoutAccuracy_YTD;G_VHRatio_Runs_5InningsAllowed_YTD;G_VHRatio_Weighted_Offense_Index_YTD;G_VHRatio_wOBA_YTD;G_VHRatio_OPS_YTD;G_VHRatio_OutsPitched_YTD;G_VHRatio_FIP_YTD;G_VHRatio_K_Minus_BB_Pct_YTD;G_VHRatio_K_Per_9_YTD;G_VHRatio_MenOnBase_Strength_YTD;G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_YTD;G_VHRatio_StartingPitcher_StrikeoutsImpact_YTD;G_VHRatio_StartingPitcher_StrikesImpact_YTD;G_VHRatio_BallpenOuts_YTD
+rolling_5G,.*_5G$,4,11.785662267,2.946415567,G_VHRatio_K_Minus_BB_Pct_5G;G_VHRatio_StartingPitcher_Strikes_Ratio_5G;G_VHRatio_StartingPitcher_StrikeoutAccuracy_5G;G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_5G
+rolling_20G,.*_20G$,7,8.789108025,1.255586861,H_Run_Differential_Per_Game_20G;V_Run_Differential_Per_Game_20G;G_VHRatio_Run_Pythag_20G;G_VHRatio_K_Minus_BB_Pct_20G;G_VHRatio_K_Per_9_20G;G_VHRatio_MenOnBase_Strength_20G;G_VHRatio_MenOnBase_Allowed_20G
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Family-grouped SHAP (dilution diagnostic)
+# ############################################################################
+# family: feature family name (see SHAP_FEATURE_FAMILIES at top of script)
+# patterns: regex patterns that define family membership
+# num_features: number of features that matched a family pattern
+# sum_mean_abs_shap: sum of mean_abs_shap across family members - headline diagnostic for the dilution problem
+# avg_mean_abs_shap: mean of mean_abs_shap within the family
+# features_matched: semicolon-separated list of features matched
+# ############################################################################

@@ -1,0 +1,51 @@
+feature,frequency,avg_mean_abs_shap,avg_mean_abs_shap_pos,avg_mean_abs_shap_neg,avg_class_asymmetry
+G_Bookie_H_Probability,6,14.290390761,14.054135578,14.547215426,-0.493079849
+G_VHRatio_MenOnBase_Strength_YTD,6,2.137056986,2.127820553,2.147097587,-0.019277034
+G_VHRatio_StartingPitcher_Strikes_Ratio_5G,6,1.621904020,1.660800792,1.579620714,0.081180077
+G_VHRatio_ClosingProbabilityLine_HV,6,1.347179114,1.343996980,1.350638300,-0.006641320
+G_VHRatio_MenOnBase_Allowed_20G,6,0.940507572,0.936470817,0.944895785,-0.008424968
+G_VHRatio_OutsPitched_YTD,6,0.817289165,0.812164082,0.822860463,-0.010696381
+G_VHRatio_StartingPitcher_StrikeoutsImpact_YTD,6,0.810238825,0.813062090,0.807169755,0.005892335
+G_VHRatio_K_Per_9_YTD,6,0.808254710,0.793904528,0.823854287,-0.029949760
+G_VHRatio_Weighted_Offense_Index_YTD,6,0.768046658,0.789872069,0.744321026,0.045551043
+G_VHRatio_K_Minus_BB_Pct_5G,6,0.753751448,0.769786152,0.736320688,0.033465464
+G_VHRatio_EarnedRuns,6,0.692176508,0.717245150,0.664925272,0.052319878
+G_VHRatio_FIP,6,0.681223064,0.699018411,0.661878371,0.037140040
+V_MenOnBase_Strength_YTD,6,0.676583855,0.673370550,0.680076925,-0.006706374
+V_Run_Differential_Per_Game_20G,6,0.644810891,0.605844386,0.687170002,-0.081325617
+G_VHRatio_Runs_5InningsAllowed_YTD,6,0.637786972,0.647125305,0.627635601,0.019489704
+G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_5G,6,0.629447727,0.645365671,0.612143893,0.033221778
+G_VHRatio_StartingPitcher_StrikeoutAccuracy_5G,6,0.624336532,0.616093458,0.633297286,-0.017203827
+G_VHRatio_BallpenOuts_YTD,6,0.600232942,0.597041242,0.603702526,-0.006661284
+G_VHRatio_K_Minus_BB_Pct_20G,6,0.581798368,0.574924079,0.589271165,-0.014347086
+G_VHRatio_StartingPitcher_StrikesImpact_YTD,6,0.571788114,0.579583412,0.563314122,0.016269290
+G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_YTD,6,0.566456392,0.577385981,0.554575222,0.022810759
+G_H_CLL_OPL_Prob_Diff,6,0.547449340,0.542856559,0.552441990,-0.009585431
+G_VHRatio_TotalDistanceTravelled_3G,6,0.542522817,0.535995680,0.549618236,-0.013622556
+V_StartingPitcher_StrikeoutAccuracy_YTD,6,0.530701358,0.526619561,0.535138536,-0.008518975
+G_VHRatio_Run_Pythag_20G,6,0.513794901,0.535352424,0.490360480,0.044991945
+H_Run_Differential_Per_Game_YTD,6,0.479259744,0.476501020,0.482258655,-0.005757635
+G_VHRatio_K_Minus_BB_Pct_YTD,6,0.457347392,0.455621794,0.459223228,-0.003601434
+G_VHRatio_Run_Pythag,6,0.404918737,0.404747293,0.405105108,-0.000357815
+G_VHRatio_MenOnBase_Strength_20G,6,0.395187541,0.392175246,0.398462100,-0.006286855
+G_VHRatio_FIP_YTD_HV,6,0.350577181,0.347087934,0.354370219,-0.007282285
+G_VHRatio_OPS_YTD,6,0.337662366,0.334246976,0.341375115,-0.007128139
+V_Run_Differential_Per_Game_YTD,6,0.328039937,0.323073085,0.333439227,-0.010366143
+H_Run_Differential_Per_Game_20G,6,0.306297050,0.304933557,0.307779256,-0.002845699
+G_VHRatio_K_Per_9_20G,6,0.306049853,0.304913431,0.307285219,-0.002371788
+G_VHRatio_wOBA_YTD,6,0.290705663,0.292085776,0.289205392,0.002880383
+G_VHRatio_FIP_YTD,6,0.281671790,0.286765982,0.276134073,0.010631910
+H_EarnedRuns_YTD,6,0.274598258,0.269219414,0.280445409,-0.011225995
+G_VHRatio_DaysRest,6,0.011293587,0.011077658,0.011528315,-0.000450657
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Aggregated SHAP across priority models only (n_models=6)
+# ############################################################################
+# feature: feature column name
+# frequency: number of priority models in which the feature appeared
+# avg_mean_abs_shap: average SHAP importance across priority models
+# avg_mean_abs_shap_pos: average positive-class |SHAP| across priority models
+# avg_mean_abs_shap_neg: average negative-class |SHAP| across priority models
+# avg_class_asymmetry: average (pos - neg) asymmetry across priority models. Persistent strong sign = reliably class-biased
+# ############################################################################

@@ -1,0 +1,45 @@
+feature,mean_abs_shap,mean_signed_shap,mean_abs_shap_pos_class,mean_abs_shap_neg_class,class_asymmetry_pos_minus_neg
+G_Bookie_H_Probability,0.128630875,-0.005525651,0.126888283,0.130517891,-0.003629607
+G_VHRatio_ClosingProbabilityLine_HV,0.021750235,-0.001262765,0.021626411,0.021884321,-0.000257910
+G_VHRatio_StartingPitcher_StrikeoutsImpact_YTD,0.018989991,-0.000231681,0.019050532,0.018924433,0.000126099
+G_VHRatio_TotalDistanceTravelled_3G,0.018486738,-0.001918161,0.018422013,0.018556826,-0.000134813
+G_VHRatio_MenOnBase_Allowed_20G,0.017218708,0.001289884,0.017085974,0.017362443,-0.000276469
+G_VHRatio_MenOnBase_Strength_YTD,0.017136457,0.000273840,0.017465155,0.016780516,0.000684639
+V_MenOnBase_Strength_YTD,0.016182632,-0.002179176,0.016143623,0.016224873,-0.000081249
+G_VHRatio_StartingPitcher_Strikes_Ratio_5G,0.015939158,-0.000386233,0.016234197,0.015619667,0.000614529
+V_StartingPitcher_StrikeoutAccuracy_YTD,0.013113677,-0.007119252,0.012897211,0.013348084,-0.000450873
+G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_5G,0.013007709,0.000321927,0.013188667,0.012811754,0.000376913
+G_VHRatio_K_Per_9_YTD,0.012427191,-0.002446108,0.012230056,0.012640665,-0.000410610
+G_H_CLL_OPL_Prob_Diff,0.012090081,-0.000496227,0.011856415,0.012343114,-0.000486700
+G_VHRatio_K_Minus_BB_Pct_5G,0.011894873,-0.000462515,0.012224994,0.011537393,0.000687601
+G_VHRatio_EarnedRuns,0.011475565,0.000954996,0.011680577,0.011253563,0.000427014
+G_VHRatio_FIP_YTD,0.010733712,0.001336715,0.010735312,0.010731979,0.000003333
+G_VHRatio_K_Minus_BB_Pct_20G,0.010686280,-0.001296464,0.010397055,0.010999476,-0.000602420
+G_VHRatio_OutsPitched_YTD,0.010034033,0.002015247,0.009810981,0.010275572,-0.000464590
+G_VHRatio_K_Minus_BB_Pct_YTD,0.008824040,-0.001443755,0.008893105,0.008749252,0.000143853
+G_VHRatio_MenOnBase_Strength_20G,0.008664732,-0.000990306,0.008531267,0.008809258,-0.000277992
+G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_YTD,0.008466275,0.000903781,0.008393072,0.008545546,-0.000152475
+G_VHRatio_Weighted_Offense_Index_YTD,0.008286841,0.000005505,0.008503640,0.008052073,0.000451566
+G_VHRatio_FIP,0.007938831,0.000170312,0.007979775,0.007894495,0.000085280
+G_VHRatio_K_Per_9_20G,0.007449920,0.000954706,0.007296899,0.007615622,-0.000318724
+G_VHRatio_StartingPitcher_StrikeoutAccuracy_5G,0.007202531,0.001331365,0.007181300,0.007225521,-0.000044222
+H_EarnedRuns_YTD,0.006985417,-0.000888620,0.007055914,0.006909078,0.000146837
+G_VHRatio_Run_Pythag_20G,0.006804587,-0.000600289,0.006809163,0.006799632,0.000009531
+G_VHRatio_StartingPitcher_StrikesImpact_YTD,0.006638190,0.000189667,0.006685796,0.006586638,0.000099158
+G_VHRatio_BallpenOuts_YTD,0.006350888,-0.000143474,0.006505484,0.006183480,0.000322005
+H_Run_Differential_Per_Game_20G,0.006068182,-0.000743562,0.006058499,0.006078667,-0.000020169
+G_VHRatio_Run_Pythag,0.006066411,-0.000943186,0.006259354,0.005857477,0.000401877
+G_VHRatio_FIP_YTD_HV,0.005181354,-0.000500705,0.005165164,0.005198886,-0.000033722
+V_Run_Differential_Per_Game_YTD,0.004950216,0.000533274,0.004851415,0.005057205,-0.000205789
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Per-model SHAP (priority model 21)
+# ############################################################################
+# feature: feature column name
+# mean_abs_shap: canonical SHAP importance - average absolute SHAP value across sampled test rows. Higher = more influential overall
+# mean_signed_shap: average directional SHAP contribution. Positive = on average pushes toward Win=+1; negative = toward Loss=-1; near zero = directionally balanced
+# mean_abs_shap_pos_class: mean |SHAP| over sampled rows where TRUE label = +1 (wins). How much the feature is engaged when predicting actual wins
+# mean_abs_shap_neg_class: mean |SHAP| over sampled rows where TRUE label = -1 (losses). How much the feature is engaged when predicting actual losses
+# class_asymmetry_pos_minus_neg: pos_class - neg_class. Positive = feature mostly contributes to win predictions; negative = mostly to loss predictions; near zero = balanced contributor
+# ############################################################################

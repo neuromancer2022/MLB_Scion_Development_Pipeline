@@ -1,0 +1,40 @@
+model_num,pkl_file,is_priority,default_threshold_used,stored_oof_threshold,testset_youden_j_threshold,testset_youden_j_value,test_auc,test_accuracy_default,test_accuracy_youden,sens_default,spec_default,sens_youden,spec_youden
+1,M1.pkl,True,0.500000,,0.519800,0.063600,0.531200,0.520942,0.525654,0.532729,0.508179,0.390735,0.671756
+2,M2.pkl,True,0.500000,,0.486100,0.069100,0.524300,0.525654,0.536126,0.531722,0.519084,0.574018,0.495093
+3,M3.pkl,True,0.500000,,0.483500,0.070100,0.531900,0.525131,0.538743,0.516616,0.534351,0.627392,0.442748
+4,M4.pkl,True,0.500000,,0.462600,0.089600,0.543000,0.531414,0.551832,0.560926,0.499455,0.748238,0.339149
+5,M5.pkl,True,0.500000,,0.481700,0.088200,0.539100,0.523037,0.548691,0.504532,0.543075,0.671702,0.415485
+6,M6.pkl,True,0.500000,,0.475100,0.055700,0.528100,0.519372,0.533508,0.501511,0.538713,0.690836,0.363141
+7,M7.pkl,True,0.500000,,0.479500,0.068100,0.525000,0.515707,0.538220,0.509567,0.522356,0.665660,0.400218
+8,M8.pkl,True,0.500000,,0.491400,0.077800,0.532700,0.527225,0.540838,0.534743,0.519084,0.599194,0.477644
+9,M9.pkl,True,0.500000,,0.494100,0.059500,0.521600,0.523037,0.530366,0.511581,0.535442,0.545821,0.513631
+10,M10.pkl,True,0.500000,,0.482400,0.059700,0.522000,0.521466,0.533508,0.519637,0.523446,0.633434,0.425300
+11,M11.pkl,True,0.500000,,0.469200,0.073600,0.532500,0.527225,0.543455,0.520645,0.534351,0.716012,0.356598
+12,M12.pkl,True,0.500000,,0.488100,0.076300,0.525400,0.526178,0.540838,0.531722,0.520174,0.630413,0.443839
+13,M13.pkl,True,0.500000,,0.529000,0.066700,0.534800,0.524607,0.527749,0.501511,0.549618,0.392749,0.673937
+14,M14.pkl,True,0.500000,,0.498900,0.099500,0.538300,0.547644,0.547644,0.514602,0.583424,0.520645,0.576881
+15,M15.pkl,True,0.500000,,0.509200,0.075500,0.535000,0.531937,0.536126,0.557905,0.503817,0.496475,0.579062
+16,M16.pkl,True,0.500000,,0.496300,0.072300,0.528000,0.531414,0.537173,0.538771,0.523446,0.574018,0.497274
+17,M17.pkl,True,0.500000,,0.498100,0.076700,0.535500,0.534555,0.537173,0.505539,0.565976,0.520645,0.555071
+18,M18.pkl,True,0.500000,,0.489300,0.076700,0.532100,0.531937,0.541361,0.543807,0.519084,0.614300,0.462377
+19,M19.pkl,True,0.500000,,0.474300,0.076200,0.532000,0.528796,0.542932,0.524673,0.533261,0.683787,0.390403
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Threshold report across all evaluated models (n=19)
+# ############################################################################
+# model_num: model number from the basename<N>.pkl sequence
+# pkl_file: pkl filename that was evaluated
+# is_priority: True if model met the precision/recall threshold criterion at the default 0.5 cut
+# default_threshold_used: decision threshold built into the model (0.5 for LGBMClassifier.predict)
+# stored_oof_threshold: Youden's J threshold computed from OOF training-set predictions at training time (loaded from sibling *_threshold.json). NaN if not available
+# testset_youden_j_threshold: Youden's J threshold computed fresh on this test set (V26.05 addition). Optimistic vs OOF threshold since selection-evaluation overlap
+# testset_youden_j_value: Youden's J value (TPR-FPR) at the testset_youden_j_threshold. Range [0,1]; 0=no separation, 1=perfect
+# test_auc: ROC AUC on the test set - discrimination quality independent of any threshold
+# test_accuracy_default: overall accuracy at the default 0.5 cut
+# test_accuracy_youden: overall accuracy at the test-set Youden-optimal cut
+# sens_default: sensitivity (recall on positive/Win class) at default 0.5 cut
+# spec_default: specificity (recall on negative/Loss class) at default 0.5 cut
+# sens_youden: sensitivity at test-set Youden cut
+# spec_youden: specificity at test-set Youden cut
+# ############################################################################

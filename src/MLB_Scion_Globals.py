@@ -378,6 +378,8 @@ def calcMOB(hits, walks, runs2b, homeruns, hitsbypitch, errors, doubleplays):
 def calcTotalBases(hits, runs2b, runs3b, homeruns):
     return float(hits+runs2b+(2*runs3b)+(3*homeruns))
 
+
+
 def calcRatio(x, y, zeroToMidPoint=False):
     """x / y, with fallback for near-zero denominators.
 
@@ -429,21 +431,39 @@ def calcRatio(x, y, zeroToMidPoint=False):
     return float(x / y)
     
 def calcProbRatio(x, y, zeroToMidPoint=False):
-    """X/(X+Y) share with fallback to 0.5 (or 0.0) when undefined.
-    Drops the legacy 'or not x' clause - X=0 is a legitimate share of 0,
-    not a missing value. Tightens the zero check to catch floating-point
-    cancellation residue on signed centred-at-zero variables.
+    """X/(X+Y) share with three-layer fallback when undefined.
+
+    Fallback layers (any one triggers the neutral 0.5 / 0.0 return):
+      1. Either input is NaN.
+      2. |X+Y| < 1e-6 (exact cancellation or FP residue from signed inputs).
+      3. Result < 0 or > 1 (signed inputs partially cancelled but |X+Y| > 1e-6,
+         producing a mathematically-valid but non-share value). Required for
+         signed centred-at-zero variables like Pythag_Luck_Factor and any other
+         feature whose H and V values can have opposite sign with similar
+         magnitude. Without this guard, X/(X+Y) can land anywhere in (-inf, inf)
+         when sum nearly cancels - previously seen at -1000 and +1551 in
+         G_VHRatio_Pythag_Luck_Factor data.
+
+    For non-negative inputs (counts, totals, magnitudes), layer 3 never fires:
+    X/(X+Y) is mathematically guaranteed to be in [0,1]. So this guard is a
+    no-op for the common case and a safety net for the signed case.
     """
-    # If either input is NaN, the share is undefined, so return the neutral
+    # Layer 1: NaN input -> neutral share
     if pd.isna(x) or pd.isna(y):
-        return 0.5   # neutral share fallback
-    # We have valid values so....
+        return 0.5
+    # Layer 2: near-zero denominator (catches cancellation residue too)
     denom = float(x + y)
-    if abs(denom) < 1e-6:       # catches cancellation residue, not just exact 0.0
+    if abs(denom) < 1e-6:
         if zeroToMidPoint:
             return 0.5          # neutral share - H and V indistinguishable
         return 0.00
-    return float(x / denom)     # includes the V=0 case (returns 0.0, not 0.5)
+    ratio = float(x / denom)
+    # Layer 3: out-of-[0,1] result -> sign-conflict between H and V
+    if ratio < 0.0 or ratio > 1.0:
+        if zeroToMidPoint:
+            return 0.5
+        return 0.00
+    return ratio
 
 def divByZeroCatch(numerator, denominator, min_denominator=1e-6):
     """Safe division. Returns NaN if denominator is too close to

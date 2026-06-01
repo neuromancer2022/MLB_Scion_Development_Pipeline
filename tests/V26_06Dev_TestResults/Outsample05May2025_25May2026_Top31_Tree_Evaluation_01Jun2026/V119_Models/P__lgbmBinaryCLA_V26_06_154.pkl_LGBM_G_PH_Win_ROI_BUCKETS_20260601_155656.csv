@@ -1,0 +1,27 @@
+subset,bucket,n_bets,n_wins,win_pct,total_invested,total_returned,total_profit,roi_pct,avg_moneyline_taken,break_even_win_pct,pct_of_total_bets
+full,Home_Fave,764,415,0.543194,98102.000000,94873.000000,-3229.000000,-0.032915,-128.410000,0.562183,0.455304
+full,Home_Dog,94,55,0.585106,9548.000000,11328.000000,1780.000000,0.186426,10.800000,0.902544,0.056019
+full,Vis_Fave,667,345,0.517241,85753.220000,79031.000000,-6722.220000,-0.078390,-128.570000,0.562489,0.397497
+full,Vis_Dog,153,71,0.464052,15378.000000,14713.000000,-665.000000,-0.043244,62.700000,0.614631,0.091180
+surprise_free,Home_Fave,760,415,0.546053,97590.000000,94873.000000,-2717.000000,-0.027841,-128.410000,0.562187,0.454002
+surprise_free,Home_Dog,94,55,0.585106,9548.000000,11328.000000,1780.000000,0.186426,10.800000,0.902544,0.056153
+surprise_free,Vis_Fave,667,345,0.517241,85753.220000,79031.000000,-6722.220000,-0.078390,-128.570000,0.562489,0.398447
+surprise_free,Vis_Dog,153,71,0.464052,15378.000000,14713.000000,-665.000000,-0.043244,62.700000,0.614631,0.091398
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Per-bucket breakdown - Home_Fave / Home_Dog / Vis_Fave / Vis_Dog
+# ############################################################################
+# subset: 'full' or 'surprise_free'
+# bucket: Home_Fave / Home_Dog / Vis_Fave / Vis_Dog - which side was bet, with fave/dog determined by which side had the more negative ML
+# n_bets: number of bets in this bucket
+# n_wins: wins in this bucket
+# win_pct: n_wins / n_bets
+# total_invested: USD
+# total_returned: USD
+# total_profit: USD; negative = lost money
+# roi_pct: profit / invested for this bucket
+# avg_moneyline_taken: mean American odds for bets in this bucket
+# break_even_win_pct: break-even win% at the avg odds taken in this bucket
+# pct_of_total_bets: this bucket as percentage of all bets placed
+# ############################################################################

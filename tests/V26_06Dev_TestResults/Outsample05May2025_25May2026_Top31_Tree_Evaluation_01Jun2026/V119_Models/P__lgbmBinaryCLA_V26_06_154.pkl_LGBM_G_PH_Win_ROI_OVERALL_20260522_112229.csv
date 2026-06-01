@@ -1,0 +1,20 @@
+subset,n_bets,n_wins,win_pct,total_invested,total_returned,total_profit,roi_pct,avg_moneyline_taken,break_even_win_pct,avg_implied_vig
+full,1678,886,0.528010,208781.220000,199945.000000,-8836.220000,-0.042323,-103.250000,0.507986,0.023131
+surprise_free,1674,886,0.529271,208269.220000,199945.000000,-8324.220000,-0.039969,-103.190000,0.507843,0.023090
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Overall ROI - full set and surprise-free subset
+# ############################################################################
+# subset: 'full' = all bets placed; 'surprise_free' = bets on games with line movement < cllopldiff_tau
+# n_bets: total number of bets placed
+# n_wins: number of bets that won
+# win_pct: n_wins / n_bets
+# total_invested: sum of stakes across all bets (USD)
+# total_returned: sum of returns across all bets (USD). On a winning bet, return = stake + profit_at_odds; on a loss, return = 0
+# total_profit: total_returned - total_invested. Negative = lost money
+# roi_pct: total_profit / total_invested. The single most important number
+# avg_moneyline_taken: mean American odds across all bets placed - lets you sanity-check break-even expectations
+# break_even_win_pct: minimum win% needed at the avg odds taken to break even. Compare with win_pct
+# avg_implied_vig: mean overround (home_implied + vis_implied - 1.0) across bet games. The market environment
+# ############################################################################

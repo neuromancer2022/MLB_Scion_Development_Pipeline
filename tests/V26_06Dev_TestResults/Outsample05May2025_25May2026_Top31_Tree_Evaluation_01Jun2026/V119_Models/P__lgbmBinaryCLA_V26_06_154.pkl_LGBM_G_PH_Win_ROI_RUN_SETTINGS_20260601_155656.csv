@@ -1,0 +1,24 @@
+setting,value
+preds_csv,/Users/jt/github/sports_model_eval_pipeline/results/preds/P__lgbmBinaryCLA_V26_06_154.pkl_LGBM_G_PH_Win_PREDS.csv
+run_timestamp,2026-06-01 15:56:56
+sports_roi_version,V1.0
+roi.preds_csv,results/preds/P__lgbmBinaryCLA_V26_06_*_PREDS.csv
+roi.log_csv,
+roi.output_dir,results/roi/
+roi.bet_mode,all
+roi.min_confidence,0.55
+roi.edge_threshold,0.02
+roi.stake_per_bet,100
+roi.price_source,closing
+roi.cllopldiff_tau,0.1
+roi.produce_dual_report,True
+roi.apply_devig,False
+roi.audit_trail,True
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Run settings - everything needed to reproduce this report
+# ############################################################################
+# setting: configuration option name
+# value: configured value used for this run
+# ############################################################################

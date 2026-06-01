@@ -1,0 +1,52 @@
+feature,mean_abs_shap,mean_abs_shap_pos_class,mean_abs_shap_neg_class,class_asymmetry_pos_minus_neg,abs_class_asymmetry,asymmetry_direction
+G_Bookie_H_Probability,11.874857339,11.760153079,11.999548287,-0.239395208,0.239395208,neg_class_dominant
+G_VHRatio_K_Per_9_YTD,1.150184166,1.083326017,1.222863298,-0.139537281,0.139537281,neg_class_dominant
+G_VHRatio_Run_Pythag_20G,0.761323986,0.816808975,0.701008214,0.115800761,0.115800761,pos_class_dominant
+V_Run_Differential_Per_Game_20G,0.571186080,0.532358956,0.613393674,-0.081034718,0.081034718,neg_class_dominant
+G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_YTD,0.589346761,0.610758884,0.566070399,0.044688486,0.044688486,pos_class_dominant
+G_VHRatio_ClosingProbabilityLine_HV,1.341682274,1.321301691,1.363837286,-0.042535595,0.042535595,neg_class_dominant
+G_VHRatio_K_Minus_BB_Pct_5G,0.612262111,0.623340020,0.600219708,0.023120312,0.023120312,pos_class_dominant
+G_VHRatio_wOBA_YTD,0.164379466,0.153653524,0.176039260,-0.022385736,0.022385736,neg_class_dominant
+G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_5G,0.282627797,0.293238235,0.271093565,0.022144670,0.022144670,pos_class_dominant
+G_VHRatio_EarnedRuns,0.447439071,0.457800321,0.436175723,0.021624598,0.021624598,pos_class_dominant
+V_StartingPitcher_StrikeoutAccuracy_YTD,0.347558751,0.337903329,0.358054820,-0.020151491,0.020151491,neg_class_dominant
+G_VHRatio_Runs_5InningsAllowed_YTD,0.266669028,0.275400093,0.257177796,0.018222296,0.018222296,pos_class_dominant
+G_VHRatio_K_Per_9_20G,0.264654102,0.257128460,0.272834962,-0.015706502,0.015706502,neg_class_dominant
+G_VHRatio_MenOnBase_Allowed_20G,0.831338402,0.824167759,0.839133356,-0.014965597,0.014965597,neg_class_dominant
+G_VHRatio_StartingPitcher_Strikes_Ratio_5G,1.187062099,1.193941731,1.179583494,0.014358237,0.014358237,pos_class_dominant
+G_VHRatio_FIP,0.457663263,0.464127246,0.450636496,0.013490750,0.013490750,pos_class_dominant
+G_VHRatio_K_Minus_BB_Pct_YTD,0.179053627,0.185162394,0.172413003,0.012749392,0.012749392,pos_class_dominant
+H_EarnedRuns_YTD,0.158919388,0.164933665,0.152381480,0.012552185,0.012552185,pos_class_dominant
+V_MenOnBase_Strength_YTD,0.952353273,0.947035406,0.958134138,-0.011098732,0.011098732,neg_class_dominant
+G_H_CLL_OPL_Prob_Diff,0.318435939,0.313342600,0.323972728,-0.010630128,0.010630128,neg_class_dominant
+G_VHRatio_FIP_YTD,0.207623824,0.202609300,0.213074936,-0.010465635,0.010465635,neg_class_dominant
+G_VHRatio_MenOnBase_Strength_20G,0.309964495,0.314548436,0.304981455,0.009566981,0.009566981,pos_class_dominant
+G_VHRatio_BallpenOuts_YTD,0.474392465,0.469919429,0.479254946,-0.009335517,0.009335517,neg_class_dominant
+G_VHRatio_OPS_YTD,0.182662112,0.179317464,0.186297961,-0.006980497,0.006980497,neg_class_dominant
+G_VHRatio_MenOnBase_Strength_YTD,1.282376093,1.285025720,1.279495777,0.005529943,0.005529943,pos_class_dominant
+G_VHRatio_K_Minus_BB_Pct_20G,0.327592957,0.325037452,0.330370957,-0.005333505,0.005333505,neg_class_dominant
+G_VHRatio_OutsPitched_YTD,0.725902966,0.723362622,0.728664483,-0.005301861,0.005301861,neg_class_dominant
+G_VHRatio_StartingPitcher_StrikeoutAccuracy_5G,0.480700090,0.483105266,0.478085507,0.005019758,0.005019758,pos_class_dominant
+G_VHRatio_Run_Pythag,0.574776807,0.572401060,0.577359398,-0.004958338,0.004958338,neg_class_dominant
+H_Run_Differential_Per_Game_YTD,0.569535541,0.567856126,0.571361174,-0.003505048,0.003505048,neg_class_dominant
+V_Run_Differential_Per_Game_YTD,0.281773097,0.280126214,0.283563365,-0.003437151,0.003437151,neg_class_dominant
+G_VHRatio_StartingPitcher_StrikesImpact_YTD,0.330009936,0.331565370,0.328319078,0.003246292,0.003246292,pos_class_dominant
+G_VHRatio_Weighted_Offense_Index_YTD,0.358720113,0.360141999,0.357174431,0.002967568,0.002967568,pos_class_dominant
+G_VHRatio_StartingPitcher_StrikeoutsImpact_YTD,0.563008556,0.564386225,0.561510942,0.002875283,0.002875283,pos_class_dominant
+H_Run_Differential_Per_Game_20G,0.150744259,0.151824692,0.149569758,0.002254935,0.002254935,pos_class_dominant
+G_VHRatio_TotalDistanceTravelled_3G,0.214130685,0.215144843,0.213028228,0.002116615,0.002116615,pos_class_dominant
+G_VHRatio_FIP_YTD_HV,0.198181318,0.198347429,0.198000744,0.000346685,0.000346685,pos_class_dominant
+G_VHRatio_DaysRest,0.000000000,0.000000000,0.000000000,0.000000000,0.000000000,balanced
+
+# ############################################################################
+# COLUMN KEY (quick reference)
+# Class-asymmetry diagnostic (n_pos=874, n_neg=804)
+# ############################################################################
+# feature: feature column name
+# mean_abs_shap: overall SHAP importance
+# mean_abs_shap_pos_class: mean |SHAP| over wins
+# mean_abs_shap_neg_class: mean |SHAP| over losses
+# class_asymmetry_pos_minus_neg: signed asymmetry (pos - neg)
+# abs_class_asymmetry: magnitude of asymmetry - sorting key
+# asymmetry_direction: 'pos_class_dominant' | 'neg_class_dominant' | 'balanced'
+# ############################################################################

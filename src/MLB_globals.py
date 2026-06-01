@@ -338,21 +338,39 @@ def calcRatio(x, y, zeroToMidPoint=False):
     return float(x / y)
     
 def calcProbRatio(x, y, zeroToMidPoint=False):
-    """X/(X+Y) share with fallback to 0.5 (or 0.0) when undefined.
-    Drops the legacy 'or not x' clause - X=0 is a legitimate share of 0,
-    not a missing value. Tightens the zero check to catch floating-point
-    cancellation residue on signed centred-at-zero variables.
+    """X/(X+Y) share with three-layer fallback when undefined.
+
+    Fallback layers (any one triggers the neutral 0.5 / 0.0 return):
+      1. Either input is NaN.
+      2. |X+Y| < 1e-6 (exact cancellation or FP residue from signed inputs).
+      3. Result < 0 or > 1 (signed inputs partially cancelled but |X+Y| > 1e-6,
+         producing a mathematically-valid but non-share value). Required for
+         signed centred-at-zero variables like Pythag_Luck_Factor and any other
+         feature whose H and V values can have opposite sign with similar
+         magnitude. Without this guard, X/(X+Y) can land anywhere in (-inf, inf)
+         when sum nearly cancels - previously seen at -1000 and +1551 in
+         G_VHRatio_Pythag_Luck_Factor data.
+
+    For non-negative inputs (counts, totals, magnitudes), layer 3 never fires:
+    X/(X+Y) is mathematically guaranteed to be in [0,1]. So this guard is a
+    no-op for the common case and a safety net for the signed case.
     """
-    # If either input is NaN, the share is undefined, so return the neutral
+    # Layer 1: NaN input -> neutral share
     if pd.isna(x) or pd.isna(y):
-        return 0.5   # neutral share fallback
-    # We have valid values so....
+        return 0.5
+    # Layer 2: near-zero denominator (catches cancellation residue too)
     denom = float(x + y)
-    if abs(denom) < 1e-6:       # catches cancellation residue, not just exact 0.0
+    if abs(denom) < 1e-6:
         if zeroToMidPoint:
             return 0.5          # neutral share - H and V indistinguishable
         return 0.00
-    return float(x / denom)     # includes the V=0 case (returns 0.0, not 0.5)
+    ratio = float(x / denom)
+    # Layer 3: out-of-[0,1] result -> sign-conflict between H and V
+    if ratio < 0.0 or ratio > 1.0:
+        if zeroToMidPoint:
+            return 0.5
+        return 0.00
+    return ratio
 
 def divByZeroCatch(numerator, denominator, min_denominator=1e-6):
     """Safe division. Returns NaN if denominator is too close to
@@ -384,19 +402,41 @@ def computeFIP(hr_allowed, walks_allowed, hbp_allowed, k_gained,
         return np.nan
     return fip
  
-def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3):
+def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3,
+                     era_cap=27.0):
     """Compute approximate bullpen ERA with defensive guards.
-    Returns NaN if bullpen_outs < min_outs or inputs are NaN.
-    No numerator flooring (v5: BallpenOuts is now correct).
-    The base variant may return small negatives due to 10G/YTD window mix."""
+
+    Returns NaN if bullpen_outs < min_outs or any input is NaN. Otherwise
+    returns a value in [0, era_cap].
+
+    Why the floor + cap (added v5.7 to fix v5.6 data-quality gap):
+
+    The arithmetic 'bullpen_er = team_er - sp_er' pairs a TEAM-window stat
+    (team_er averaged over the team's last N games) with an SP-window stat
+    (sp_er averaged over the starting pitcher's last N starts). These are
+    different game sets, so sp_er > team_er is entirely possible and produces
+    negative bullpen_er. But bullpen ERA is bounded below by 0 by physical
+    definition: a bullpen cannot allow a negative number of earned runs.
+    Floor numerator at 0 before dividing.
+
+    The 27 multiplier inflates small-window noise into wild outliers (5G
+    data showed era=45 from bullpen_er=6 over bullpen_outs=3.6). 27 is the
+    per-inning ceiling (1 IP allowing 9 ER); for windowed averages it is
+    already extremely generous - league-worst bullpen ERA over a season is
+    typically ~6 to ~7. The cap suppresses small-sample blowup-rate noise
+    without affecting any plausible real-bullpen value."""
     if any(pd.isna(v) for v in [team_er, sp_er, bullpen_outs]):
         return np.nan
     if bullpen_outs < min_outs:
         return np.nan
-    bullpen_er = team_er - sp_er   # no flooring (v5)
-    era = 27 * bullpen_er / bullpen_outs
+    # Floor: negative impossible (windowing artifact, not real performance)
+    bullpen_er = max(0.0, team_er - sp_er)
+    era = 27.0 * bullpen_er / bullpen_outs
     if not np.isfinite(era):
         return np.nan
+    # Cap: per-inning physical ceiling; suppresses small-window noise
+    if era > era_cap:
+        era = era_cap
     return era
 
 def calcAddFeatures(x, y):
