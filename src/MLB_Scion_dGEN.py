@@ -4406,6 +4406,7 @@ class scionDGEN:
         #Simply checks self._game_df for NFL_dbvar.NO_DATA and replaces with 0
         self._currentgame_df = self._currentgame_df.replace(int(MLB_dbvar.NO_DATA), 0)
         self._currentgame_df = self._currentgame_df.replace(float(MLB_dbvar.NO_DATA), 0.0)
+        self._nodata_set_zero = True
     
     def getHomeSPNullStatus(self):
         return self._home_SP_isNull
