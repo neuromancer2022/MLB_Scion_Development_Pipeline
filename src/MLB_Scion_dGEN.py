@@ -242,6 +242,13 @@ class scionDGEN:
         self._currentgame_df[MLB_dbvar.dbvar_G_Opening_TotalOverLine].values[0] = MLB_dbvar.NO_DATA
         self._currentgame_df[MLB_dbvar.dbvar_G_Closing_TotalOver].values[0] = float(mupsObj.getCurrentMUPOverClose())
         self._currentgame_df[MLB_dbvar.dbvar_G_Closing_TotalOverLine].values[0] = MLB_dbvar.NO_DATA
+        # Now, the lines we are playing on is ALWAYS the closing lines (that appear in the mups, which should be updated during span)
+        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_TotalOver].values[0] = float(mupsObj.getCurrentMUPOverClose())
+        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_TotalOverLine].values[0] = MLB_dbvar.NO_DATA
+        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_H_MoneyLine].values[0] = x = float(mupsObj.getCurrentMUPHomeMLClose())
+        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_H_Probability].values[0] = MLB_global.convertMoneyLinetoProb(x)
+        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_V_MoneyLine].values[0] = x = float(mupsObj.getCurrentMUPVisMLClose())
+        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_V_Probability].values[0] = MLB_global.convertMoneyLinetoProb(x)
     
     def _getCurrentSPBOBSORatio(self, h_or_v):
         _spBOB = _spSO = _spBOBSOratio = 0.0

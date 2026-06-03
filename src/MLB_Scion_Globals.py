@@ -548,6 +548,11 @@ def genStarStr(numStars):
             _starStr += "*"
     return _starStr
 
+def annotateWithStars(textStr, numStars):
+    _starStr = genStarStr(numStars)
+    _starString = _starStr + " " + textStr + " " + _starStr
+    return _starString
+
 def calcStrengthCategory(strVal, insampleAVG, insampleSTDEV, flipCATEGORIES=False):
     #This function returns the strength category of strength value given the insample average and stdev.
     #06 May 2024: flipCATEGORIES allows categories to be flipped such that high +ve values can be bad and high -ve values good
