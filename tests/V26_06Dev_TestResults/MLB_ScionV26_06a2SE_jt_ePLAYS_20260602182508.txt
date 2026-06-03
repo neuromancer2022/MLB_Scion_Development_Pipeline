@@ -1,0 +1,5 @@
+|    | Game_Id          | Team   |   ML | Play    |
+|---:|:-----------------|:-------|-----:|:--------|
+|  1 | 20260525_MIN@CWS | CWS    | -107 | HomFave |
+|  2 | 20260525_HOU@TEX | TEX    | -114 | HomFave |
+|  3 | 20260525_ARZ@SF  | ARZ    |  110 | VisDog  |

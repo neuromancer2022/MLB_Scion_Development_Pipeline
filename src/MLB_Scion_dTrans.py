@@ -86,7 +86,7 @@ class scionDTRANS:
             self._feature_insample_stats_fname_csv = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_varstats_fname_attrib])
             self._feature_insample_stats_fname_csv = os.path.join(self.modelCFG.system_path, self._feature_insample_stats_fname_csv)
             self._target_insample_stats_fname_csv = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_op_varstats_fname_attrib])
-        self._target_insample_stats_fname_csv = os.path.join(self.modelCFG.system_path, self._target_insample_stats_fname_csv)
+            self._target_insample_stats_fname_csv = os.path.join(self.modelCFG.system_path, self._target_insample_stats_fname_csv)
         self._inputdict_fname_json = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_categvar_jsonlookup_fname_attrib])
         self._inputdict_fname_json = os.path.join(self.modelCFG.system_path, self._inputdict_fname_json)
         self._model_results_fname = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_op_result_fname_attrib])
@@ -385,7 +385,7 @@ class scionDTRANS:
             if not self._features_selected:
                 self._selectDesiredGameFeatures()
             #3. Check if data has been scaled
-            if not self._features_scaled:
+            if not self._features_scaled and self._scaleType != MLB_global.ScaleTypes.NoScale.value:
                 self._scaleContinuousFeatures()
             #4. All good so make a copy of the scaled data; this copy will be transformed and for them  feature pattern for the machine learning models
             self._scaled_categvartrans_game_df = self._scaled_game_df.copy()
