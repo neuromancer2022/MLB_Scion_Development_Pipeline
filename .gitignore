@@ -84,3 +84,4 @@ secrets.yaml
 # --- Archived version CFG files (always track these) ------
 !configs/versions/
 !configs/versions/*
+data/mups/mlbmups.csv

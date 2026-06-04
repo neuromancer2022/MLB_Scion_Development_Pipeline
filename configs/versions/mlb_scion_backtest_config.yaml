@@ -1,0 +1,31 @@
+# ============================================================
+# MLB Scion Development Configuration — Backtest
+# ============================================================
+# Used by scripts/run_backtest.py to run Scion against a
+# historical mups file and evaluate performance.
+#
+# data/backtest/insample/  — games from the model training period
+# data/backtest/outsample/ — games from after the training cutoff
+#                            (2024+ for models trained to 2023)
+#
+# ============================================================
+
+# --- System paths -------------------------------------------
+system_path: "models"
+config_fname: "MLB_Scion_CFG.txt"
+
+# --- Input data paths ---------------------------------------
+input:
+  sciondata_file: "data/sciondata/mlbsciondata.csv"
+  # Switch between insample and outsample as needed:
+  mups_file:      "data/backtest/outsample/mlbmups_backtest.csv"
+
+# --- Output paths -------------------------------------------
+# These paths are passed as environment variables to MLB_Scion.py.
+# Prediction files (VERBOSE, SUMMARY, iPLAYS, iPOS etc.) are written
+# to predictions_dir. Log files are written to logs_dir.
+# tempfiles_dir holds intermediate test pattern files during model runs.
+output:
+  predictions_dir: "results/backtests"
+  logs_dir:        "results/logs"
+  tempfiles_dir:   "results/tempfiles"
