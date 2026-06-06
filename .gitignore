@@ -85,3 +85,5 @@ secrets.yaml
 !configs/versions/
 !configs/versions/*
 data/mups/mlbmups.csv
+models/V26_06Dev/Tepper_Prob/MLB_Scion_DT_TestPattern.csv
+models/V26_06Dev/Tepper_Prob/MLB_Scion_DT_Probabilities.txt
