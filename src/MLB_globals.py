@@ -15,6 +15,8 @@ import MLB_dbvar as MLB_dbvar
 
 MASK_ON = 1
 EPSILON = 0.00001 #this is to avoid divide by zero errors with iqr and log calculations; see https://blogs.sas.com/content/iml/2011/04/27/log-transformations-how-to-handle-negative-data-values.html
+FIP_FALLBACK = 4.0          # recent MLB league-average FIP
+BULLPEN_ERA_FALLBACK = 4.2  # recent MLB league-average bullpen ERA
 # Using enum class create enumerations
 class ScaleTypes(enum.Enum):
    NoScale = 0
@@ -387,54 +389,60 @@ def divByZeroCatch(numerator, denominator, min_denominator=1e-6):
 def computeFIP(hr_allowed, walks_allowed, hbp_allowed, k_gained,
                outs_pitched, min_ip=5.0):
     """Compute Fielding-Independent Pitching with defensive guards.
-    Returns NaN if any input is invalid, IP < min_ip, or result is
-    not finite. min_ip default = 5 (suitable for 10G window); use
-    10 for YTD_HV which has a smaller home-only sample size."""
+
+    Returns the formula result when inputs are valid and IP >= min_ip.
+    Otherwise returns FIP_FALLBACK (module-level constant, default 4.0)
+    rather than NaN, since dGEN runs standalone without the imputer
+    pipeline and every output cell must be a usable numeric value.
+
+    min_ip default 5.0 suits 10G windows; lower it (e.g. 3.0) for the
+    smaller YTD_HV home-only sample. To tune the fallback value globally,
+    edit FIP_FALLBACK at the top of this module.
+    """
     inputs = [hr_allowed, walks_allowed, hbp_allowed, k_gained, outs_pitched]
     if any(pd.isna(v) for v in inputs):
-        return np.nan
+        return FIP_FALLBACK
     ip = outs_pitched / 3.0
     if ip < min_ip:
-        return np.nan
+        return FIP_FALLBACK
     fip = (13 * hr_allowed + 3 * (walks_allowed + hbp_allowed)
            - 2 * k_gained) / ip + 3.12
     if not np.isfinite(fip):
-        return np.nan
+        return FIP_FALLBACK
     return fip
  
 def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3,
                      era_cap=27.0):
     """Compute approximate bullpen ERA with defensive guards.
 
-    Returns NaN if bullpen_outs < min_outs or any input is NaN. Otherwise
-    returns a value in [0, era_cap].
+    Returns a value in [0, era_cap] in all cases. When inputs are invalid
+    (NaN, low IP, non-finite result), returns BULLPEN_ERA_FALLBACK (module-
+    level constant, default 4.2) rather than NaN. dGEN runs standalone here
+    without the imputer pipeline, so every output cell must be a usable
+    numeric value.
 
-    Why the floor + cap (added v5.7 to fix v5.6 data-quality gap):
+    Why the floor + cap (added v5.7):
 
-    The arithmetic 'bullpen_er = team_er - sp_er' pairs a TEAM-window stat
-    (team_er averaged over the team's last N games) with an SP-window stat
-    (sp_er averaged over the starting pitcher's last N starts). These are
-    different game sets, so sp_er > team_er is entirely possible and produces
-    negative bullpen_er. But bullpen ERA is bounded below by 0 by physical
-    definition: a bullpen cannot allow a negative number of earned runs.
-    Floor numerator at 0 before dividing.
+    The arithmetic bullpen_er = team_er - sp_er pairs a TEAM-window stat
+    with an SP-window stat over different game sets, so sp_er > team_er
+    is entirely possible and produces negative bullpen_er. Floor at 0
+    (physical: bullpen cannot allow negative earned runs). The x27
+    multiplier inflates small-window noise into wild outliers; cap at
+    27.0 (per-inning physical ceiling) suppresses small-sample noise.
 
-    The 27 multiplier inflates small-window noise into wild outliers (5G
-    data showed era=45 from bullpen_er=6 over bullpen_outs=3.6). 27 is the
-    per-inning ceiling (1 IP allowing 9 ER); for windowed averages it is
-    already extremely generous - league-worst bullpen ERA over a season is
-    typically ~6 to ~7. The cap suppresses small-sample blowup-rate noise
-    without affecting any plausible real-bullpen value."""
+    To tune the fallback value globally, edit BULLPEN_ERA_FALLBACK at
+    the top of this module.
+    """
     if any(pd.isna(v) for v in [team_er, sp_er, bullpen_outs]):
-        return np.nan
+        return BULLPEN_ERA_FALLBACK
     if bullpen_outs < min_outs:
-        return np.nan
-    # Floor: negative impossible (windowing artifact, not real performance)
+        return BULLPEN_ERA_FALLBACK
+    # Floor: bullpen cannot allow negative earned runs.
     bullpen_er = max(0.0, team_er - sp_er)
     era = 27.0 * bullpen_er / bullpen_outs
     if not np.isfinite(era):
-        return np.nan
-    # Cap: per-inning physical ceiling; suppresses small-window noise
+        return BULLPEN_ERA_FALLBACK
+    # Cap: per-inning physical ceiling.
     if era > era_cap:
         era = era_cap
     return era
