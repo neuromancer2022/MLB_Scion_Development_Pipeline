@@ -192,7 +192,9 @@ messageScionEns2NoFavePlay = "Ens2 is NoPlay as bookie-line outside range for Fa
 messageScionEns1InsufficientVoters = "Ens1 is NoPlay due to insufficient voter agreement. "
 messageScionEns2InsufficientVoters = "Ens2 is NoPlay due to insufficient voter agreement. "
 #No play due to Null Pitcher
-messageScionNoPlayNullPitcher = "NoPlay due to a NULL Starting Pitcher. "
+messageScionNullHSP = "NoPlay as H_SP is Null. "
+messageScionNullVSP = "NoPlay as V_SP is Null. "
+messageScionNullBothSP = "NoPlay as BOTH H_SP and V_SP are Null. "
 #No play due to H or V price evaluating to an abs value within 0 to 99
 messageScionInvalidTeamPrice = "Ens2 is NoPlay due to an invalid bookie team price being calculated. Game skipped! "
 #unknown
