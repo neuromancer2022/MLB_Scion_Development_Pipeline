@@ -282,7 +282,7 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
     #   1) LGBM HomWin Ensemble is used to determine Scion price
     #   2) 1 Ensemble: ens1 (pm150)
     #   3) Ensemble play positions will be determined by the following factors: 
-    #        abs_price_thresh, cent_gap, model_price_limits, agreement threshold
+    #        abs_price_thresh, cent_gap, model_price_limits, agreement threshold, whether or not a pitcher is a NULL SP
     #   4) VF Plays are disallowed
     #   5) Confidence and Star value with respect to play is based on Ensemble Vote Agreement
     #           5* play: ens1 HF/VD/HD at >74% agreement and meets price and gap constraints
@@ -315,21 +315,29 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         _scionCONF = 0.0
         #2. Get Scion position, assuming valid H and V bookie price calculated
         if MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice):
-            _ens1ThreshPlay, _ens1ThreshPosition, predsObj = getEnsemblePosition(MLB_global.MODEL_PROBENS1, _hBookiePrice, _vBookiePrice, _ens1BookieMin, _ens1BookieMax, _ens1MajorityVote, _ens1VoteAgreement, _ens1HPrice, _ens1PriceMin, _ens1PriceMax, _ens1AgreeThreshold, _ens1BookieCentGap, predsObj)
-            # Strategy: Ens1 only (Bookie H Line +/-150)
-            #           5* play: ens1 HF/VD/HD at >74% agreement and meets price and gap constraints
-            #           3* play: ens1 HF/VD/HD at >64% agreement and meets price and gap constraints
-            #           1* play: ens1 HF/VD/HD at >50% agreement and meets price and gap constraints
-            #           No Play: VF play or process and gap constraints not met
-            if _ens1ThreshPlay: 
-                _scionPOS = _ens1ThreshPosition
-                _scionCONF = _ens1VoteAgreement
-                if  _ens1VoteAgreement >= 0.74:
-                    _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
-                elif _ens1VoteAgreement >= 0.64:
-                    _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+            if not _hSP_Null and not _vSP_Null:
+                _ens1ThreshPlay, _ens1ThreshPosition, predsObj = getEnsemblePosition(MLB_global.MODEL_PROBENS1, _hBookiePrice, _vBookiePrice, _ens1BookieMin, _ens1BookieMax, _ens1MajorityVote, _ens1VoteAgreement, _ens1HPrice, _ens1PriceMin, _ens1PriceMax, _ens1AgreeThreshold, _ens1BookieCentGap, predsObj)
+                # Strategy: Ens1 only (Bookie H Line +/-150)
+                #           5* play: ens1 HF/VD/HD at >74% agreement and meets price and gap constraints
+                #           3* play: ens1 HF/VD/HD at >64% agreement and meets price and gap constraints
+                #           1* play: ens1 HF/VD/HD at >50% agreement and meets price and gap constraints
+                #           No Play: VF play or process and gap constraints not met
+                if _ens1ThreshPlay: 
+                    _scionPOS = _ens1ThreshPosition
+                    _scionCONF = _ens1VoteAgreement
+                    if  _ens1VoteAgreement >= 0.74:
+                        _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
+                    elif _ens1VoteAgreement >= 0.64:
+                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+                    else:
+                        _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR     
+            else:
+                if _hSP_Null and not _vSP_Null:
+                    predsObj.addComment(MLB_global.messageScionNullHSP)
+                elif not _hSP_Null and _vSP_Null:
+                    predsObj.addComment(MLB_global.messageScionNullVSP)
                 else:
-                    _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR     
+                    predsObj.addComment(MLB_global.messageScionNullBothSP)
         else:
             predsObj.addComment(MLB_global.messageScionInvalidTeamPrice)
         #3. Update preds Obj
