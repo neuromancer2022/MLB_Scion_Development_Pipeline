@@ -1,0 +1,134 @@
+# MLB Scion Noisy-Model Audit Pipeline - Configuration
+# Edit values here rather than in the Python source. Re-run `make all` after edits.
+
+# -----------------------------------------------------------------------------
+# File paths (relative to project root)
+# -----------------------------------------------------------------------------
+paths:
+  # Noisy outsample = generated with pre-v5.6 dGEN (the data the models were
+  # trained against). Same calendar period and game IDs as clean outsample.
+  noisy_outsample: input/MLB_V119_pm150_Noisy_Outsample06Jun2025_25May2026.csv
+
+  # Clean outsample = generated with post-v5.8 dGEN (BallpenERA / FIP /
+  # calcProbRatio / Pythag / WHIP fixes all in place).
+  clean_outsample: input/MLB_V119_pm150_Clean_Outsample06Jun2025_25May2026.csv
+
+  models_dir: models
+  results_dir: results
+
+# -----------------------------------------------------------------------------
+# CSV column names - adjust if your schema differs
+# -----------------------------------------------------------------------------
+columns:
+  game_id: G_Id
+  date: G_Date
+  target: G_PH_Win        # binary label: 1 = home team won, 0 = home team lost
+
+# -----------------------------------------------------------------------------
+# V119: The 38-feature list
+# -----------------------------------------------------------------------------
+features:
+  - G_Bookie_H_Probability
+  - G_H_CLL_OPL_Prob_Diff
+  - H_Run_Differential_Per_Game_20G
+  - H_Run_Differential_Per_Game_YTD
+  - H_EarnedRuns_YTD
+  - V_Run_Differential_Per_Game_20G
+  - V_Run_Differential_Per_Game_YTD
+  - V_MenOnBase_Strength_YTD
+  - V_StartingPitcher_StrikeoutAccuracy_YTD
+  - G_VHRatio_DaysRest
+  - G_VHRatio_TotalDistanceTravelled_3G
+  - G_VHRatio_ClosingProbabilityLine_HV
+  - G_VHRatio_Run_Pythag
+  - G_VHRatio_Run_Pythag_20G
+  - G_VHRatio_Runs_5InningsAllowed_YTD
+  - G_VHRatio_Weighted_Offense_Index_YTD
+  - G_VHRatio_wOBA_YTD
+  - G_VHRatio_OPS_YTD
+  - G_VHRatio_OutsPitched_YTD
+  - G_VHRatio_EarnedRuns
+  - G_VHRatio_FIP
+  - G_VHRatio_FIP_YTD
+  - G_VHRatio_FIP_YTD_HV
+  - G_VHRatio_K_Minus_BB_Pct_5G
+  - G_VHRatio_K_Minus_BB_Pct_20G
+  - G_VHRatio_K_Minus_BB_Pct_YTD
+  - G_VHRatio_K_Per_9_20G
+  - G_VHRatio_K_Per_9_YTD
+  - G_VHRatio_MenOnBase_Strength_20G
+  - G_VHRatio_MenOnBase_Strength_YTD
+  - G_VHRatio_MenOnBase_Allowed_20G
+  - G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_YTD
+  - G_VHRatio_StartingPitcher_StrikeoutsImpact_YTD
+  - G_VHRatio_StartingPitcher_StrikesImpact_YTD
+  - G_VHRatio_StartingPitcher_Strikes_Ratio_5G
+  - G_VHRatio_StartingPitcher_StrikeoutAccuracy_5G
+  - G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_5G
+  - G_VHRatio_BallpenOuts_YTD
+
+# -----------------------------------------------------------------------------
+# Affected feature classification (intersection of the v5.6-v5.8 fix list
+# with the Scion V26.06 feature set above).
+# -----------------------------------------------------------------------------
+affected_features:
+  strong:
+    - G_VHRatio_Run_Pythag                                    # Pythag closed-form fix
+    - G_VHRatio_Run_Pythag_20G                                # Pythag closed-form fix
+    - G_VHRatio_FIP_YTD_HV                                    # NaN -> 4.0 NaN-routing change
+    - G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_YTD  # WHIP operator-precedence
+    - G_VHRatio_StartingPitcher_WalkHitsAllowedPerInning_5G   # WHIP operator-precedence
+    - G_VHRatio_MenOnBase_Strength_20G                        # calcProbRatio Layer 3
+    - G_VHRatio_MenOnBase_Strength_YTD                        # calcProbRatio Layer 3
+  weak:
+    - G_VHRatio_FIP                                           # calcProbRatio Layer 3 (mild)
+    - G_VHRatio_FIP_YTD                                       # calcProbRatio Layer 3 (mild)
+    - G_VHRatio_EarnedRuns                                    # calcProbRatio Layer 3 (mild)
+
+# -----------------------------------------------------------------------------
+# Phase 1 categorisation thresholds
+# -----------------------------------------------------------------------------
+phase1_thresholds:
+  # "Clean" if: strong_share < clean_strong_max AND weak_share < clean_weak_max
+  clean_strong_max: 0.05
+  clean_weak_max: 0.10
+  # "Light" if not Clean and strong_share < light_strong_max
+  light_strong_max: 0.15
+  # "Substantial" if not Light and either condition below holds
+  substantial_strong_max: 0.30
+  substantial_any_feature_min: 0.10
+  # "Heavy" trigger: FIP_YTD_HV importance >= this, OR strong_share >= substantial_strong_max
+  heavy_fip_ythv_min: 0.10
+  # Feature used as the FIP_YTD_HV trigger column (matches affected_features.strong)
+  heavy_fip_ythv_feature: G_VHRatio_FIP_YTD_HV
+
+# -----------------------------------------------------------------------------
+# Phase 2 decision rules (relaxed slightly per Jon's clarification that the
+# ensemble is observed-not-traded; salvage-friendly rather than strict-retire)
+# -----------------------------------------------------------------------------
+phase2_thresholds:
+  # KEEP: model is robust to the data fix; production candidate
+  keep_pred_agreement_min: 0.95
+  keep_proba_corr_min: 0.95
+  keep_prec_delta_min: -0.01
+
+  # INVESTIGATE: meaningful shift, needs per-game error analysis before deciding
+  investigate_pred_agreement_min: 0.85
+  investigate_proba_corr_min: 0.85
+  investigate_prec_delta_min: -0.03
+
+  # DEMOTE: keep but mark for replacement-first priority (was RETIRE in strict mode)
+  demote_pred_agreement_min: 0.70
+  demote_prec_delta_min: -0.05
+
+  # Anything below the demote band -> RETIRE (model is unreliable)
+
+  # KEEP_SUSPECT: precision improved substantially on clean data; spot-check for leakage
+  keep_suspect_prec_delta_min: 0.03
+
+# -----------------------------------------------------------------------------
+# Phase 4 ensemble evaluation
+# -----------------------------------------------------------------------------
+phase4:
+  default_agreement_threshold: 0.60
+  threshold_sweep: [0.55, 0.60, 0.65, 0.70, 0.75, 0.80]
