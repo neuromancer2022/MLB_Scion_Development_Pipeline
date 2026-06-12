@@ -1,0 +1,9 @@
+Quick version, since you're heading to bed.
+You already have M and R — the implied probabilities from the visitor and home prices. The only problem with them is that they sum to more than 1; that surplus is the vig. De-vigging is just rescaling them so they sum to 1.
+So for each game:
+
+total = M + R
+devigged visitor prob = M / total
+devigged home prob = R / total
+
+That's it — the "normalise to sum to 1" method. If M = 0.55 and R = 0.52, total = 1.07 (a 7-cent overround), and the true home prob the book is implying is 0.52 / 1.07 = 0.486, not 0.52. You compare Scion's home probability against that 0.486, not the raw 0.52.
