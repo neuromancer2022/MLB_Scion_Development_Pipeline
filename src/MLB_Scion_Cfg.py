@@ -71,7 +71,7 @@ class scionCFG:
 		self._cfg_sys_prob_min_attrib = "SYS_PROB_MIN"
 		self._cfg_sys_prob_max_attrib = "SYS_PROB_MAX"
 		self._cfg_sys_prob_thresh_attrib = "SYS_PROB_MODELTHRESH"
-		self._cfg_sys_prob_avg_agreemajvote_attrib = "SYS_PROB_AVG_AGREEMAJVOTE"
+		self._cfg_sys_prob_ensprob_type_attrib = "SYS_PROB_ENSPROB_TYPE" # options defined in MLB_global.EnsembleProbabilityTypes
 		self._cfg_sys_prob_base_abspricelimit_attrib = "SYS_PROB_BASE_ABSPRICE_LIMIT"
 		self._cfg_sys_prob_base_agreethresh_attrib = "SYS_PROB_BASE_AGREETHRESH"
 		self._cfg_sys_prob_minprice_attrib = "SYS_PROB_MINPRICE"
@@ -116,7 +116,7 @@ class scionCFG:
 										self._cfg_sys_prob_min_attrib,
 										self._cfg_sys_prob_max_attrib,
 										self._cfg_sys_prob_thresh_attrib,
-										self._cfg_sys_prob_avg_agreemajvote_attrib,
+										self._cfg_sys_prob_ensprob_type_attrib,
 										self._cfg_sys_prob_base_abspricelimit_attrib,
 										self._cfg_sys_prob_base_agreethresh_attrib, 
 										self._cfg_sys_prob_minprice_attrib,
@@ -438,7 +438,7 @@ class scionCFG:
 	@property 
 	def cfg_sys_prob_thresh_attrib(self): return self._cfg_sys_prob_thresh_attrib 
 	@property 
-	def cfg_sys_prob_avg_agreemajvote_attrib(self): return self._cfg_sys_prob_avg_agreemajvote_attrib
+	def cfg_sys_prob_ensprob_type_attrib(self): return self._cfg_sys_prob_ensprob_type_attrib
 	@property 
 	def cfg_sys_prob_base_abspricelimit_attrib(self): return self._cfg_sys_prob_base_abspricelimit_attrib 
 	@property 
@@ -586,8 +586,8 @@ class scionCFG:
 		return self._cfg_variable_settings[self.cfg_sys_prob_max_attrib]
 	def getSysProbThresh(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_thresh_attrib]
-	def getSysProbAvgAgreeMajVote(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_avg_agreemajvote_attrib]
+	def getSysProbEnsProbType(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_ensprob_type_attrib]
 	def getSysProbMinPrice(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_minprice_attrib]
 	def getSysProbMaxPrice(self):

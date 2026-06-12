@@ -372,17 +372,18 @@ class scionPREDS:
 			print("\nscionPREDS._createPREDSFolder(): unexpected error creating the system folder " + str(self.preds_subfolder_path))
 			raise
   
-	def _getProbabilityMajorityVote(self, ens, avgMajVotersOnly):
+	def _getProbabilityMajorityVote(self, ens, ensProbType):
 	# This traverses the relevant ens dict, counting the number of different positions and returns the key with the highest frequency
-	# The average prediction for the ensemble is also returned
 	# NoPlays must be considered a valid voter and thus if it is the majority vote, there is no play
-	# V25.05a feature: add a flag that if true only generates an average based on voters that agree with the majority vote
+	# 02 May 2025: new feature: add a flag that if true only generates an average based on voters that agree with the majority vote
+	# 12 Jun 2026: new feature: return the median vote rather average. Note: if this is active then avgMajVotersOnly will be turned off as mutually exclusive
 	# NOTE: the probability could be HWin or FaveWin so we must just return the average probability and allow the calling program to deal with what it means
 		try:
 			# 1. Create spread freq count dict
 			_playFreqDict = {MLB_global.ACTION_NOPLAYPUSH : 0, MLB_global.ACTION_NOPLAY : 0, MLB_global.ACTION_LINE_HF : 0, MLB_global.ACTION_LINE_HD : 0, MLB_global.ACTION_LINE_VF : 0, MLB_global.ACTION_LINE_VD : 0}
 			_playProbSumDict = {MLB_global.ACTION_NOPLAYPUSH : 0, MLB_global.ACTION_NOPLAY : 0, MLB_global.ACTION_LINE_HF : 0, MLB_global.ACTION_LINE_HD : 0, MLB_global.ACTION_LINE_VF : 0, MLB_global.ACTION_LINE_VD : 0}
 			_validVotes = _playFreqDict.keys()
+			_probList = []
 			# 2. COPY the correct ens dict (we dont want to change the original)
 			ens_dict = {}
 			if ens == MLB_global.MODEL_PROBENS1:
@@ -392,8 +393,14 @@ class scionPREDS:
 			else: #unknown
 				print("Unrecognised probability ensemble!")
 				raise Exception
-		
-            # 3. Now traverse dict, increasing frequency counts 
+			# 3. Ensure medianProb and avgMajVotersOnly flags are mutually exclusive (medianProb takes precedence if both true)
+			medianProb = avgMajVotersOnly = MLB_global.NO #default value is to return avg of all voters
+			if ensProbType == MLB_global.EnsembleProbabilityTypes.MedianAllVoters.value:
+				medianProb = MLB_global.YES
+			else:
+				if ensProbType == MLB_global.EnsembleProbabilityTypes.AvgMajorityVotersOnly.value:
+					avgMajVotersOnly = MLB_global.YES
+            # 4. Now traverse dict, increasing frequency counts 
 			numVotes = len(ens_dict)
 			voteCtr = 0
 			_avgProb = 0.0
@@ -405,21 +412,26 @@ class scionPREDS:
 				if _vote not in _validVotes:
 					print("\nError - " + str(_vote) + " is an unrecognised voting position!")
 					raise Exception
-				#all good, so now increment relevant dict item and increase avgSpread
+				#all good, so now increment relevant dict item and increase avgSpread and add current prob to _probList
 				_playFreqDict[_vote] += 1
 				_playProbSumDict[_vote] += _homProb
 				voteCtr += 1
 				_avgProb += float(_homProb)
-			# 4. Check all votes counted
+				_probList.append(float(_homProb))
+			# 5. Check all votes counted
 			if voteCtr != numVotes:
 				print("\nError - not all votes have been counted. Expecting " + str(numVotes) + " but processed " + str(voteCtr))
 				raise Exception
-			# 5. Calc avg
+			# 6. Calc avg
 			_avgProb /= voteCtr
-			# 6. Get key with highest vote (need to combine NOPLAYPUSH and NOPLAY)
+			# 7. Get key with highest vote (need to combine NOPLAYPUSH and NOPLAY)
 			_majorityVote = max(_playFreqDict.keys(), key=(lambda k: _playFreqDict[k]))
-			if avgMajVotersOnly == MLB_global.YES:
-				_avgProb = _playProbSumDict[_majorityVote] / _playFreqDict[_majorityVote]
+			# 8. Get desired form of probability (default is avg of all; others: median of all voters or avg of majority voters)
+			if medianProb == MLB_global.YES:
+				_avgProb = float(MLB_global.calcMedian(_probList))
+			else:
+				if avgMajVotersOnly == MLB_global.YES:
+					_avgProb = _playProbSumDict[_majorityVote] / _playFreqDict[_majorityVote]
 			_majorityWgt = max(_playFreqDict.items(), key=lambda k: k[1])
 			_majorityWgt = _majorityWgt[1] #just get count
 			_numNoPlays = _playFreqDict[MLB_global.ACTION_NOPLAYPUSH]
@@ -1226,7 +1238,7 @@ class scionPREDS:
 			majorityVote = ""
 			majorityWgt = 0.0
 			avgProb = avgHomProb = 0.0
-			avgMajorityVotersOnly = int(sysCfgObj.getSysProbAvgAgreeMajVote())
+			ensProbType = int(sysCfgObj.getSysProbEnsProbType())
 			target = sysCfgObj.getCurrentModelTarget()
 			vPrice = self.getPreds_V_Bookie_Bet_Price()
 			hPrice = self.getPreds_H_Bookie_Bet_Price()
@@ -1235,7 +1247,7 @@ class scionPREDS:
 				print("\nUnrecognised ensemble " + str(ens) + "! Please review Scion configuration files to ensure only active ensembles are used.")
 				raise Exception
 			else:
-				numVoters, majorityVote, majorityWgt, avgProb, numNoPlays  = self._getProbabilityMajorityVote(ens,avgMajorityVotersOnly)
+				numVoters, majorityVote, majorityWgt, avgProb, numNoPlays  = self._getProbabilityMajorityVote(ens,ensProbType)
 				if target == "B1": #HWin
 					avgHomProb = avgProb
 				elif  target == "B2": #VWin
