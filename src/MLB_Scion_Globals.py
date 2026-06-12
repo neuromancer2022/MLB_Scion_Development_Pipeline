@@ -74,6 +74,11 @@ class ModelConfidenceTypes(enum.Enum):
 	FOURSTAR = 4
 	FIVESTAR = 5
 
+class EnsembleProbabilityTypes(enum.Enum):
+   Default = 0
+   MedianAllVoters = 1
+   AvgMajorityVotersOnly = 2
+
 GAME_ID_INDEX = 0  # relates to index of value in main dictionary
 GAME_THRESHOLD = 5 # different to NBA (which is 3)
 H_OR_V_INDEX = 1  # relates to index of value in main dictionary
@@ -543,6 +548,15 @@ def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3,
     if era > era_cap:
         era = era_cap
     return era
+
+def calcMedian(probList):
+    sortedList = sorted(probList)
+    listLen = len(sortedList)
+    if listLen % 2 == 0:
+        median = (sortedList[listLen//2 - 1] + sortedList[listLen//2]) / 2
+    else:
+        median = sortedList[listLen//2]
+    return median   
 
 def calcAddFeatures(x, y):
     if x == MLB_dbvar.NO_DATA or y == MLB_dbvar.NO_DATA:
