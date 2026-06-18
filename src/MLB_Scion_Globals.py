@@ -49,6 +49,11 @@ class MiddleLineTypes(enum.Enum):
    Prob = 1
    Money = 2
 
+class StakeTypes(enum.Enum):
+   Unknown = 0
+   Flat = 1
+   Kelly = 2
+
 class ModelTypes(enum.Enum):
 	NN = 0
 	OLS = 1
@@ -242,6 +247,17 @@ def hasTaskTypeValue(usrValue):
 
 def hasTaskTypeName(usrName):
     validNames = set(item.name for item in TaskTypes)
+    return usrName in validNames
+
+def getStakeTypeName(stakeNo):
+    return StakeTypes(stakeNo).name
+
+def hasStakeTypeValue(usrValue):
+    validValues = set(item.value for item in StakeTypes)
+    return usrValue in validValues
+
+def hasStakeTypeName(usrName):
+    validNames = set(item.name for item in StakeTypes)
     return usrName in validNames
 
 def isOppSide(price1, price2):

@@ -67,6 +67,8 @@ class scionCFG:
 		self._cfg_sys_run_models_attrib = "SYS_RUN_MODELS"
 		self._cfg_sys_run_min_attrib = "SYS_RUN_MIN"
 		self._cfg_sys_run_max_attrib = "SYS_RUN_MAX"
+		self._cfg_sys_stake_mode_attrib = "SYS_STAKE_MODE"
+		self._cfg_sys_fract_kelly_attrib = "SYS_FRACT_KELLY"
 		self._cfg_sys_prob_models_attrib = "SYS_PROB_MODELS"
 		self._cfg_sys_prob_min_attrib = "SYS_PROB_MIN"
 		self._cfg_sys_prob_max_attrib = "SYS_PROB_MAX"
@@ -76,16 +78,16 @@ class scionCFG:
 		self._cfg_sys_prob_base_agreethresh_attrib = "SYS_PROB_BASE_AGREETHRESH"
 		self._cfg_sys_prob_minprice_attrib = "SYS_PROB_MINPRICE"
 		self._cfg_sys_prob_maxprice_attrib = "SYS_PROB_MAXPRICE"
-		self._cfg_sys_prob_pricegapcents_attrib = "SYS_PROB_PRICEGAP_CENTS"
+		self._cfg_sys_prob_edgepp_attrib = "SYS_PROB_EDGEPP_GAP"
 		self._cfg_sys_prob_bpvardp_attrib = "SYS_PROB_BPVARDP"
-		self._cfg_sys_prob_pm210_thresh_attrib = "SYS_PROB_PM210_MODELTHRESH"
-		self._cfg_sys_prob_pm210_bookie_min_attrib = "SYS_PROB_PM210_BOOKIE_MIN"
-		self._cfg_sys_prob_pm210_bookie_max_attrib = "SYS_PROB_PM210_BOOKIE_MAX"
-		self._cfg_sys_prob_pm210_agreethresh_attrib = "SYS_PROB_PM210_AGREETHRESH"
-		self._cfg_sys_prob_pm210_minprice_attrib = "SYS_PROB_PM210_MODEL_MIN"
-		self._cfg_sys_prob_pm210_maxprice_attrib = "SYS_PROB_PM210_MODEL_MAX"
-		self._cfg_sys_prob_pm210_pricegapcents_attrib = "SYS_PROB_PM210_PRICEGAP_CENTS"
-		self._cfg_sys_prob_pm210_bpvardp_attrib = "SYS_PROB_PM210_BPVARDP"
+		self._cfg_sys_prob_statsonly_thresh_attrib = "SYS_PROB_STATSONLY_MODELTHRESH"
+		self._cfg_sys_prob_statsonly_bookie_min_attrib = "SYS_PROB_STATSONLY_BOOKIE_MIN"
+		self._cfg_sys_prob_statsonly_bookie_max_attrib = "SYS_PROB_STATSONLY_BOOKIE_MAX"
+		self._cfg_sys_prob_statsonly_agreethresh_attrib = "SYS_PROB_STATSONLY_AGREETHRESH"
+		self._cfg_sys_prob_statsonly_minprice_attrib = "SYS_PROB_STATSONLY_MODEL_MINPRICE"
+		self._cfg_sys_prob_statsonly_maxprice_attrib = "SYS_PROB_STATSONLY_MODEL_MAXPRICE"
+		self._cfg_sys_prob_statsonly_edgepp_attrib = "SYS_PROB_STATSONLY_EDGEPP_GAP"
+		self._cfg_sys_prob_statsonly_bpvardp_attrib = "SYS_PROB_STATSONLY_BPVARDP"
 		self._cfg_sys_total_models_attrib = "SYS_TOTAL_MODELS"
 		self._cfg_sys_total_use_runmodel_attrib = "SYS_TOTAL_USERUNPRED" #if this is active, total_models will be set to 0 and the H and V run pred of RUN module will be used
 		self._cfg_sys_dog_history_limit = "SYS_DOG_HISTORY_LIMIT"
@@ -121,18 +123,20 @@ class scionCFG:
 										self._cfg_sys_prob_base_agreethresh_attrib, 
 										self._cfg_sys_prob_minprice_attrib,
 										self._cfg_sys_prob_maxprice_attrib,
-										self._cfg_sys_prob_pricegapcents_attrib,
+										self._cfg_sys_prob_edgepp_attrib,
 										self._cfg_sys_prob_bpvardp_attrib,
-										self._cfg_sys_prob_pm210_thresh_attrib,
-										self._cfg_sys_prob_pm210_bookie_min_attrib,
-										self._cfg_sys_prob_pm210_bookie_max_attrib,
-										self._cfg_sys_prob_pm210_agreethresh_attrib,
-										self._cfg_sys_prob_pm210_minprice_attrib,
-										self._cfg_sys_prob_pm210_maxprice_attrib,
-										self._cfg_sys_prob_pm210_pricegapcents_attrib,
-										self._cfg_sys_prob_pm210_bpvardp_attrib,
+										self._cfg_sys_prob_statsonly_thresh_attrib,
+										self._cfg_sys_prob_statsonly_bookie_min_attrib,
+										self._cfg_sys_prob_statsonly_bookie_max_attrib,
+										self._cfg_sys_prob_statsonly_agreethresh_attrib,
+										self._cfg_sys_prob_statsonly_minprice_attrib,
+										self._cfg_sys_prob_statsonly_maxprice_attrib,
+										self._cfg_sys_prob_statsonly_edgepp_attrib,
+										self._cfg_sys_prob_statsonly_bpvardp_attrib,
 										self._cfg_sys_run_min_attrib,
 										self._cfg_sys_run_max_attrib,
+										self._cfg_sys_stake_mode_attrib,
+										self._cfg_sys_fract_kelly_attrib,
 										self._cfg_sys_dog_history_limit,
 										self._cfg_sys_dog_winprice_threshold,
 										self._cfg_sys_hf_conf_attrib,
@@ -448,30 +452,34 @@ class scionCFG:
 	@property 
 	def cfg_sys_prob_maxprice_attrib(self): return self._cfg_sys_prob_maxprice_attrib 
 	@property 
-	def cfg_sys_prob_pricegapcents_attrib(self): return self._cfg_sys_prob_pricegapcents_attrib 
+	def cfg_sys_prob_edgepp_attrib(self): return self._cfg_sys_prob_edgepp_attrib 
 	@property 
 	def cfg_sys_prob_bpvardp_attrib(self): return self._cfg_sys_prob_bpvardp_attrib
 	@property
-	def cfg_sys_prob_pm210_thresh_attrib(self): return self._cfg_sys_prob_pm210_thresh_attrib
+	def cfg_sys_prob_statsonly_thresh_attrib(self): return self._cfg_sys_prob_statsonly_thresh_attrib
 	@property 
-	def cfg_sys_prob_pm210_bookie_min_attrib(self): return self._cfg_sys_prob_pm210_bookie_min_attrib
+	def cfg_sys_prob_statsonly_bookie_min_attrib(self): return self._cfg_sys_prob_statsonly_bookie_min_attrib
 	@property 
-	def cfg_sys_prob_pm210_bookie_max_attrib(self): return self._cfg_sys_prob_pm210_bookie_max_attrib 
+	def cfg_sys_prob_statsonly_bookie_max_attrib(self): return self._cfg_sys_prob_statsonly_bookie_max_attrib 
 	@property 
-	def cfg_sys_prob_pm210_agreethresh_attrib(self): return self._cfg_sys_prob_pm210_agreethresh_attrib 
+	def cfg_sys_prob_statsonly_agreethresh_attrib(self): return self._cfg_sys_prob_statsonly_agreethresh_attrib 
 	@property 
-	def cfg_sys_prob_pm210_minprice_attrib(self): return self._cfg_sys_prob_pm210_minprice_attrib 
+	def cfg_sys_prob_statsonly_minprice_attrib(self): return self._cfg_sys_prob_statsonly_minprice_attrib 
 	@property 
-	def cfg_sys_prob_pm210_maxprice_attrib(self): return self._cfg_sys_prob_pm210_maxprice_attrib 
+	def cfg_sys_prob_statsonly_maxprice_attrib(self): return self._cfg_sys_prob_statsonly_maxprice_attrib 
 	@property 
-	def  cfg_sys_prob_pm210_pricegapcents_attrib(self): return self._cfg_sys_prob_pm210_pricegapcents_attrib 
+	def  cfg_sys_prob_statsonly_edgepp_attrib(self): return self._cfg_sys_prob_statsonly_edgepp_attrib 
 	@property
-	def cfg_sys_prob_pm210_bpvardp_attrib(self): return self._cfg_sys_prob_pm210_bpvardp_attrib
+	def cfg_sys_prob_statsonly_bpvardp_attrib(self): return self._cfg_sys_prob_statsonly_bpvardp_attrib
 	@property 
 	def  cfg_sys_run_min_attrib(self): return self._cfg_sys_run_min_attrib 
 	@property 
 	def  cfg_sys_run_max_attrib(self): return self._cfg_sys_run_max_attrib 
 	@property 
+	def  cfg_sys_stake_mode_attrib(self): return self._cfg_sys_stake_mode_attrib 
+	@property 
+	def  cfg_sys_fract_kelly_attrib(self): return self._cfg_sys_fract_kelly_attrib 
+	@property
 	def  cfg_sys_dog_history_limit(self): return self._cfg_sys_dog_history_limit
 	@property
 	def  cfg_sys_dog_winprice_threshold(self): return self._cfg_sys_dog_winprice_threshold
@@ -597,29 +605,33 @@ class scionCFG:
 	def getSysProbAbsPriceLimit(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_base_abspricelimit_attrib]
 	def getSysProbPriceGapCents(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pricegapcents_attrib]
+		return self._cfg_variable_settings[self.cfg_sys_prob_edgepp_attrib]
 	def getSysProbBPVarDP(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_bpvardp_attrib]
-	def getSysProbPM210Thresh(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pm210_thresh_attrib]
-	def getSysProbPM210BookieMin(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pm210_bookie_min_attrib]
-	def getSysProbPM210BookieMax(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pm210_bookie_max_attrib]
-	def getSysProbPM210AgreeThresh(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pm210_agreethresh_attrib]
-	def getSysProbPM210ModelMin(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pm210_minprice_attrib]
-	def getSysProbPM210ModelMax(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pm210_maxprice_attrib]
-	def getSysProbPM210PriceGapCents(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pm210_pricegapcents_attrib]
-	def getSysProbPM210BPVarDP(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_pm210_bpvardp_attrib]
+	def getSysProbSTATSONLYThresh(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_thresh_attrib]
+	def getSysProbSTATSONLYBookieMin(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_bookie_min_attrib]
+	def getSysProbSTATSONLYBookieMax(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_bookie_max_attrib]
+	def getSysProbSTATSONLYAgreeThresh(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_agreethresh_attrib]
+	def getSysProbSTATSONLYModelMin(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_minprice_attrib]
+	def getSysProbSTATSONLYModelMax(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_maxprice_attrib]
+	def getSysProbSTATSONLYPriceGapCents(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_edgepp_attrib]
+	def getSysProbSTATSONLYBPVarDP(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_bpvardp_attrib]
 	def getSysRunMin(self):
 		return self._cfg_variable_settings[self.cfg_sys_run_min_attrib]
 	def getSysRunMax(self):
 		return self._cfg_variable_settings[self.cfg_sys_run_max_attrib]
+	def getSysStakeMode(self):
+		return self._cfg_variable_settings[self.cfg_sys_stake_mode_attrib]
+	def getSysKellyFract(self):
+		return self._cfg_variable_settings[self.cfg_sys_fract_kelly_attrib]
 	def getSysDogHistoryLimit(self):
 		return self._cfg_variable_settings[self.cfg_sys_dog_history_limit]
 	def getSysDogWinLossPriceThres(self):
