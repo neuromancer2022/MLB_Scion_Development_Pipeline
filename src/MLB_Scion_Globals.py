@@ -99,6 +99,8 @@ SLEEPLEN = 3
 VIS_VIG_PRICE_PERC = 5
 OPT_MEDIAN = 8.5
 DEFAULT_SPAN_CENTS = 5
+DEFAULT_FLAT_STAKE_UNITS = 1.0
+DEFAULT_FRACT_KELLY = 0.25
 BOOKIEPROBADJVAL = 0.15
 BOOKIETOTADJVAL = 3.0
 AVG_H = "H"
@@ -139,8 +141,8 @@ ACTION_LINE_POS = "+"
 ACTION_LINE_NEG = "-"
 ACTION_LINE_ZERO = "0"
 MODEL_PRED_SEPARATOR = " "
-MODEL_PROBENS1 = "PM150"
-MODEL_PROBENS2 = "PM210"
+MODEL_PROBENS1 = "LINESTAT_PM150"
+MODEL_PROBENS2 = "STATONLY_PM150"
 MODEL_TOTALENS = "TOTALENS"
 MODEL_PROBENS = [MODEL_PROBENS1, MODEL_PROBENS2]
 HISTORY_LENGTHS = [5,10, 20, 365]
@@ -179,40 +181,42 @@ messageOPLAdjusted = "Moneyline is a SPAN value. "
 messageGameHomePitcherNoData = "H_SP is Null, team-based avg used. "
 messageGameVisPitcherNoData = "V_SP is Null, team-based avg used. "
 #Ensemble play determination messages
-messageScionNoVFPlay = "VF plays are disabled. "
+messageScionNoVFPlay = "VF plays are disallowed. "
 messageScionEnsNoFavePlay = "Fave plays are disallowed. "
-messageScionEns1Play = "Play determined by Ens1 only. "
-messageScionEns2Play = "Play determined by Ens2 only. "
-messageScionEns1n2Play = "Play determined by Ens1 and Ens2 agreement. "
-messageScionEns1n2Disagree = "No play as Ens1 and Ens2 have conflicting positions. "
+messageScionEns1Play = "Play determined by LineStatEns only. "
+messageScionEns2Play = "Play determined by StatOnlyEns only. "
+messageScionEns1n2Play = "Play determined by LineStatEns and StatOnlyEns agreement. "
+messageScionEns1n2Disagree = "No play as LineStatEns and StatOnlyEns disagree. "
 #Ensemble majority vote and price DISAGREE messages
-messageScionEns1PricePlayMismatch = "Ens1 price diagrees with Ens1 majority vote! "
-messageScionEns2PricePlayMismatch = "Ens2 price diagrees with Ens2 majority vote! "
-#Ensemble price not exceed gap
-messageScionEns1GapNotExceeded = "Ens1 price does not exceed cent_gap constraint! "
-messageScionEns2GapNotExceeded = "Ens2 price does not exceed cent_gap constraint! "
+messageScionEns1PricePlayMismatch = "LineStatEns price diagrees with LineStatEns majority vote! "
+messageScionEns2PricePlayMismatch = "StatOnlyEns price diagrees with StatOnlyEns majority vote! "
+#Ensemble probability-based restrictions
+messageScionEns1GapNotExceeded = "LineStatEns probability points gap does not exceed threshold (no edge found)! "
+messageScionEns1GapAgainstVote = "LineStatEns probability points gap exceeded but against its vote! "
+messageScionEns2GapNotExceeded = "StatOnlyEns probability points gap does not exceed threshold (no edge found)! "
+messageScionEns2GapAgainstVote = "StatOnlyEns probability points gap exceeded but against its vote! "
 #Ensemble price outside allowable range
-messageScionEns1OutsideRange = "Ens1 price is outside allowable range! "
-messageScionEns2OutsideRange = "Ens2 price is outside allowable range! "
+messageScionEns1OutsideRange = "LineStatEns price is outside allowable range! "
+messageScionEns2OutsideRange = "StatOnlyEns price is outside allowable range! "
 #Ensemble ignored due to either outside bookieline constraints 
-messageScionEns1BookieOutsideRange = "Ens1 is NoPlay as bookie-line outside range. "
-messageScionEns2BookieOutsideRange = "Ens2 is NoPlay as bookie-line outside range. "
-messageScionEns2NoFavePlay = "Ens2 is NoPlay as bookie-line outside range for Fave play. "
+messageScionEns1BookieOutsideRange = "LineStatEns is NoPlay as bookie-line outside range. "
+messageScionEns2BookieOutsideRange = "StatOnlyEns is NoPlay as bookie-line outside range. "
+messageScionEns2NoFavePlay = "StatOnlyEns is NoPlay as bookie-line outside range for Fave play. "
 #Ensemble ignored due to voter agreement threshold not satisfied
-messageScionEns1InsufficientVoters = "Ens1 is NoPlay due to insufficient voter agreement. "
-messageScionEns2InsufficientVoters = "Ens2 is NoPlay due to insufficient voter agreement. "
+messageScionEns1InsufficientVoters = "LineStatEns is NoPlay due to insufficient voter agreement. "
+messageScionEns2InsufficientVoters = "StatOnlyEns is NoPlay due to insufficient voter agreement. "
 #No play due to Null Pitcher
 messageScionNullHSP = "NoPlay as H_SP is Null. "
 messageScionNullVSP = "NoPlay as V_SP is Null. "
 messageScionNullBothSP = "NoPlay as BOTH H_SP and V_SP are Null. "
 #No play due to H or V price evaluating to an abs value within 0 to 99
-messageScionInvalidTeamPrice = "Ens2 is NoPlay due to an invalid bookie team price being calculated. Game skipped! "
+messageScionInvalidTeamPrice = "StatOnlyEns is NoPlay due to an invalid bookie team price being calculated. Game skipped! "
 #unknown
 messageScionEnsUnknownEnsemble = "Unknown ensemble. "
 #default DOG play   
 messageScionDefaultDogPlay = "Default dog play! "
 messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not met! "
-messageScionEns2MajorityVoteDogPlay = "Ens2 Majority Vote Dog play! "
+messageScionEns2MajorityVoteDogPlay = "StatOnlyEns Majority Vote Dog play! "
 
 def setColType(df, col_list, col_type):
     try:
@@ -365,6 +369,17 @@ def validTeamPrice(teamPrice):
         return True
     else:
         return False
+    
+def calcDeVigProb(bookieHProb, bookieVProb, h_or_v):
+    _totalProb = bookieHProb + bookieVProb
+    deVigProb = 0.5
+    if _totalProb != 0:
+        if h_or_v == HOME:
+            deVigProb = bookieHProb / _totalProb
+        else:
+            deVigProb = bookieVProb / _totalProb
+
+    return deVigProb
 
 def punctuateComment(strComment):
     _punct = ". "
