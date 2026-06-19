@@ -72,9 +72,10 @@ class scionCFG:
 		self._cfg_sys_prob_models_attrib = "SYS_PROB_MODELS"
 		self._cfg_sys_prob_min_attrib = "SYS_PROB_MIN"
 		self._cfg_sys_prob_max_attrib = "SYS_PROB_MAX"
-		self._cfg_sys_prob_thresh_attrib = "SYS_PROB_MODELTHRESH"
 		self._cfg_sys_prob_ensprob_type_attrib = "SYS_PROB_ENSPROB_TYPE" # options defined in MLB_global.EnsembleProbabilityTypes
-		self._cfg_sys_prob_base_abspricelimit_attrib = "SYS_PROB_BASE_ABSPRICE_LIMIT"
+		self._cfg_sys_prob_base_thresh_attrib = "SYS_PROB_BASE_MODELTHRESH"
+		self._cfg_sys_prob_base_bookie_min_attrib = "SYS_PROB_BASE_BOOKIE_MIN"
+		self._cfg_sys_prob_base_bookie_max_attrib = "SYS_PROB_BASE_BOOKIE_MAX"
 		self._cfg_sys_prob_base_agreethresh_attrib = "SYS_PROB_BASE_AGREETHRESH"
 		self._cfg_sys_prob_minprice_attrib = "SYS_PROB_MINPRICE"
 		self._cfg_sys_prob_maxprice_attrib = "SYS_PROB_MAXPRICE"
@@ -117,9 +118,10 @@ class scionCFG:
 										self._cfg_sys_prob_models_attrib,
 										self._cfg_sys_prob_min_attrib,
 										self._cfg_sys_prob_max_attrib,
-										self._cfg_sys_prob_thresh_attrib,
+										self._cfg_sys_prob_base_thresh_attrib,
 										self._cfg_sys_prob_ensprob_type_attrib,
-										self._cfg_sys_prob_base_abspricelimit_attrib,
+										self._cfg_sys_prob_base_bookie_min_attrib,
+										self._cfg_sys_prob_base_bookie_max_attrib,
 										self._cfg_sys_prob_base_agreethresh_attrib, 
 										self._cfg_sys_prob_minprice_attrib,
 										self._cfg_sys_prob_maxprice_attrib,
@@ -440,11 +442,13 @@ class scionCFG:
 	@property 
 	def cfg_sys_prob_max_attrib(self): return self._cfg_sys_prob_max_attrib 
 	@property 
-	def cfg_sys_prob_thresh_attrib(self): return self._cfg_sys_prob_thresh_attrib 
+	def cfg_sys_prob_base_thresh_attrib(self): return self._cfg_sys_prob_base_thresh_attrib 
 	@property 
 	def cfg_sys_prob_ensprob_type_attrib(self): return self._cfg_sys_prob_ensprob_type_attrib
 	@property 
-	def cfg_sys_prob_base_abspricelimit_attrib(self): return self._cfg_sys_prob_base_abspricelimit_attrib 
+	def cfg_sys_prob_base_bookie_min_attrib(self): return self._cfg_sys_prob_base_bookie_min_attrib 
+	@property 
+	def cfg_sys_prob_base_bookie_max_attrib(self): return self._cfg_sys_prob_base_bookie_max_attrib 
 	@property 
 	def cfg_sys_prob_base_agreethresh_attrib(self): return self._cfg_sys_prob_base_agreethresh_attrib 
 	@property 
@@ -593,7 +597,7 @@ class scionCFG:
 	def getSysProbMax(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_max_attrib]
 	def getSysProbThresh(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_thresh_attrib]
+		return self._cfg_variable_settings[self.cfg_sys_prob_base_thresh_attrib]
 	def getSysProbEnsProbType(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_ensprob_type_attrib]
 	def getSysProbMinPrice(self):
@@ -602,9 +606,11 @@ class scionCFG:
 		return self._cfg_variable_settings[self.cfg_sys_prob_maxprice_attrib]
 	def getSysProbAgreeThresh(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_base_agreethresh_attrib]
-	def getSysProbAbsPriceLimit(self):
-		return self._cfg_variable_settings[self.cfg_sys_prob_base_abspricelimit_attrib]
-	def getSysProbPriceGapCents(self):
+	def getSysProbBookieMin(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_base_bookie_min_attrib]
+	def getSysProbBookieMax(self):
+		return self._cfg_variable_settings[self.cfg_sys_prob_base_bookie_max_attrib]
+	def getSysProbPointsGap(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_edgepp_attrib]
 	def getSysProbBPVarDP(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_bpvardp_attrib]
@@ -620,7 +626,7 @@ class scionCFG:
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_minprice_attrib]
 	def getSysProbSTATSONLYModelMax(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_maxprice_attrib]
-	def getSysProbSTATSONLYPriceGapCents(self):
+	def getSysProbSTATSONLYPointsGap(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_edgepp_attrib]
 	def getSysProbSTATSONLYBPVarDP(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_bpvardp_attrib]

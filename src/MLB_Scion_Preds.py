@@ -1356,7 +1356,7 @@ class scionPREDS:
 					else:
 						avgHomProb = 1 - avgProb
 
-				if ens == MLB_global.MODEL_PROBENS1: #V25.06a: active V113PM210)
+				if ens == MLB_global.MODEL_PROBENS1: 
 					self.setPreds_Ens1_HWinProb(avgHomProb)
 					self.setPreds_Ens1_HProbabilityEdge(round(float(avgHomProb - hDevigProb),5))
 					self.setPreds_Ens1_HWinPrice(MLB_global.convertProbtoMoneyLine(avgHomProb))
@@ -1364,7 +1364,7 @@ class scionPREDS:
 					self.setPreds_Ens1_PlayPosition(majorityVote) #This might change to No Play if CLL thresholds are not met
 					self.setPreds_Ens1_NumVoters(numVoters)
 					self.setPreds_Ens1_VoteAgreement(round(float(majorityWgt/numVoters),2))
-				elif ens == MLB_global.MODEL_PROBENS2: #V25.06a: active V113PM210)
+				elif ens == MLB_global.MODEL_PROBENS2: 
 					self.setPreds_Ens2_HWinProb(avgHomProb)
 					self.setPreds_Ens2_HProbabilityEdge(round(float(avgHomProb - hDevigProb),5))
 					self.setPreds_Ens2_HWinPrice(MLB_global.convertProbtoMoneyLine(avgHomProb))
