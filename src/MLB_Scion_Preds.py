@@ -804,7 +804,6 @@ class scionPREDS:
 		_day = _gameDate.day
 		self.setPreds_date(_gameDate)
 		self.setPreds_monthweek(MLB_dbvar.createMonthWeek(_month, _day))
-		self.setPreds_Bookie_Total(mupsDB.getCurrentMUPOverClose())
 		_hPrice = mupsDB.getCurrentMUPHomeMLOpen()
 		_vPrice = mupsDB.getCurrentMUPVisMLOpen()
 		_hProb = MLB_global.convertMoneyLinetoProb(_hPrice)
@@ -817,8 +816,8 @@ class scionPREDS:
 		_vPrice = mupsDB.getCurrentMUPVisMLClose()
 		_hProb = MLB_global.convertMoneyLinetoProb(_hPrice)
 		_vProb = MLB_global.convertMoneyLinetoProb(_vPrice)
-		_bookiePerHold = MLB_global.calcPercBookieHold(_hProb,_vProb) * 100
-		self.setPreds_Bookie_PercHold = _bookiePerHold
+		_bookiePerHold = f"{round(MLB_global.calcPercBookieHold(_hProb,_vProb) * 100):.1f}"
+		self.setPreds_Bookie_PercHold(_bookiePerHold)
 		self.setPreds_V_Bookie_Bet_Price(_vPrice)
 		self.setPreds_V_Bookie_Bet_Prob(_vProb)
 		self.setPreds_H_Bookie_Bet_Price(_hPrice)
