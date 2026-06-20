@@ -735,11 +735,11 @@ def getStakeMultiplier(hBookiePrice, vBookiePrice, ensMajorityVote):
                 _stakeMultiplier = vBookiePrice/100
     return round(_stakeMultiplier, 3)
     
-def getStakeAmount(stakeModel, kellyFrac, hBookiePrice, ensHProb, ensPos, stakeMultiplier):
+def getStakeAmount(stakeMode, kellyFrac, hBookiePrice, ensHProb, ensPos, stakeMultiplier):
     _stakeAmount = 0.0
-    if stakeModel == StakeTypes.Flat.value:
+    if stakeMode == StakeTypes.Flat.value:
         _stakeAmount = DEFAULT_FLAT_STAKE_UNITS
-    elif stakeModel == StakeTypes.Kelly.value:
+    elif stakeMode == StakeTypes.Kelly.value:
         _kellyStake = 0.0
         if ensPos == ACTION_LINE_HF or ensPos == ACTION_LINE_HD:
             _kellyStake = kellyFrac * max(0, ensHProb - (1-ensHProb)/stakeMultiplier)

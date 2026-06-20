@@ -142,11 +142,11 @@ def getG2Position(probThresh, bookieHMLine, bookieVMLine, modelProb):
 def getEnsBPFeatureDP(modelCfg):
     bpvardp = 10 #default
     ens = modelCfg.getCurrentTaskModelEnsemble()
-    if ens == MLB_global.MODEL_PROBENS1: #PM150
+    if ens == MLB_global.MODEL_PROBENS1: 
         bpvardp = int(modelCfg.getSysProbBPVarDP())
     else:
-        if ens == MLB_global.MODEL_PROBENS2: #PM210
-            bpvardp = int(modelCfg.getSysProbPM210BPVarDP())
+        if ens == MLB_global.MODEL_PROBENS2: 
+            bpvardp = int(modelCfg.getSysProbSTATSONLYBPVarDP())
     
     return bpvardp
 
@@ -214,8 +214,8 @@ def validateEnsemblePosition(ens, hBookiePrice, hDevigProb, vBookiePrice, vDevig
                             #check if model price meets gap constraint
                             if ensProbPointsEdge >=  ensProbEdgeThreshold:
                                 ensPosition = ensMajorityVote
-                                ensPlay = True
                             else:
+                                ensPlay = False
                                 if ens == MLB_global.MODEL_PROBENS1:
                                     predsObj.addComment(MLB_global.messageScionEns1GapNotExceeded)
                                 else:
@@ -224,13 +224,14 @@ def validateEnsemblePosition(ens, hBookiePrice, hDevigProb, vBookiePrice, vDevig
                             #check if live dog and within dog constraint
                             if ensProbPointsEdge <= (-1 * ensProbEdgeThreshold):
                                 ensPosition = ensMajorityVote
-                                ensPlay = True
                             else:
+                                ensPlay = False
                                 if ens == MLB_global.MODEL_PROBENS1:
                                     predsObj.addComment(MLB_global.messageScionEns1GapNotExceeded)
                                 else:
                                     predsObj.addComment(MLB_global.messageScionEns2GapNotExceeded)
                     else:
+                        ensPlay = False
                         if ens == MLB_global.MODEL_PROBENS1:
                             predsObj.addComment(MLB_global.messageScionEns1OutsideRange)
                         else:
@@ -249,17 +250,19 @@ def validateEnsemblePosition(ens, hBookiePrice, hDevigProb, vBookiePrice, vDevig
                         if ensMajorityVote == MLB_global.ACTION_LINE_VF:
                             #disabled VF plays
                             predsObj.addComment(MLB_global.messageScionNoVFPlay)
+                            ensPlay = False
                         else:
                             #check if live dog and within dog constraint
                             if ensProbPointsEdge >=  ensProbEdgeThreshold:
                                 ensPosition = ensMajorityVote
-                                ensPlay = True
                             else:
+                                ensPlay = False
                                 if ens == MLB_global.MODEL_PROBENS1:
                                     predsObj.addComment(MLB_global.messageScionEns1GapNotExceeded)
                                 else:
                                     predsObj.addComment(MLB_global.messageScionEns2GapNotExceeded)
                     else:
+                        ensPlay = False
                         if ens == MLB_global.MODEL_PROBENS1:
                             predsObj.addComment(MLB_global.messageScionEns1OutsideRange)
                         else:
@@ -309,11 +312,11 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         _scionPOS = MLB_global.ACTION_NOPLAY
         _scionCONF = _scionMultiplier = _scionStake = _scionEdge = 0.0
         _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-        _stakeModel = sysCfgObj.getSysStakeModel()
-        _kellyFrac = float(sysCfgObj.getSysKellyFraction())
+        _stakeMode = int(sysCfgObj.getSysStakeMode())
+        _kellyFrac = float(sysCfgObj.getSysKellyFract())
         #ens1 pm150 Line and Stat ens
-        _ens1BookieMax = round(float(sysCfgObj.getSysProbBaseBookieMin()))
-        _ens1BookieMin = round(float(sysCfgObj.getSysProbBaseBookieMax()))
+        _ens1BookieMin = round(float(sysCfgObj.getSysProbBookieMin()))
+        _ens1BookieMax = round(float(sysCfgObj.getSysProbBookieMax()))
         _ens1PriceMin = float(sysCfgObj.getSysProbMinPrice())
         _ens1PriceMax = float(sysCfgObj.getSysProbMaxPrice())
         _ens1AgreeThreshold = float(sysCfgObj.getSysProbAgreeThresh())
@@ -382,10 +385,10 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         #Ens stake and multiplier
         if _ens1ThreshPlay:
             _ens1Multiplier = MLB_global.getStakeMultiplier(_hBookiePrice, _vBookiePrice, _ens1MajorityVote)
-            _ens1Stake = MLB_global.getStakeAmount(_stakeModel, _kellyFrac, _hBookiePrice, _ens1HProb, _ens1MajorityVote, _ens1Multiplier)
+            _ens1Stake = MLB_global.getStakeAmount(_stakeMode, _kellyFrac, _hBookiePrice, _ens1HProb, _ens1MajorityVote, _ens1Multiplier)
         if _ens2ThreshPlay:
             _ens2Multiplier = MLB_global.getStakeMultiplier(_hBookiePrice, _vBookiePrice, _ens2MajorityVote)
-            _ens2Stake = MLB_global.getStakeAmount(_stakeModel, _kellyFrac, _hBookiePrice, _ens2HProb, _ens2MajorityVote, _ens2Multiplier)
+            _ens2Stake = MLB_global.getStakeAmount(_stakeMode, _kellyFrac, _hBookiePrice, _ens2HProb, _ens2MajorityVote, _ens2Multiplier)
         predsObj.setPreds_Ens1_PlayPayoutMultiplier(_ens1Multiplier)
         predsObj.setPreds_Ens1_PlayStake(_ens1Stake)
         predsObj.setPreds_Ens2_PlayPayoutMultiplier(_ens2Multiplier)

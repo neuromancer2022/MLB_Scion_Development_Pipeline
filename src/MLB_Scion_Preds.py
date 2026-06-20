@@ -60,9 +60,9 @@ class scionPREDS:
 		self._preds_V_Offense_Price_attrib = "V_MenOnBaseStrengthYTD_Price"
 		self._preds_V_Offense_strPrice_attrib = "V_MenOnBaseStrengthYTD_strPrice"
 		self._preds_V_Offense_StrengthCategory_attrib = "V_MenOnBaseStrengthYTD_StrengthCategory"
-		self._preds_V_Defense_Price_attrib = "V_SP_BaseOnBallsStrikeout5G_Price"
-		self._preds_V_Defense_strPrice_attrib = "V_SP_BaseOnBallsStrikeout5G_strPrice"
-		self._preds_V_Defense_StrengthCategory_attrib = "V_SP_BaseOnBallsStrikeout5G_StrengthCategory"
+		self._preds_V_Defense_Price_attrib = "V_SP_Strikeouts_YTD_Price"
+		self._preds_V_Defense_strPrice_attrib = "V_SP_Strikeouts_YTD_strPrice"
+		self._preds_V_Defense_StrengthCategory_attrib = "V_SP_Strikeouts_YTD_StrengthCategory"
 		self._preds_H_Id_attrib = "H_Id"
 		self._preds_H_Sname_attrib = "H_Team"
 		self._preds_H_Bookie_Opening_Price_attrib = "H_Bookie_Opening_Price"
@@ -76,9 +76,9 @@ class scionPREDS:
 		self._preds_H_Offense_Price_attrib = "H_MenOnBaseStrengthYTD_Price"
 		self._preds_H_Offense_strPrice_attrib = "H_MenOnBaseStrengthYTD_strPrice"
 		self._preds_H_Offense_StrengthCategory_attrib = "H_MenOnBaseStrengthYTD_StrengthCategory"
-		self._preds_H_Defense_Price_attrib = "H_SP_BaseOnBallsStrikeout5G_Price"
-		self._preds_H_Defense_strPrice_attrib = "H_SP_BaseOnBallsStrikeout5G_strPrice"
-		self._preds_H_Defense_StrengthCategory_attrib = "H_SP_BaseOnBallsStrikeout5G_StrengthCategory"
+		self._preds_H_Defense_Price_attrib = "H_SP_Strikeouts_YTD_Price"
+		self._preds_H_Defense_strPrice_attrib = "H_SP_Strikeouts_YTD_strPrice"
+		self._preds_H_Defense_StrengthCategory_attrib = "H_SP_Strikeouts_YTD_StrengthCategory"
 		self._preds_Ens1_VoterProfile_attrib = "PM150LineStat_VoterProfile"
 		self._preds_Ens1_MajorityVote_attrib = "PM150LineStat_MajorityVote"
 		self._preds_Ens1_NumVoters_attrib = "PM150LineStat_NumVoters"
@@ -100,7 +100,7 @@ class scionPREDS:
 		self._preds_Ens2_PlayStake_attrib = "PM150StatOnly_PlayStake"
 		self._preds_Ens2_PlayPayoutMultiplier_attrib = "PM150StatOnly_PlayPayoutMultiplier"
 		self._preds_Scion_Side_Position_attrib = "Scion_Side_Play_Position"
-		self._preds_Scion_Side_HProbabilityEdge_attrib = "PM150StatOnly_H_ProbabilityEdge"
+		self._preds_Scion_Side_HProbabilityEdge_attrib = "Scion_H_ProbabilityEdge"
 		self._preds_Scion_Side_PlayStake_attrib = "Scion_Side_Play_Stake"
 		self._preds_Scion_Side_PlayPayoutMultiplier_attrib = "Scion_Side_Play_PayoutMultiplier"
 		self._preds_Scion_Side_Stars_attrib = "Scion_Side_Stars"
@@ -820,8 +820,12 @@ class scionPREDS:
 		self.setPreds_Bookie_PercHold(_bookiePerHold)
 		self.setPreds_V_Bookie_Bet_Price(_vPrice)
 		self.setPreds_V_Bookie_Bet_Prob(_vProb)
+		devigProb = MLB_global.calcDeVigProb(_hProb, _vProb, h_or_v=MLB_global.VISITOR)
+		self.setPreds_V_Bookie_Bet_DevigProb(devigProb)
 		self.setPreds_H_Bookie_Bet_Price(_hPrice)
 		self.setPreds_H_Bookie_Bet_Prob(_hProb)
+		devigProb = MLB_global.calcDeVigProb(_hProb, _vProb, h_or_v=MLB_global.HOME)
+		self.setPreds_H_Bookie_Bet_DevigProb(devigProb)
 		self.setPreds_V_Id(mupsDB.getCurrentMUPVisId())
 		self.setPreds_V_Sname(mupsDB.getCurrentMUPVisSName())
 		self.setPreds_V_SP_Id(mupsDB.getCurrentMUPVisSPId())
