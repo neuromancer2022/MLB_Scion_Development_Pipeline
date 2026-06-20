@@ -668,6 +668,7 @@ def getModelResponse(sysCfgObj, transGameObj):
     return success
 
 def _getStrengthValueAndCategory(dgenObj, fieldName, stats_df, avgIndex, stdevIndex, flipCategory=False):
+    # Note Higher value doesnt necessarily mean good hence the flip option (although I dont like this old sloppy programming and it needs to go)
     _strValue = _avgVal = _stdeVal = 0.0
     _strCateg = ""
     #a. get strength value
@@ -700,23 +701,23 @@ def updatePredsWithStrPriceCateg(dgenObj, predsObj, sysCfgObj):
     _strValue = _strPrice = 0.0
     _strCateg = ""
     #c. Update team-based Offense strength values and categories
-    _fieldName = MLB_dbvar.dbvar_V_MenOnBase_Strength_20G
+    _fieldName = MLB_dbvar.dbvar_V_MenOnBase_Strength_YTD
     _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex)
     predsObj.setPreds_V_Offense_StrengthCategory(_strCateg)
     _strPrice = predsObj.getPreds_V_OffensePrice()
     predsObj.setPreds_V_OffenseStrPrice(_annotatePrice(_strPrice, _strCateg))
-    _fieldName = MLB_dbvar.dbvar_H_MenOnBase_Strength_20G
+    _fieldName = MLB_dbvar.dbvar_H_MenOnBase_Strength_YTD
     _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex)
     predsObj.setPreds_H_Offense_StrengthCategory(_strCateg)
     _strPrice = predsObj.getPreds_H_OffensePrice()
     predsObj.setPreds_H_OffenseStrPrice(_annotatePrice(_strPrice, _strCateg))
     #d. Update team-based Defense/Pitcher strength values and categories
-    _fieldName = MLB_dbvar.dbvar_V_StartingPitcher_BaseOnBallsStrikeouts_Ratio_5G
-    _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex, True)
+    _fieldName = MLB_dbvar.dbvar_G_VHRatio_StartingPitcher_Strikeouts_YTD
+    _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex)
     predsObj.setPreds_V_DefenseStrengthCategory(_strCateg)
     _strPrice = predsObj.getPreds_V_DefensePrice()
     predsObj.setPreds_V_DefenseStrPrice(_annotatePrice(_strPrice, _strCateg))
-    _fieldName = MLB_dbvar.dbvar_H_StartingPitcher_BaseOnBallsStrikeouts_Ratio_5G
+    _fieldName = MLB_dbvar.dbvar_G_VHRatio_StartingPitcher_Strikeouts_YTD
     _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex, True)
     predsObj.setPreds_H_DefenseStrengthCategory(_strCateg)
     _strPrice = predsObj.getPreds_H_DefensePrice()
@@ -732,12 +733,13 @@ def updatePredsWithdGEN(dgenObj, predsObj, sysCfgObj):
     predsObj.setPreds_monthweek(dgenObj._currentgame_df[MLB_dbvar.dbvar_G_MonthWeek].values[0])
     #b. Team-based Offense and Defense prices 
     predsObj.setPreds_H_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_H_MenOnBase_Strength_YTD].values[0]))
-    predsObj.setPreds_H_DefensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_StrikeoutAccuracy_YTD].values[0]))
+    predsObj.setPreds_H_DefensePrice(MLB_global.convertProbtoMoneyLine(1 - dgenObj._currentgame_df[MLB_dbvar.dbvar_G_VHRatio_StartingPitcher_Strikeouts_YTD].values[0]))
     predsObj.setPreds_V_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_V_MenOnBase_Strength_YTD].values[0]))
-    predsObj.setPreds_V_DefensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_StrikeoutAccuracy_YTD].values[0]))
+    predsObj.setPreds_V_DefensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_G_VHRatio_StartingPitcher_Strikeouts_YTD].values[0]))
     predsObj = updatePredsWithStrPriceCateg(dgenObj, predsObj, sysCfgObj)
     #c. Initialise prediction vars
     predsObj.setPreds_Ens1_PlayPosition(MLB_global.ACTION_NOPLAY)
+    predsObj.setPreds_Ens2_PlayPosition(MLB_global.ACTION_NOPLAY)
     predsObj.setPreds_Scion_Side_Position(MLB_global.ACTION_NOPLAY)    
     
     return predsObj
