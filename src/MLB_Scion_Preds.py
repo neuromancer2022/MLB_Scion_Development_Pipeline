@@ -46,7 +46,7 @@ class scionPREDS:
 		self._preds_Id_attrib = "Pred_Id"
 		self._preds_date_attrib = "Date"
 		self._preds_MonthWeekNum_attrib = "MonthWeekNum"
-		self._preds_Bookie_Total_attrib = "BookieTotal"
+		self._preds_Bookie_PercHold_attrib = "Bookie_Perc_Hold"
 		self._preds_V_Id_attrib = "V_Id"
 		self._preds_V_Sname_attrib = "V_Team"
 		self._preds_V_Bookie_Opening_Price_attrib = "V_Bookie_Opening_Price"
@@ -100,6 +100,9 @@ class scionPREDS:
 		self._preds_Ens2_PlayStake_attrib = "PM150StatOnly_PlayStake"
 		self._preds_Ens2_PlayPayoutMultiplier_attrib = "PM150StatOnly_PlayPayoutMultiplier"
 		self._preds_Scion_Side_Position_attrib = "Scion_Side_Play_Position"
+		self._preds_Scion_Side_HProbabilityEdge_attrib = "PM150StatOnly_H_ProbabilityEdge"
+		self._preds_Scion_Side_PlayStake_attrib = "Scion_Side_Play_Stake"
+		self._preds_Scion_Side_PlayPayoutMultiplier_attrib = "Scion_Side_Play_PayoutMultiplier"
 		self._preds_Scion_Side_Stars_attrib = "Scion_Side_Stars"
 		self._preds_Scion_Side_Confidence_attrib = "Scion_Side_Play_Confidence"
 		self._preds_Comments_attrib = "Comments"
@@ -111,9 +114,11 @@ class scionPREDS:
 		self._preds_iPos_H_Bookie_Bet_Price_attrib = "HLINE"
 		self._preds_iPos_Defense_HPrice_attrib = "DEF_H"
 		self._preds_iPos_Offense_HPrice_attrib = "OFF_H"
-		self._preds_iPos_Ens1_HPrice_attrib = "ENS_PM150LineStat_HPrice"
-		self._preds_iPos_Ens2_HPrice_attrib = "ENS_PM150StatOnly_HPrice"
+		self._preds_iPos_Ens1_HPrice_attrib = "ENS_LineStat_HPrice"
+		self._preds_iPos_Ens2_HPrice_attrib = "ENS_StatOnly_HPrice"
 		self._preds_iPos_Scion_Play_attrib = "PRED"
+		self._preds_iPos_Scion_HProbEdge_attrib = "PRED_HPROB_EDGE"
+		self._preds_iPos_Scion_PlayPayoutMultiplier_attrib = "PRED_PAYOUTMULTIPLER"
 		self._preds_iPos_Comments_attrib = "NOTES"
 
 		self._preds_iPlay_GId_attrib = "Game_Id"
@@ -124,6 +129,8 @@ class scionPREDS:
 		self._preds_iPlay_Offense_HPrice_attrib = "OFF_hPrice"
 		self._preds_iPlay_Ens1_HPrice_attrib = "ENS_PM150LineStat_HPrice"
 		self._preds_iPlay_Ens2_HPrice_attrib = "ENS_PM150StatOnly_HPrice"
+		self._preds_iPlay_HPRobEdge_attrib = "ScionHProbEdge"
+		self._preds_iPlay_PlayPayoutMultiplier_attrib = "ScionPayoutMultiplier"
 		self._preds_iPlay_Confidence_attrib = "ScionConf"
 		self._preds_ePlay_GId_attrib = "Game_Id"
 		self._preds_ePlay_Team_Sname_attrib = "Team"
@@ -135,7 +142,7 @@ class scionPREDS:
 										self._preds_Id_attrib,
 										self._preds_date_attrib,
 										self._preds_MonthWeekNum_attrib,
-										self._preds_Bookie_Total_attrib,
+										self._preds_Bookie_PercHold_attrib,
 										self._preds_V_Id_attrib,
 										self._preds_V_Sname_attrib,
 										self._preds_V_Bookie_Opening_Price_attrib,
@@ -189,6 +196,9 @@ class scionPREDS:
 										self._preds_Ens2_PlayStake_attrib,
 										self._preds_Ens2_PlayPayoutMultiplier_attrib,
 										self._preds_Scion_Side_Position_attrib,
+										self._preds_Scion_Side_HProbabilityEdge_attrib,
+										self._preds_Scion_Side_PlayStake_attrib,
+										self._preds_Scion_Side_PlayPayoutMultiplier_attrib,
 										self._preds_Scion_Side_Stars_attrib,
 										self._preds_Scion_Side_Confidence_attrib,
 										self._preds_Comments_attrib
@@ -203,18 +213,12 @@ class scionPREDS:
 										self._preds_V_Bookie_Bet_Price_attrib,
 										self._preds_V_SP_Id_attrib,
 										self._preds_V_SP_Null_attrib,
-										self._preds_V_WinningForm_Price_attrib,
-										self._preds_V_Offense_strPrice_attrib,
-										self._preds_V_Defense_strPrice_attrib,
 										self._preds_H_Id_attrib,
 										self._preds_H_Sname_attrib,
 										self._preds_H_Bookie_Opening_Price_attrib,
 										self._preds_H_Bookie_Bet_Price_attrib,
 										self._preds_H_SP_Id_attrib,
 										self._preds_H_SP_Null_attrib,
-										self._preds_H_WinningForm_Price_attrib,
-										self._preds_H_Offense_strPrice_attrib,
-										self._preds_H_Defense_strPrice_attrib,
 										self._preds_Ens1_VoterProfile_attrib,
 										self._preds_Ens1_VoteAgreement_attrib,
 										self._preds_Ens1_HProbabilityEdge_attrib,
@@ -230,6 +234,9 @@ class scionPREDS:
 										self._preds_Ens2_PlayStake_attrib,
 										self._preds_Ens2_PlayPayoutMultiplier_attrib,
 										self._preds_Scion_Side_Position_attrib,
+										self._preds_Scion_Side_HProbabilityEdge_attrib,
+										self._preds_Scion_Side_PlayStake_attrib,
+										self._preds_Scion_Side_PlayPayoutMultiplier_attrib,
 										self._preds_Scion_Side_Stars_attrib,
 										self._preds_Scion_Side_Confidence_attrib,
 										self._preds_Comments_attrib
@@ -246,6 +253,8 @@ class scionPREDS:
 										self._preds_iPos_Ens1_HPrice_attrib,
 										self._preds_iPos_Ens2_HPrice_attrib,
 										self._preds_iPos_Scion_Play_attrib,
+										self._preds_iPos_Scion_HProbEdge_attrib,
+										self._preds_iPos_Scion_PlayPayoutMultiplier_attrib,
 										self._preds_iPos_Comments_attrib
 									]
 
@@ -259,6 +268,8 @@ class scionPREDS:
 										self._preds_iPlay_Offense_HPrice_attrib,
 										self._preds_iPlay_Ens1_HPrice_attrib,
 										self._preds_iPlay_Ens2_HPrice_attrib,
+										self._preds_iPlay_HPRobEdge_attrib,
+										self._preds_iPlay_PlayPayoutMultiplier_attrib,
 										self._preds_iPlay_Confidence_attrib
 									]
 
@@ -280,7 +291,7 @@ class scionPREDS:
 									]
 		self._preds_float_cols 	=	[
 										self._preds_MonthWeekNum_attrib,
-										self._preds_Bookie_Total_attrib,
+										self._preds_Bookie_PercHold_attrib,
 										self._preds_V_Bookie_Opening_Price_attrib,
 										self._preds_V_Bookie_Opening_Prob_attrib,
 										self._preds_V_Bookie_Bet_Price_attrib,
@@ -307,6 +318,9 @@ class scionPREDS:
 										self._preds_Ens2_HPrice_attrib,
 										self._preds_Ens2_PlayStake_attrib,
 										self._preds_Ens2_PlayPayoutMultiplier_attrib,
+										self._preds_Scion_Side_HProbabilityEdge_attrib,
+										self._preds_Scion_Side_PlayStake_attrib,
+										self._preds_Scion_Side_PlayPayoutMultiplier_attrib,
 										self._preds_Scion_Side_Confidence_attrib,
 									]
 
@@ -340,7 +354,9 @@ class scionPREDS:
 											self._preds_iPos_Defense_HPrice_attrib,
 											self._preds_iPos_Offense_HPrice_attrib,
 											self._preds_iPos_Ens1_HPrice_attrib,
-											self._preds_iPos_Ens2_HPrice_attrib
+											self._preds_iPos_Ens2_HPrice_attrib,
+											self._preds_iPos_Scion_HProbEdge_attrib,
+											self._preds_iPos_Scion_PlayPayoutMultiplier_attrib
 										]
 
 		self._preds_ipos_str_cols 	=	[
@@ -357,6 +373,8 @@ class scionPREDS:
 											self._preds_iPlay_Offense_HPrice_attrib,
 											self._preds_iPlay_Ens1_HPrice_attrib,
 											self._preds_iPlay_Ens2_HPrice_attrib,
+											self._preds_iPlay_HPRobEdge_attrib,
+											self._preds_iPlay_PlayPayoutMultiplier_attrib,
 											self._preds_iPlay_Confidence_attrib
 										]
 
@@ -655,7 +673,7 @@ class scionPREDS:
 											self._preds_Id_attrib:MLB_dbvar.NO_DATA,
 											self._preds_date_attrib:MLB_dbvar.NO_DATA,
 											self._preds_MonthWeekNum_attrib:MLB_dbvar.NO_DATA,
-											self._preds_Bookie_Total_attrib:MLB_dbvar.NO_DATA,
+											self._preds_Bookie_PercHold_attrib:MLB_dbvar.NO_DATA,
 											self._preds_V_Id_attrib:MLB_dbvar.NO_DATA,
 											self._preds_V_Sname_attrib:MLB_dbvar.NO_DATA,
 											self._preds_V_Bookie_Opening_Price_attrib:MLB_dbvar.NO_DATA,
@@ -709,6 +727,9 @@ class scionPREDS:
 											self._preds_Ens2_PlayStake_attrib:MLB_dbvar.NO_DATA,
 											self._preds_Ens2_PlayPayoutMultiplier_attrib:MLB_dbvar.NO_DATA,
 											self._preds_Scion_Side_Position_attrib:MLB_dbvar.NO_DATA,
+											self._preds_Scion_Side_HProbabilityEdge_attrib:MLB_dbvar.NO_DATA,
+											self._preds_Scion_Side_PlayStake_attrib:MLB_dbvar.NO_DATA,
+											self._preds_Scion_Side_PlayPayoutMultiplier_attrib:MLB_dbvar.NO_DATA,
 											self._preds_Scion_Side_Stars_attrib:MLB_dbvar.NO_DATA,
 											self._preds_Scion_Side_Confidence_attrib:MLB_dbvar.NO_DATA,
 											self._preds_Comments_attrib:MLB_dbvar.NO_DATA
@@ -726,6 +747,8 @@ class scionPREDS:
 													self._preds_iPos_Ens1_HPrice_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Ens2_HPrice_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Scion_Play_attrib:str(MLB_dbvar.NO_DATA),
+													self._preds_iPos_Scion_HProbEdge_attrib:str(MLB_dbvar.NO_DATA),
+													self._preds_iPos_Scion_PlayPayoutMultiplier_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Comments_attrib:str(MLB_dbvar.NO_DATA)
 												}
 
@@ -739,6 +762,8 @@ class scionPREDS:
 													self._preds_iPlay_Offense_HPrice_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPlay_Ens1_HPrice_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPlay_Ens2_HPrice_attrib:str(MLB_dbvar.NO_DATA),
+													self._preds_iPlay_HPRobEdge_attrib:str(MLB_dbvar.NO_DATA),
+													self._preds_iPlay_PlayPayoutMultiplier_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPlay_Confidence_attrib:str(MLB_dbvar.NO_DATA)
 												}
 
@@ -792,6 +817,8 @@ class scionPREDS:
 		_vPrice = mupsDB.getCurrentMUPVisMLClose()
 		_hProb = MLB_global.convertMoneyLinetoProb(_hPrice)
 		_vProb = MLB_global.convertMoneyLinetoProb(_vPrice)
+		_bookiePerHold = MLB_global.calcPercBookieHold(_hProb,_vProb) * 100
+		self.setPreds_Bookie_PercHold = _bookiePerHold
 		self.setPreds_V_Bookie_Bet_Price(_vPrice)
 		self.setPreds_V_Bookie_Bet_Prob(_vProb)
 		self.setPreds_H_Bookie_Bet_Price(_hPrice)
@@ -819,7 +846,7 @@ class scionPREDS:
 	def setPreds_Id(self, newValue):self.preds_current_game_dict[self._preds_Id_attrib] = newValue
 	def setPreds_date(self, newValue):self.preds_current_game_dict[self._preds_date_attrib] = newValue
 	def setPreds_monthweek(self, newValue):self.preds_current_game_dict[self._preds_MonthWeekNum_attrib] = newValue
-	def setPreds_Bookie_Total(self, newValue):self.preds_current_game_dict[self._preds_Bookie_Total_attrib] = newValue
+	def setPreds_Bookie_PercHold(self, newValue):self.preds_current_game_dict[self._preds_Bookie_PercHold_attrib] = newValue
 	def setPreds_V_Id(self, newValue):self.preds_current_game_dict[self._preds_V_Id_attrib] = newValue
 	def setPreds_V_Sname(self, newValue):self.preds_current_game_dict[self._preds_V_Sname_attrib] = newValue
 	def setPreds_V_Bookie_Opening_Price(self, newValue):self.preds_current_game_dict[self._preds_V_Bookie_Opening_Price_attrib] = newValue
@@ -873,6 +900,9 @@ class scionPREDS:
 	def setPreds_Ens2_PlayStake(self, newValue):self.preds_current_game_dict[self._preds_Ens2_PlayStake_attrib] = newValue
 	def setPreds_Ens2_PlayPayoutMultiplier(self, newValue):self.preds_current_game_dict[self._preds_Ens2_PlayPayoutMultiplier_attrib] = newValue
 	def setPreds_Scion_Side_Position(self, newValue):self.preds_current_game_dict[self._preds_Scion_Side_Position_attrib] = newValue
+	def setPreds_Scion_HProbabilityEdge(self, newValue):self.preds_current_game_dict[self._preds_Scion_Side_HProbabilityEdge_attrib] = newValue
+	def setPreds_Scion_PlayStake(self, newValue):self.preds_current_game_dict[self._preds_Scion_Side_PlayStake_attrib] = newValue
+	def setPreds_Scion_PlayPayoutMultiplier(self, newValue):self.preds_current_game_dict[self._preds_Scion_Side_PlayPayoutMultiplier_attrib] = newValue
 	def setPreds_Scion_Side_Stars(self, newValue):self.preds_current_game_dict[self._preds_Scion_Side_Stars_attrib] = newValue
 	def setPreds_Scion_Side_Confidence(self, newValue):self.preds_current_game_dict[self._preds_Scion_Side_Confidence_attrib] = newValue
 	def setPreds_Comments(self, newValue):
@@ -889,6 +919,8 @@ class scionPREDS:
 	def setPreds_iPos_Ens1_HPrice(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Ens1_HPrice_attrib] = newValue
 	def setPreds_iPos_Ens2_HPrice(self, newValue):self.preds_ipos_current_game_dict[self._preds_iPos_Ens2_HPrice_attrib] = newValue
 	def setPreds_iPos_Scion_Play(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Scion_Play_attrib] = newValue
+	def setPreds_iPos_Scion_HProbEdge(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Scion_HProbEdge_attrib] = newValue
+	def setPreds_iPos_Scion_PlayPayoutMultiplier(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Scion_PlayPayoutMultiplier_attrib] = newValue
 	def setPreds_iPos_Comments(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Comments_attrib] = newValue
 	#Plays
 	def setPreds_iPlay_GId(self, newValue):self.preds_iplays_current_game_dict[self.preds_iPlay_GId_attrib] = newValue
@@ -899,6 +931,8 @@ class scionPREDS:
 	def setPreds_iPlay_Offense_HPrice(self, newValue):self.preds_iplays_current_game_dict[self.preds_iPlay_Offense_HPrice_attrib] = newValue
 	def setPreds_iPlay_Ens1_HPrice(self, newValue):self.preds_iplays_current_game_dict[self._preds_iPlay_Ens1_HPrice_attrib] = newValue
 	def setPreds_iPlay_Ens2_HPrice(self, newValue):self.preds_iplays_current_game_dict[self._preds_iPlay_Ens2_HPrice_attrib] = newValue
+	def setPreds_iPlay_HPRobEdge(self, newValue):self.preds_iplays_current_game_dict[self._preds_iPlay_HPRobEdge_attrib] = newValue
+	def setPreds_iPlay_PlayPayoutMultiplier(self, newValue):self.preds_iplays_current_game_dict[self._preds_iPlay_PlayPayoutMultiplier_attrib] = newValue
 	def setPreds_iPlay_Confidence(self, newValue):self.preds_iplays_current_game_dict[self.preds_iPlay_Confidence_attrib] = newValue
 	def setPreds_ePlay_GId(self, newValue):self.preds_eplays_current_game_dict[self.preds_ePlay_GId_attrib] = newValue
 	def setPreds_ePlay_Team_Sname(self, newValue):self.preds_eplays_current_game_dict[self.preds_ePlay_Team_Sname_attrib] = newValue
@@ -908,7 +942,7 @@ class scionPREDS:
 	def getPreds_Id(self): return self.preds_current_game_dict[self._preds_Id_attrib]
 	def getPreds_date(self): return self.preds_current_game_dict[self._preds_date_attrib]
 	def getPreds_monthweek(self): return self.preds_current_game_dict[self._preds_MonthWeekNum_attrib]
-	def getPreds_opt(self): return self.preds_current_game_dict[self._preds_Bookie_Total_attrib]
+	def getPreds_Bookie_PercHold(self): return self.preds_current_game_dict[self._preds_Bookie_PercHold_attrib]
 	def getPreds_V_Id(self): return self.preds_current_game_dict[self._preds_V_Id_attrib]
 	def getPreds_V_Sname(self): return self.preds_current_game_dict[self._preds_V_Sname_attrib]
 	def getPreds_V_Bookie_Opening_Price(self): return self.preds_current_game_dict[self._preds_V_Bookie_Opening_Price_attrib]
@@ -950,7 +984,7 @@ class scionPREDS:
 	def getPreds_Ens1_HWinPrice(self): return self.preds_current_game_dict[self._preds_Ens1_HPrice_attrib]
 	def getPreds_Ens1_PlayPosition(self): return self.preds_current_game_dict[self._preds_Ens1_PlayPosition_attrib]
 	def getPreds_Ens1_PlayStake(self): return self.preds_current_game_dict[self._preds_Ens1_PlayStake_attrib]
-	def getPreds_Ens2_PlayPayoutMultiplier(self): return self.preds_current_game_dict[self._preds_Ens2_PlayPayoutMultiplier_attrib]
+	def getPreds_Ens1_PlayPayoutMultiplier(self): return self.preds_current_game_dict[self._preds_Ens1_PlayPayoutMultiplier_attrib]
 	def getPreds_Ens2_VoterProfile(self): return self.preds_current_game_dict[self._preds_Ens2_VoterProfile_attrib]
 	def getPreds_Ens2_MajorityVote(self): return self.preds_current_game_dict[self._preds_Ens2_MajorityVote_attrib]
 	def getPreds_Ens2_NumVoters(self): return self.preds_current_game_dict[self._preds_Ens2_NumVoters_attrib]
@@ -962,6 +996,9 @@ class scionPREDS:
 	def getPreds_Ens2_PlayStake(self): return self.preds_current_game_dict[self._preds_Ens2_PlayStake_attrib]
 	def getPreds_Ens2_PlayPayoutMultiplier(self): return self.preds_current_game_dict[self._preds_Ens2_PlayPayoutMultiplier_attrib]
 	def getPreds_Scion_Side_Position(self): return self.preds_current_game_dict[self._preds_Scion_Side_Position_attrib]
+	def getPreds_Scion_HProbabilityEdge(self): return self.preds_current_game_dict[self._preds_Scion_Side_HProbabilityEdge_attrib]
+	def getPreds_Scion_PlayStake(self): return self.preds_current_game_dict[self._preds_Scion_Side_PlayStake_attrib]
+	def getPreds_Scion_PlayPayoutMultiplier(self): return self.preds_current_game_dict[self._preds_Scion_Side_PlayPayoutMultiplier_attrib]
 	def getPreds_Scion_Side_Stars(self): return self.preds_current_game_dict[self._preds_Scion_Side_Stars_attrib]
 	def getPreds_Scion_Side_Confidence(self): return self.preds_current_game_dict[self._preds_Scion_Side_Confidence_attrib]
 	def getPreds_Comments(self): return self.preds_current_game_dict[self._preds_Comments_attrib]
@@ -976,6 +1013,8 @@ class scionPREDS:
 	def getPreds_iPos_Ens1_HPrice(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Ens1_HPrice_attrib]
 	def getPreds_iPos_Ens2_HPrice(self): return self.preds_ipos_current_game_dict[self._preds_iPos_Ens2_HPrice_attrib]
 	def getPreds_iPos_Scion_Play(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Scion_Play_attrib]
+	def getPreds_iPos_Scion_HProbEdge(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Scion_HProbEdge_attrib]
+	def getPreds_iPos_Scion_PlayPayoutMultiplier(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Scion_PlayPayoutMultiplier_attrib]
 	def getPreds_iPos_Comments(self): return self.preds_ipos_current_game_dict[self._preds_iPos_Comments_attrib]
 	#Plays
 	def getPreds_iPlay_GId(self):return self.preds_iplays_current_game_dict[self.preds_iPlay_GId_attrib]
@@ -986,6 +1025,8 @@ class scionPREDS:
 	def getPreds_iPlay_Offense_HPrice(self):return self.preds_iplays_current_game_dict[self.preds_iPlay_Offense_HPrice_attrib]
 	def getPreds_iPlay_Ens1_HPrice(self):return self.preds_iplays_current_game_dict[self._preds_iPlay_Ens1_HPrice_attrib]
 	def getPreds_iPlay_Ens2_HPrice(self):return self.preds_iplays_current_game_dict[self._preds_iPlay_Ens2_HPrice_attrib]
+	def getPreds_iPlay_HPRobEdge(self): return self.preds_iplays_current_game_dict[self._preds_iPlay_HPRobEdge_attrib]
+	def getPreds_iPlay_PlayPayoutMultiplier(self): return self.preds_iplays_current_game_dict[self._preds_iPlay_PlayPayoutMultiplier_attrib]
 	def getPreds_iPlay_Confidence(self):return self.preds_iplays_current_game_dict[self.preds_iPlay_Confidence_attrib]
 	def getPreds_ePlay_GId(self):return self.preds_eplays_current_game_dict[self.preds_ePlay_GId_attrib]
 	def getPreds_ePlay_Team_Sname(self):return self.preds_eplays_current_game_dict[self.preds_ePlay_Team_Sname_attrib]
@@ -1025,7 +1066,7 @@ class scionPREDS:
 			#Set column specific precision:
 			# https://stackoverflow.com/questions/20003290/output-different-precision-by-column-with-pandas-dataframe-to-csv
 			self.preds_verbose_df[self._preds_MonthWeekNum_attrib] = self.preds_verbose_df[self._preds_MonthWeekNum_attrib].map(lambda x: '{:.1f}'.format(float(x)))
-			self.preds_verbose_df[self._preds_Bookie_Total_attrib] = self.preds_verbose_df[self._preds_Bookie_Total_attrib].map(lambda x: '{:.1f}'.format(float(x)))
+			self.preds_verbose_df[self._preds_Bookie_PercHold_attrib] = self.preds_verbose_df[self._preds_Bookie_PercHold_attrib].map(lambda x: '{:.2f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_V_Bookie_Opening_Price_attrib] = self.preds_verbose_df[self._preds_V_Bookie_Opening_Price_attrib].map(lambda x: '{:.1f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_V_Bookie_Opening_Prob_attrib] = self.preds_verbose_df[self._preds_V_Bookie_Opening_Prob_attrib].map(lambda x: '{:.2f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_V_WinningForm_Price_attrib] = self.preds_verbose_df[self._preds_V_WinningForm_Price_attrib].map(lambda x: '{:.2f}'.format(float(x)))
@@ -1039,11 +1080,18 @@ class scionPREDS:
 			self.preds_verbose_df[self._preds_Ens1_HProbability_attrib] = self.preds_verbose_df[self._preds_Ens1_HProbability_attrib].map(lambda x: '{:.2f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_Ens1_HProbabilityEdge_attrib] = self.preds_verbose_df[self._preds_Ens1_HProbabilityEdge_attrib].map(lambda x: '{:.5f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_Ens1_HPrice_attrib] = self.preds_verbose_df[self._preds_Ens1_HPrice_attrib].map(lambda x: '{:.1f}'.format(float(x)))
+			self.preds_verbose_df[self._preds_Ens1_PlayStake_attrib] = self.preds_verbose_df[self._preds_Ens1_PlayStake_attrib].map(lambda x: '{:.3f}'.format(float(x)))
+			self.preds_verbose_df[self._preds_Ens1_PlayPayoutMultiplier_attrib] = self.preds_verbose_df[self._preds_Ens1_PlayPayoutMultiplier_attrib].map(lambda x: '{:.4f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_Ens1_VoteAgreement_attrib] = self.preds_verbose_df[self._preds_Ens1_VoteAgreement_attrib].map(lambda x: '{:.2f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_Ens2_HProbability_attrib] = self.preds_verbose_df[self._preds_Ens2_HProbability_attrib].map(lambda x: '{:.2f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_Ens2_HProbabilityEdge_attrib] = self.preds_verbose_df[self._preds_Ens2_HProbabilityEdge_attrib].map(lambda x: '{:.5f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_Ens2_HPrice_attrib] = self.preds_verbose_df[self._preds_Ens2_HPrice_attrib].map(lambda x: '{:.1f}'.format(float(x)))
+			self.preds_verbose_df[self._preds_Ens2_PlayStake_attrib] = self.preds_verbose_df[self._preds_Ens2_PlayStake_attrib].map(lambda x: '{:.3f}'.format(float(x)))
+			self.preds_verbose_df[self._preds_Ens2_PlayPayoutMultiplier_attrib] = self.preds_verbose_df[self._preds_Ens2_PlayPayoutMultiplier_attrib].map(lambda x: '{:.4f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_Ens2_VoteAgreement_attrib] = self.preds_verbose_df[self._preds_Ens2_VoteAgreement_attrib].map(lambda x: '{:.2f}'.format(float(x)))
+			self.preds_verbose_df[self._preds_Scion_Side_HProbabilityEdge_attrib] = self.preds_verbose_df[self._preds_Scion_Side_HProbabilityEdge_attrib].map(lambda x: '{:.5f}'.format(float(x)))
+			self.preds_verbose_df[self._preds_Scion_Side_PlayStake_attrib] = self.preds_verbose_df[self._preds_Scion_Side_PlayStake_attrib].map(lambda x: '{:.3f}'.format(float(x)))
+			self.preds_verbose_df[self._preds_Scion_Side_PlayPayoutMultiplier_attrib] = self.preds_verbose_df[self._preds_Scion_Side_PlayPayoutMultiplier_attrib].map(lambda x: '{:.4f}'.format(float(x)))
 			self.preds_verbose_df[self._preds_Scion_Side_Confidence_attrib] = self.preds_verbose_df[self._preds_Scion_Side_Confidence_attrib].map(lambda x: '{:.3f}'.format(float(x)))
 			#Store to CSV
 			self._storePredsCSV(self.preds_verbose_df,self._preds_verbose_csv_fname,self._preds_verbose_cols)
@@ -1221,6 +1269,7 @@ class scionPREDS:
 		#Assumption 1: self.preds_current_game_dict is FULLY populated with valid data
 		#Assumption 2: the play position has been calculated and it is No Play
 		#Assumption 3: iPos primitives and Comments have already been populated
+		#Assumption 4: Ens1 primitives are used for Scion's position (Ens2 only constrains it)
 		try:
 			#1. Initi variables
 			_sidePos = self.getPreds_Scion_Side_Position()
@@ -1230,11 +1279,18 @@ class scionPREDS:
 			#3. Store No Play prices
 			_tDefPrice = f"{round(self.getPreds_H_DefensePrice()):.0f}"
 			_tOffPrice = f"{round(self.getPreds_H_OffensePrice()):.0f}"
-			_ens1Price = round(self.getPreds_Ens1_HWinPrice())
-			self.setPreds_iPos_Scion_Play(MLB_global.ACTION_NOPLAY) #just to be sure its there!
+			_ens1HPrice = f"{round(self.getPreds_Ens1_HWinPrice()):.0f}"
+			_ens2HPrice = f"{round(self.getPreds_Ens2_HWinPrice()):.0f}"
+			_ens1Multiplier = f"{round(self.getPreds_Ens1_PlayPayoutMultiplier()):.3f}"
+			_ens1HProbEdge = f"{round(self.getPreds_Ens1_HProbabilityEdge()):.3f}"
 			self.setPreds_iPos_Defense_HPrice(_tDefPrice)
 			self.setPreds_iPos_Offense_HPrice(_tOffPrice)
-			self.setPreds_iPos_Ens1_HPrice(_ens1Price)
+			self.setPreds_iPos_Ens1_HPrice(_ens1HPrice)
+			self.setPreds_iPos_Ens2_HPrice(_ens2HPrice)
+			self.setPreds_iPos_Scion_HProbEdge(_ens1HProbEdge)
+			self.setPreds_iPos_Scion_PlayPayoutMultiplier(_ens1Multiplier)
+			self.setPreds_iPos_Scion_Play(MLB_global.ACTION_NOPLAY) #just to be sure its there!
+
 		except Exception:
 			print("\nscionPREDS.updateiPosNoPlayPrices(): Unexpected error encountered when updating the iPos dictionary.")
 			raise
@@ -1269,26 +1325,23 @@ class scionPREDS:
 		#Assumption 5: totals are not implemented
 		try:
 			#1. Initi variables
-			_storePlay = True
 			if _mupComments and str(MLB_dbvar.NO_DATA) not in _mupComments: 
 				_playComments = _mupComments 
 			else: 
 				_playComments = ""
-			_playSide = True
+			
+			_storePlay = _playSide = True
 			_sidePos = self.getPreds_Scion_Side_Position()
-			_sideConf = self.getPreds_Scion_Side_Confidence()
-			_homeOffDefPrice = self.getPreds_OffDef_HPrice()
-
 			#2. Check if we have a play to store (only Side plays are active in this version)
 			if _sidePos == MLB_global.ACTION_NOPLAY or _sidePos == MLB_global.ACTION_NOPLAYPUSH or _sidePos == MLB_global.ACTION_NOPLAYGAP:
 				_playSide = False
-				_storePlay = False
 
-			#3. If we have a side and/or total play, let's store it
-			if _storePlay:
+			#3. If we have a side play, let's store it
+			if _storePlay: #could be side or total
 				self.setPreds_iPlay_GId(self.getPreds_Id())
 				_ePlays_GId = self._createPredId(False)
 				self.setPreds_ePlay_GId(_ePlays_GId)
+				_sideConf = self.getPreds_Scion_Side_Confidence()
 				#2.1 Add comments from MUPS if any (as we might update them further down)
 				self.addComment(_playComments, True, True)
 				#2.2 Store side play data
@@ -1299,6 +1352,12 @@ class scionPREDS:
 					self.setPreds_iPos_Scion_Play(_pricePlay)
 					self.setPreds_iPlay_Ens1_HPrice(round(self.getPreds_Ens1_HWinPrice()))
 					self.setPreds_iPos_Ens1_HPrice(round(self.getPreds_Ens1_HWinPrice()))
+					self.setPreds_iPlay_Ens2_HPrice(round(self.getPreds_Ens2_HWinPrice()))
+					self.setPreds_iPos_Ens2_HPrice(round(self.getPreds_Ens2_HWinPrice()))
+					self.setPreds_iPos_Scion_HProbEdge(self.getPreds_Scion_HProbabilityEdge())
+					self.setPreds_iPlay_HPRobEdge(self.getPreds_Scion_HProbabilityEdge())
+					self.setPreds_iPos_Scion_PlayPayoutMultiplier(self.getPreds_Scion_PlayPayoutMultiplier())
+					self.setPreds_iPlay_PlayPayoutMultiplier(self.getPreds_Scion_PlayPayoutMultiplier())
 					self.setPreds_iPlay_Confidence(_sideConf)
 					#store KEY home team prices (incl off, def, offdef)
 					_tSname, _tDefPrice, _tOffPrice = self.getPlayTeamData(MLB_global.HOME)
@@ -1425,7 +1484,7 @@ class scionPREDS:
 	@property
 	def preds_date_attrib(self): return self._preds_date_attrib
 	@property
-	def preds_Bookie_Total_attrib(self): return self._preds_Bookie_Total_attrib
+	def preds_Bookie_PercHold_attrib(self): return self._preds_Bookie_PercHold_attrib
 	@property
 	def preds_V_Id_attrib(self): return self._preds_V_Id_attrib
 	@property
@@ -1531,7 +1590,13 @@ class scionPREDS:
 	@property		
 	def preds_iPos_Ens1_HPrice_attrib(self):return self._preds_iPos_Ens1_HPrice_attrib
 	@property		
+	def preds_iPos_Ens2_HPrice_attrib(self):return self._preds_iPos_Ens2_HPrice_attrib
+	@property		
 	def preds_iPos_Scion_Play_attrib(self):return self._preds_iPos_Scion_Play_attrib
+	@property		
+	def preds_iPos_Scion_HProbEdge_attrib(self):return self._preds_iPos_Scion_HProbEdge_attrib
+	@property		
+	def preds_iPos_Scion_PlayPayoutMultiplier_attrib(self):return self._preds_iPos_Scion_PlayPayoutMultiplier_attrib
 	@property		
 	def preds_iPos_Comments_attrib(self):return self._preds_iPos_Comments_attrib
 	@property
@@ -1548,6 +1613,12 @@ class scionPREDS:
 	def preds_iPlay_Offense_HPrice_attrib(self):return self._preds_iPlay_Offense_HPrice_attrib
 	@property		
 	def preds_iPlay_Ens1_HPrice_attrib(self):return self._preds_iPlay_Ens1_HPrice_attrib
+	@property		
+	def preds_iPlay_Ens2_HPrice_attrib(self):return self._preds_iPlay_Ens2_HPrice_attrib
+	@property
+	def preds_iPlay_HPRobEdge_attrib(self): return self._preds_iPlay_HPRobEdge_attrib
+	@property
+	def preds_iPlay_PlayPayoutMultiplier_attrib(self): return self._preds_iPlay_PlayPayoutMultiplier_attrib
 	@property		
 	def preds_iPlay_Confidence_attrib(self):return self._preds_iPlay_Confidence_attrib
 	@property		
