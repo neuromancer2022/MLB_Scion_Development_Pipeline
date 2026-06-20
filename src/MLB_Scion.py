@@ -840,7 +840,7 @@ if __name__ == "__main__":
             if numMups > 0:
                 per_complete = (mupIndex+1)/numMups*100
             original_hml = predsObj.getPreds_H_Bookie_Bet_Price()
-            original_total = predsObj.getPreds_opt()
+            original_total = float(mupsDB.getCurrentMUPOverClose())
             print("\rGenerating predictions --> game {0} of {1} ({2:.1f}%)".format(mupIndex+1, numMups, per_complete) + " [ {0} {1} @ {2} | HML {3} | TOTAL {4} ]".format(str(mupsDB.current_mup_dict[mupsDB.mup_date_attrib]), 
                                                                                                                                                                     str(mupsDB.current_mup_dict[mupsDB.mup_vis_sname_attrib]), 
                                                                                                                                                                     str(mupsDB.current_mup_dict[mupsDB.mup_hom_sname_attrib]), 
