@@ -731,10 +731,10 @@ def updatePredsWithdGEN(dgenObj, predsObj, sysCfgObj):
     #a. Compound Date-based attributes
     predsObj.setPreds_monthweek(dgenObj._currentgame_df[MLB_dbvar.dbvar_G_MonthWeek].values[0])
     #b. Team-based Offense and Defense prices 
-    predsObj.setPreds_H_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_H_MenOnBase_Strength_20G].values[0]))
-    predsObj.setPreds_H_DefensePrice(MLB_global.convertProbtoMoneyLine(1 - dgenObj._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_BaseOnBallsStrikeouts_Ratio_5G].values[0]))
-    predsObj.setPreds_V_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_V_MenOnBase_Strength_20G].values[0]))
-    predsObj.setPreds_V_DefensePrice(MLB_global.convertProbtoMoneyLine(1 - dgenObj._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_BaseOnBallsStrikeouts_Ratio_5G].values[0]))
+    predsObj.setPreds_H_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_H_MenOnBase_Strength_YTD].values[0]))
+    predsObj.setPreds_H_DefensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_StrikeoutAccuracy_YTD].values[0]))
+    predsObj.setPreds_V_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_V_MenOnBase_Strength_YTD].values[0]))
+    predsObj.setPreds_V_DefensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_StrikeoutAccuracy_YTD].values[0]))
     predsObj = updatePredsWithStrPriceCateg(dgenObj, predsObj, sysCfgObj)
     #c. Initialise prediction vars
     predsObj.setPreds_Ens1_PlayPosition(MLB_global.ACTION_NOPLAY)
