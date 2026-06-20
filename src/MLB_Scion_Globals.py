@@ -703,3 +703,52 @@ def getNumStars(numStars):
         return 5
     else:
         return 0
+    
+def calcPercBookieHold(bookieHProb, bookieVProb):
+    _probSum = bookieHProb + bookieVProb
+    if _probSum == 0:
+        return 0
+    else:
+        return (1 - (1/(_probSum)))
+    
+def calcKellyStake(bookiePrice, ensPrice):
+    _kellyStake = 0.0
+    if bookiePrice != MLB_dbvar.NODATA and ensPrice != MLB_dbvar.NO_DATA:
+        _bookieProb = convertMoneyLinetoProb(bookiePrice)
+        _ensProb = convertMoneyLinetoProb(ensPrice)
+        if _bookieProb != 0:
+            _kellyStake = (_ensProb - _bookieProb) / _bookieProb
+    return round(_kellyStake, 3)
+
+def getStakeMultiplier(hBookiePrice, vBookiePrice, ensMajorityVote):
+    _stakeMultiplier = 1.0
+    if hBookiePrice != MLB_dbvar.NO_DATA and vBookiePrice != MLB_dbvar.NO_DATA:
+        if ensMajorityVote ==  ACTION_LINE_HF or ensMajorityVote ==  ACTION_LINE_HD:
+            if hBookiePrice < 0:
+                _stakeMultiplier = 100/abs(hBookiePrice)
+            else:
+                _stakeMultiplier = hBookiePrice/100
+        else:
+            if vBookiePrice < 0:
+                _stakeMultiplier = 100/abs(vBookiePrice)
+            else:
+                _stakeMultiplier = vBookiePrice/100
+    return round(_stakeMultiplier, 3)
+    
+def getStakeAmount(stakeModel, kellyFrac, hBookiePrice, ensHProb, ensPos, stakeMultiplier):
+    _stakeAmount = 0.0
+    if stakeModel == StakeTypes.Flat.value:
+        _stakeAmount = DEFAULT_FLAT_STAKE_UNITS
+    elif stakeModel == StakeTypes.Kelly.value:
+        _kellyStake = 0.0
+        if ensPos == ACTION_LINE_HF or ensPos == ACTION_LINE_HD:
+            _kellyStake = kellyFrac * max(0, ensHProb - (1-ensHProb)/stakeMultiplier)
+            _kellyStake = round(_kellyStake, 5)
+        else:
+            _kellyStake = kellyFrac * max(0, (1-ensHProb) - ensHProb/stakeMultiplier)
+            _kellyStake = round(_kellyStake, 5)
+    else:
+        print("\nMLB_Scion_Globals.getStakeAmount: Unrecognised stake model!")
+        raise Exception
+
+    return _stakeAmount 
