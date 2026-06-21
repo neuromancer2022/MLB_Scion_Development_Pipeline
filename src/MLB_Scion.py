@@ -357,19 +357,32 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                 if _ens1ThreshPlay and _ens2ThreshPlay and _ens1ThreshPosition == _ens2ThreshPosition: 
                     _scionPOS = _ens1ThreshPosition
                     _scionCONF = _ens1VoteAgreement
+                    _scionMultiplier = _ens1Multiplier
+                    _scionStake = _ens1Stake
+                    _scionEdge = _ens1ProbPointsEdge
                     predsObj.addComment(MLB_global.messageScionEns1n2Play)
                     if _scionPOS == MLB_global.ACTION_LINE_HD or _scionPOS == MLB_global.ACTION_LINE_VD:
                         _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
                     else:
                         _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
                 elif _ens1ThreshPlay and _ens2ThreshPlay and _ens1ThreshPosition != _ens2ThreshPosition: 
-                    predsObj.addComment(MLB_global.messageScionEns1n2Disagree)
+                    #Play stat only
+                    _scionPOS = _ens2ThreshPosition
+                    _scionCONF = _ens2VoteAgreement
+                    _scionMultiplier = _ens2Multiplier
+                    _scionStake = _ens2Stake
+                    _scionEdge = _ens2ProbPointsEdge
+                    predsObj.addComment(MLB_global.messageScionEns2PlayEns1Disagree)
+                    _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
                 elif _ens1ThreshPlay and not _ens2ThreshPlay:
                     if _scionPOS == MLB_global.ACTION_LINE_HD or _scionPOS == MLB_global.ACTION_LINE_VD:
                         predsObj.addComment(MLB_global.messageScionEns1NoDogPlay)
                     else:
                         _scionPOS = _ens1ThreshPosition
                         _scionCONF = _ens1VoteAgreement
+                        _scionMultiplier = _ens1Multiplier
+                        _scionStake = _ens1Stake
+                        _scionEdge = _ens1ProbPointsEdge
                         predsObj.addComment(MLB_global.messageScionEns1Play)
                         _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR       
                 else:
@@ -397,11 +410,7 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         predsObj.setPreds_Ens1_PlayStake(_ens1Stake)
         predsObj.setPreds_Ens2_PlayPayoutMultiplier(_ens2Multiplier)
         predsObj.setPreds_Ens2_PlayStake(_ens2Stake)
-        #Scion (if a play, its always based on ens1 Line and Stats model)
-        if _scionPOS != MLB_global.ACTION_NOPLAY:
-            _scionMultiplier = _ens1Multiplier
-            _scionStake = _ens1Stake
-            _scionEdge = _ens1ProbPointsEdge
+        #Scion 
         predsObj.setPreds_Scion_Side_Position(_scionPOS)
         predsObj.setPreds_Scion_Side_Confidence(_scionCONF)
         predsObj.setPreds_Scion_Side_Stars(MLB_global.getNumStars(_starPlay)) #convert from enum to int

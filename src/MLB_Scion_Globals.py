@@ -187,6 +187,7 @@ messageScionEnsNoFavePlay = "Fave plays are disallowed. "
 messageScionEns1NoDogPlay = "LineStatEns only dog plays disallowed. "
 messageScionEns1Play = "Play determined by LineStatEns only. "
 messageScionEns2Play = "Play determined by StatOnlyEns only. "
+messageScionEns2PlayEns1Disagree = "Play determined by StatOnlyEns when with disagree LineStatEns. "
 messageScionEns1n2Play = "Play determined by LineStatEns and StatOnlyEns agreement. "
 messageScionEns1n2Disagree = "No play as LineStatEns and StatOnlyEns disagree. "
 #Ensemble majority vote and price DISAGREE messages
