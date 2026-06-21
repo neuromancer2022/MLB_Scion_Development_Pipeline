@@ -362,14 +362,18 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                         _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
                     else:
                         _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
+                elif _ens1ThreshPlay and _ens2ThreshPlay and _ens1ThreshPosition != _ens2ThreshPosition: 
+                    predsObj.addComment(MLB_global.messageScionEns1n2Disagree)
                 elif _ens1ThreshPlay and not _ens2ThreshPlay:
-                    _scionPOS = _ens1ThreshPosition
-                    _scionCONF = _ens1VoteAgreement
-                    predsObj.addComment(MLB_global.messageScionEns1Play)
                     if _scionPOS == MLB_global.ACTION_LINE_HD or _scionPOS == MLB_global.ACTION_LINE_VD:
-                        _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
+                        predsObj.addComment(MLB_global.messageScionEns1NoDogPlay)
                     else:
+                        _scionPOS = _ens1ThreshPosition
+                        _scionCONF = _ens1VoteAgreement
+                        predsObj.addComment(MLB_global.messageScionEns1Play)
                         _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR       
+                else:
+                    predsObj.addComment(MLB_global.messageScionNoStrategyPlay)
             else:
                 if _hSP_Null and not _vSP_Null:
                     predsObj.addComment(MLB_global.messageScionNullHSP)

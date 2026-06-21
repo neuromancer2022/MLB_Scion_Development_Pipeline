@@ -1290,8 +1290,8 @@ class scionPREDS:
 			self.setPreds_iPos_Offense_HPrice(_tOffPrice)
 			self.setPreds_iPos_Ens1_HPrice(_ens1HPrice)
 			self.setPreds_iPos_Ens2_HPrice(_ens2HPrice)
-			self.setPreds_iPos_Scion_HProbEdge(_ens1HProbEdge)
-			self.setPreds_iPos_Scion_PlayPayoutMultiplier(_ens1Multiplier)
+			self.setPreds_iPos_Scion_HProbEdge(0)
+			self.setPreds_iPos_Scion_PlayPayoutMultiplier(0)
 			self.setPreds_iPos_Scion_Play(MLB_global.ACTION_NOPLAY) #just to be sure its there!
 
 		except Exception:

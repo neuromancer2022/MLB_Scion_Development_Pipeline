@@ -7675,7 +7675,7 @@ V_NULLPITCHER_FEATURES = [dbvar_V_StartingPitcher_NP_YTD,dbvar_V_StartingPitcher
 TEAM_ID_LNAME = {0 : "ATLANTA Braves", 1 : "ARIZONA Diamondbacks",
                  2 : "BALTIMORE Orioles", 3 : "BOSTON Red Sox",
                  4 : "LOS ANGELES Angels", 5 : "CHICAGO Cubs",
-                 6 : "CINCINNATI Reds", 7 : "CLEVELAND Indians",
+                 6 : "CINCINNATI Reds", 7 : "CLEVELAND Guardians",
                  8 : "COLORADO Rockies", 9 : "CHICAGO White Sox",
                  10 : "DETROIT Tigers", 11 : "FLORIDA Marlins",
                  12 : "HOUSTON Astros", 13 : "KANSAS CITY Royals",
