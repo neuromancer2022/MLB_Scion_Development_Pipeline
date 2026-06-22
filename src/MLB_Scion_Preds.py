@@ -118,7 +118,6 @@ class scionPREDS:
 		self._preds_iPos_Ens2_HPrice_attrib = "ENS_StatOnly_HPrice"
 		self._preds_iPos_Scion_Play_attrib = "PRED"
 		self._preds_iPos_Scion_HProbEdge_attrib = "PRED_HPROB_EDGE"
-		self._preds_iPos_Scion_PlayPayoutMultiplier_attrib = "PRED_PAYOUTMULTIPLER"
 		self._preds_iPos_Comments_attrib = "NOTES"
 
 		self._preds_iPlay_GId_attrib = "Game_Id"
@@ -254,7 +253,6 @@ class scionPREDS:
 										self._preds_iPos_Ens2_HPrice_attrib,
 										self._preds_iPos_Scion_Play_attrib,
 										self._preds_iPos_Scion_HProbEdge_attrib,
-										self._preds_iPos_Scion_PlayPayoutMultiplier_attrib,
 										self._preds_iPos_Comments_attrib
 									]
 
@@ -355,8 +353,7 @@ class scionPREDS:
 											self._preds_iPos_Offense_HPrice_attrib,
 											self._preds_iPos_Ens1_HPrice_attrib,
 											self._preds_iPos_Ens2_HPrice_attrib,
-											self._preds_iPos_Scion_HProbEdge_attrib,
-											self._preds_iPos_Scion_PlayPayoutMultiplier_attrib
+											self._preds_iPos_Scion_HProbEdge_attrib
 										]
 
 		self._preds_ipos_str_cols 	=	[
@@ -748,7 +745,6 @@ class scionPREDS:
 													self._preds_iPos_Ens2_HPrice_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Scion_Play_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Scion_HProbEdge_attrib:str(MLB_dbvar.NO_DATA),
-													self._preds_iPos_Scion_PlayPayoutMultiplier_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Comments_attrib:str(MLB_dbvar.NO_DATA)
 												}
 
@@ -923,7 +919,6 @@ class scionPREDS:
 	def setPreds_iPos_Ens2_HPrice(self, newValue):self.preds_ipos_current_game_dict[self._preds_iPos_Ens2_HPrice_attrib] = newValue
 	def setPreds_iPos_Scion_Play(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Scion_Play_attrib] = newValue
 	def setPreds_iPos_Scion_HProbEdge(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Scion_HProbEdge_attrib] = newValue
-	def setPreds_iPos_Scion_PlayPayoutMultiplier(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Scion_PlayPayoutMultiplier_attrib] = newValue
 	def setPreds_iPos_Comments(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Comments_attrib] = newValue
 	#Plays
 	def setPreds_iPlay_GId(self, newValue):self.preds_iplays_current_game_dict[self.preds_iPlay_GId_attrib] = newValue
@@ -1017,7 +1012,6 @@ class scionPREDS:
 	def getPreds_iPos_Ens2_HPrice(self): return self.preds_ipos_current_game_dict[self._preds_iPos_Ens2_HPrice_attrib]
 	def getPreds_iPos_Scion_Play(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Scion_Play_attrib]
 	def getPreds_iPos_Scion_HProbEdge(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Scion_HProbEdge_attrib]
-	def getPreds_iPos_Scion_PlayPayoutMultiplier(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Scion_PlayPayoutMultiplier_attrib]
 	def getPreds_iPos_Comments(self): return self.preds_ipos_current_game_dict[self._preds_iPos_Comments_attrib]
 	#Plays
 	def getPreds_iPlay_GId(self):return self.preds_iplays_current_game_dict[self.preds_iPlay_GId_attrib]
@@ -1291,7 +1285,6 @@ class scionPREDS:
 			self.setPreds_iPos_Ens1_HPrice(_ens1HPrice)
 			self.setPreds_iPos_Ens2_HPrice(_ens2HPrice)
 			self.setPreds_iPos_Scion_HProbEdge(0)
-			self.setPreds_iPos_Scion_PlayPayoutMultiplier(0)
 			self.setPreds_iPos_Scion_Play(MLB_global.ACTION_NOPLAY) #just to be sure its there!
 
 		except Exception:
@@ -1359,7 +1352,6 @@ class scionPREDS:
 					self.setPreds_iPos_Ens2_HPrice(round(self.getPreds_Ens2_HWinPrice()))
 					self.setPreds_iPos_Scion_HProbEdge(self.getPreds_Scion_HProbabilityEdge())
 					self.setPreds_iPlay_HPRobEdge(self.getPreds_Scion_HProbabilityEdge())
-					self.setPreds_iPos_Scion_PlayPayoutMultiplier(self.getPreds_Scion_PlayPayoutMultiplier())
 					self.setPreds_iPlay_PlayPayoutMultiplier(self.getPreds_Scion_PlayPayoutMultiplier())
 					self.setPreds_iPlay_Confidence(_sideConf)
 					#store KEY home team prices (incl off, def, offdef)
@@ -1598,8 +1590,6 @@ class scionPREDS:
 	def preds_iPos_Scion_Play_attrib(self):return self._preds_iPos_Scion_Play_attrib
 	@property		
 	def preds_iPos_Scion_HProbEdge_attrib(self):return self._preds_iPos_Scion_HProbEdge_attrib
-	@property		
-	def preds_iPos_Scion_PlayPayoutMultiplier_attrib(self):return self._preds_iPos_Scion_PlayPayoutMultiplier_attrib
 	@property		
 	def preds_iPos_Comments_attrib(self):return self._preds_iPos_Comments_attrib
 	@property
