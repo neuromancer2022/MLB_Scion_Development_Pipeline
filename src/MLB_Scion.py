@@ -79,7 +79,7 @@ def _errorReport():
     print ("*** format_tb:")
     print (traceback.format_tb(exc_traceback))
     print ("*** tb_lineno:", exc_traceback.tb_lineno)
-    sys.exit(0)
+    sys.exit(1)
 
 def float_to_str(f):
     """
@@ -142,11 +142,11 @@ def getG2Position(probThresh, bookieHMLine, bookieVMLine, modelProb):
 def getEnsBPFeatureDP(modelCfg):
     bpvardp = 10 #default
     ens = modelCfg.getCurrentTaskModelEnsemble()
-    if ens == MLB_global.MODEL_PROBENS1: #V113PM210
-        bpvardp = int(modelCfg.getSysProbPM210BPVarDP())
+    if ens == MLB_global.MODEL_PROBENS1: 
+        bpvardp = int(modelCfg.getSysProbBPVarDP())
     else:
-        if ens == MLB_global.MODEL_PROBENS2: #V113PM150
-            bpvardp = int(modelCfg.getSysProbBPVarDP())
+        if ens == MLB_global.MODEL_PROBENS2: 
+            bpvardp = int(modelCfg.getSysProbSTATSONLYBPVarDP())
     
     return bpvardp
 
@@ -187,24 +187,33 @@ def getDefaultDogPlay(hBookiePrice, vBookiePrice, sysCfgObj, predsObj):
 
     return defaultDogPlay
 
-def getEnsemblePosition(ens, hBookiePrice, vBookiePrice, _ensBookieMinPrice, _ensBookieMaxPrice, _ensMajorityVote, _ensVoteAgreement, _ensHPrice, _ensPriceMin, _ensPriceMax, _ensAgreeThreshold, _ensBookieCentGap, predsObj):
-    # ASSUMPTION 1: prices must be rounded to nearest integer before decision making
-    # ASSUMPTION 2: price and majority vote MUST match
+def validateEnsemblePosition(ens, hBookiePrice, hDevigProb, vBookiePrice, vDevigProb, ensBookieMinPrice, ensBookieMaxPrice, ensMajorityVote, ensVoteAgreement, ensHPrice, ensPriceMin, ensPriceMax, ensAgreeThreshold, ensProbPointsEdge, ensProbEdgeThreshold, predsObj):
+    # This function applies all the critical validation checks, as described in the accompanying modelling spreadsheet to see whether the majority vote is allowed.
+    # If the ensemble conditions pass these checks, it will remain a play.
+    #
+    # CHECK 1: price and majority vote MUST match
+    # CHECK 2: VF Plays disallowed
+    # CHECK 3: both bookie and model prices must be within range
+    # CHECK 4: edge_gap must meet threshold
+    # CHECK 5: ensemble vote agreement must meet threshold
+    # CHECK 6: bookie price must be within range
+    
+    # Assume no play
     ensPosition = MLB_global.ACTION_NOPLAY
     ensPlay = False
-    #1. xxxx
-    if hBookiePrice >= _ensBookieMinPrice and hBookiePrice <= _ensBookieMaxPrice:
-        if _ensVoteAgreement >= _ensAgreeThreshold:
+    # Run validation checks
+    if hBookiePrice >= ensBookieMinPrice and hBookiePrice <= ensBookieMaxPrice:
+        if ensVoteAgreement >= ensAgreeThreshold:
             if hBookiePrice < vBookiePrice: #HFVD
-                ensPlay = getPriceVoteMatchStatus(hBookiePrice, vBookiePrice, _ensHPrice, _ensMajorityVote)
+                ensPlay = getPriceVoteMatchStatus(hBookiePrice, vBookiePrice, ensHPrice, ensMajorityVote)
                 #a. are we looking outside the threshold?
                 if ensPlay:
                     #check if model price is within range
-                    if _ensHPrice >= _ensPriceMin:
-                        if _ensMajorityVote == MLB_global.ACTION_LINE_HF:
+                    if ensHPrice >= ensPriceMin:
+                        if ensMajorityVote == MLB_global.ACTION_LINE_HF:
                             #check if model price meets gap constraint
-                            if _ensHPrice <= (hBookiePrice - _ensBookieCentGap):
-                                ensPosition = _ensMajorityVote
+                            if ensProbPointsEdge >=  ensProbEdgeThreshold:
+                                ensPosition = ensMajorityVote
                             else:
                                 ensPlay = False
                                 if ens == MLB_global.MODEL_PROBENS1:
@@ -213,8 +222,8 @@ def getEnsemblePosition(ens, hBookiePrice, vBookiePrice, _ensBookieMinPrice, _en
                                     predsObj.addComment(MLB_global.messageScionEns2GapNotExceeded)
                         else:
                             #check if live dog and within dog constraint
-                            if _ensHPrice > 0 and _ensHPrice >= (hBookiePrice + _ensBookieCentGap):
-                                ensPosition = _ensMajorityVote
+                            if ensProbPointsEdge <= (-1 * ensProbEdgeThreshold):
+                                ensPosition = ensMajorityVote
                             else:
                                 ensPlay = False
                                 if ens == MLB_global.MODEL_PROBENS1:
@@ -233,25 +242,19 @@ def getEnsemblePosition(ens, hBookiePrice, vBookiePrice, _ensBookieMinPrice, _en
                     else:
                         predsObj.addComment(MLB_global.messageScionEns2PricePlayMismatch)
             else: #VFHD
-                ensPlay = getPriceVoteMatchStatus(hBookiePrice, vBookiePrice, _ensHPrice, _ensMajorityVote)
+                ensPlay = getPriceVoteMatchStatus(hBookiePrice, vBookiePrice, ensHPrice, ensMajorityVote)
                 #a. are we looking outside the threshold?
                 if ensPlay:
                     #check if model price is within range
-                    if _ensHPrice <= _ensPriceMax:
-                        if _ensMajorityVote == MLB_global.ACTION_LINE_VF:
-                            #check if model price meets gap constraint
-                            if _ensHPrice >= (hBookiePrice + _ensBookieCentGap):
-                                ensPosition = _ensMajorityVote
-                            else:
-                                ensPlay = False
-                                if ens == MLB_global.MODEL_PROBENS1:
-                                    predsObj.addComment(MLB_global.messageScionEns1GapNotExceeded)
-                                else:
-                                    predsObj.addComment(MLB_global.messageScionEns2GapNotExceeded)
+                    if ensHPrice <= ensPriceMax:
+                        if ensMajorityVote == MLB_global.ACTION_LINE_VF:
+                            #disabled VF plays
+                            predsObj.addComment(MLB_global.messageScionNoVFPlay)
+                            ensPlay = False
                         else:
                             #check if live dog and within dog constraint
-                            if _ensHPrice < 0 and _ensHPrice <= (hBookiePrice - _ensBookieCentGap):
-                                ensPosition = _ensMajorityVote
+                            if ensProbPointsEdge >=  ensProbEdgeThreshold:
+                                ensPosition = ensMajorityVote
                             else:
                                 ensPlay = False
                                 if ens == MLB_global.MODEL_PROBENS1:
@@ -283,118 +286,145 @@ def getEnsemblePosition(ens, hBookiePrice, vBookiePrice, _ensBookieMinPrice, _en
     return ensPlay, ensPosition, predsObj
 
 def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
-    # This function implements Scion V25.05a strategy which consists of the following components:
+    # This function implements Scion V26.06a strategy which consists of the following components:
     #   1) LGBM HomWin Ensemble is used to determine Scion price
-    #   2) 2 Ensembles: ens1 (v113pm210_2023), ens2 (v113pm150_2023)
-    #   3) Ensemble play positions will be determined by the following factors for ens1 and 2: 
-    #        abs_price_thresh, ens2, cent_gap, model_price_limits, agreement threshold
-    #      All ensemble plays are five star
-    #   4) If ens1 and ens2 both have plays BUT disagree then No Play
+    #   2) 2 Ensembles: ens1 (pm150 Line and Stats) and ens2 (pm150 Stats Only) are used to determine Scion position
+    #   3) Ensemble play positions will be determined by the following factors: 
+    #        abs_price_thresh, edge_probability_gap, model_price_limits, agreement threshold, ens1 and ens2 agreement, ens1, whether or not a pitcher is a NULL SP
+    #   4) VF Plays are disallowed
+    #   5) Confidence and Star value with respect to play is based on Ensemble Vote Agreement
+    #           5* play: ens1 and ens2 agree on HomDog or VisDog in addition to each ensemble passing its price and gap constraints.
+    #           3* play: ens1 has HF play in addition to it meeting its price and gap constraints.
+    #           1* play: a) ens1 and ens2 agree on HF in addition to meeting its own price and gap constraints
+    #                    b) ens1 has a Dog play in addition to it meeting its price and gap constraints.
+    #   6) NULL Pitcher games are allowed
     # ASSUMPTION 1: sysCfgObj and predsObj have required component data stored
     # ASSUMPTION 2: All prices must be rounded to nearest integer before decision making
     try:
         #1. Get key var values
         #initialise key high-level vars
-        _hBookiePrice = predsObj.getPreds_H_Bookie_Price()
-        _vBookiePrice = predsObj.getPreds_V_Bookie_Price()
+        _hBookiePrice = predsObj.getPreds_H_Bookie_Bet_Price()
+        _hDevigProb = predsObj.getPreds_H_Bookie_Bet_DevigProb()
+        _vBookiePrice = predsObj.getPreds_V_Bookie_Bet_Price()
+        _vDevigProb = predsObj.getPreds_V_Bookie_Bet_DevigProb()
         _hSP_Null = predsObj.getPreds_H_SP_Null()
         _vSP_Null = predsObj.getPreds_V_SP_Null()
-        _ensThreshPosition = MLB_global.ACTION_NOPLAY
+        _scionPOS = MLB_global.ACTION_NOPLAY
+        _scionCONF = _scionMultiplier = _scionStake = _scionEdge = 0.0
         _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-        #ens1 V113pm210 dog ens
-        _ens1BookieMin=round(float(sysCfgObj.getSysProbPM210BookieMin()))
-        _ens1BookieMax=round(float(sysCfgObj.getSysProbPM210BookieMax()))
-        _ens1PriceMin = float(sysCfgObj.getSysProbPM210ModelMin())
-        _ens1PriceMax = float(sysCfgObj.getSysProbPM210ModelMax())
-        _ens1AgreeThreshold = float(sysCfgObj.getSysProbPM210AgreeThresh())
-        _ens1BookieCentGap = float(sysCfgObj.getSysProbPM210PriceGapCents())
+        _stakeMode = int(sysCfgObj.getSysStakeMode())
+        _kellyFrac = float(sysCfgObj.getSysKellyFract())
+        #ens1 pm150 Line and Stat ens
+        _ens1BookieMin = round(float(sysCfgObj.getSysProbBookieMin()))
+        _ens1BookieMax = round(float(sysCfgObj.getSysProbBookieMax()))
+        _ens1PriceMin = float(sysCfgObj.getSysProbMinPrice())
+        _ens1PriceMax = float(sysCfgObj.getSysProbMaxPrice())
+        _ens1AgreeThreshold = float(sysCfgObj.getSysProbAgreeThresh())
+        _ens1ProbEdgeThreshold = float(sysCfgObj.getSysProbPointsGap())
+        _ens1ProbPointsEdge = float(predsObj.getPreds_Ens1_HProbabilityEdge())
+        _ens1Multiplier = _ens1Stake = 0.0
         _ens1HPrice = float(predsObj.getPreds_Ens1_HWinPrice())
+        _ens1HProb = float(predsObj.getPreds_Ens1_HWinProb())
         _ens1MajorityVote = predsObj.getPreds_Ens1_MajorityVote()
         _ens1VoteAgreement = predsObj.getPreds_Ens1_VoteAgreement()
         _ens1ThreshPlay = False
         _ens1ThreshPosition = MLB_global.ACTION_NOPLAY
-        #ens2 V113pm150 master ens
-        _ens2BookieABSPriceMax=round(float(sysCfgObj.getSysProbAbsPriceLimit()))
-        _ens2PriceMin = float(sysCfgObj.getSysProbMinPrice())
-        _ens2PriceMax = float(sysCfgObj.getSysProbMaxPrice())
-        _ens2AgreeThreshold = float(sysCfgObj.getSysProbAgreeThresh())
-        _ens2BookieCentGap = float(sysCfgObj.getSysProbPriceGapCents())
+        #ens2 pm150 Line StatsOnly ens
+        _ens2BookieMin = round(float(sysCfgObj.getSysProbSTATSONLYBookieMin()))
+        _ens2BookieMax = round(float(sysCfgObj.getSysProbSTATSONLYBookieMax()))
+        _ens2PriceMin = float(sysCfgObj.getSysProbSTATSONLYModelMin())
+        _ens2PriceMax = float(sysCfgObj.getSysProbSTATSONLYModelMax())
+        _ens2AgreeThreshold = float(sysCfgObj.getSysProbSTATSONLYAgreeThresh())
+        _ens2ProbEdgeThreshold = float(sysCfgObj.getSysProbSTATSONLYPointsGap())
+        _ens2ProbPointsEdge = float(predsObj.getPreds_Ens2_HProbabilityEdge())
+        _ens2Multiplier = _ens2Stake = 0.0
         _ens2HPrice = float(predsObj.getPreds_Ens2_HWinPrice())
+        _ens2HProb = float(predsObj.getPreds_Ens2_HWinProb())
         _ens2MajorityVote = predsObj.getPreds_Ens2_MajorityVote()
         _ens2VoteAgreement = predsObj.getPreds_Ens2_VoteAgreement()
         _ens2ThreshPlay = False
         _ens2ThreshPosition = MLB_global.ACTION_NOPLAY
-        _defaultDogPlay = False
         #2. Get Scion position, assuming valid H and V bookie price calculated
-        if not _hSP_Null and not _vSP_Null:
-            if MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice):
-                _ens1ThreshPlay, _ens1ThreshPosition, predsObj = getEnsemblePosition(MLB_global.MODEL_PROBENS1, _hBookiePrice, _vBookiePrice, _ens1BookieMin, _ens1BookieMax, _ens1MajorityVote, _ens1VoteAgreement, _ens1HPrice, _ens1PriceMin, _ens1PriceMax, _ens1AgreeThreshold, _ens1BookieCentGap, predsObj)
-                _ens2ThreshPlay, _ens2ThreshPosition, predsObj = getEnsemblePosition(MLB_global.MODEL_PROBENS2, _hBookiePrice, _vBookiePrice, (_ens2BookieABSPriceMax*-1), _ens2BookieABSPriceMax, _ens2MajorityVote, _ens2VoteAgreement, _ens2HPrice, _ens2PriceMin, _ens2PriceMax, _ens2AgreeThreshold, _ens2BookieCentGap, predsObj)
-                # Strategy: 
-                #           5* play: ens2 fave; ens1 and ens2 agree on Dog play
-                #           3* play: (ens1 = Dog  > 60% and ens2 = NoPlay) or (ens1 = NoPlay and ens2 = Dog > 60%)
-                #           1* play: Default dog play
-                #           No Play: (ens1 = Dog  > 60% and ens2 = NoPlay) or (ens1 = NoPlay and ens2 = Dog > 60%)
-                if _ens2ThreshPlay: #could be Fave or Dog that meets strict threshold; 5* for Fave; 5* for Dog IF ens1 also agrees
-                    if  _ens2ThreshPosition == MLB_global.ACTION_LINE_HD or _ens2ThreshPosition == MLB_global.ACTION_LINE_VD:
-                        if _ens1ThreshPosition == _ens2ThreshPosition:
-                            _ensThreshPosition = _ens2ThreshPosition
-                            _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
-                            predsObj.addComment(MLB_global.messageScionEns1n2Play)
-                        else:
-                            if _ens1ThreshPosition == MLB_global.ACTION_LINE_HF or _ens1ThreshPosition == MLB_global.ACTION_LINE_VF:
-                                _ens1ThreshPlay = _ens2ThreshPlay = False
-                                _ensThreshPosition = _ens1ThreshPosition = _ens2ThreshPosition = MLB_global.ACTION_NOPLAY
-                                _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-                                predsObj.addComment(MLB_global.messageScionEns1n2Disagree)
-                            else: #ens1 must be No Play, thus ens2 is 3* dog play
-                                _ensThreshPosition = _ens2ThreshPosition
-                                _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
-                                predsObj.addComment(MLB_global.messageScionEns2MajorityVoteDogPlay)
-                    else: #5* Fave play if within desired constraints
-                        if (_ens2ThreshPosition == MLB_global.ACTION_LINE_HF and (_hBookiePrice >= -130 and _hBookiePrice <= -105)) or (_ens2ThreshPosition == MLB_global.ACTION_LINE_VF and (_hBookiePrice >= 120 and _hBookiePrice <= 210)):
-                            _ensThreshPosition = _ens2ThreshPosition
-                            _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
-                            predsObj.addComment(MLB_global.messageScionEns2Play)
-                        else:
-                            predsObj.addComment(MLB_global.messageScionEns2NoFavePlay)
-                            _defaultDogPlay = True
-                else: # 3* play if ens1 has a dog play
-                    if _ens1ThreshPlay and (_ens1ThreshPosition == MLB_global.ACTION_LINE_HD or _ens1ThreshPosition == MLB_global.ACTION_LINE_VD):
-                        _ensThreshPosition = _ens1ThreshPosition
-                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
-                        predsObj.addComment(MLB_global.messageScionEns1Play)
+        if MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice):
+            if not _hSP_Null and not _vSP_Null:
+                _ens1ThreshPlay, _ens1ThreshPosition, predsObj = validateEnsemblePosition(MLB_global.MODEL_PROBENS1, _hBookiePrice, _hDevigProb, _vBookiePrice, _vDevigProb, _ens1BookieMin, _ens1BookieMax, _ens1MajorityVote, _ens1VoteAgreement, _ens1HPrice, _ens1PriceMin, _ens1PriceMax, _ens1AgreeThreshold, _ens1ProbPointsEdge, _ens1ProbEdgeThreshold, predsObj)
+                _ens2ThreshPlay, _ens2ThreshPosition, predsObj = validateEnsemblePosition(MLB_global.MODEL_PROBENS2, _hBookiePrice, _hDevigProb, _vBookiePrice, _vDevigProb, _ens2BookieMin, _ens2BookieMax, _ens2MajorityVote, _ens2VoteAgreement, _ens2HPrice, _ens2PriceMin, _ens2PriceMax, _ens2AgreeThreshold, _ens2ProbPointsEdge, _ens2ProbEdgeThreshold, predsObj)
+                # Strategy: Ens1 = V119 Line and Stats, Ens2 = V123 StatsOnly (Bookie H Line +/-150)
+                #           5* play: ens1 and ens 2 agree on a Dog play after meeting its own price and gap constraints
+                #           3* play: ens1 HomFave play, ens2 is no play and meets its own price and gap constraints
+                #           1* play: a) ens1 and ens2 agree HomFave or b) ens1 is HF play, ens 2 is no play and ens1 meets price and gap constraints
+                #           No Play: VF play or price and gap constraints not met
+                if _ens1ThreshPlay and _ens2ThreshPlay and _ens1ThreshPosition == _ens2ThreshPosition: 
+                    _scionPOS = _ens1ThreshPosition
+                    _scionCONF = _ens1VoteAgreement
+                    predsObj.addComment(MLB_global.messageScionEns1n2Play)
+                    if _scionPOS == MLB_global.ACTION_LINE_HD or _scionPOS == MLB_global.ACTION_LINE_VD:
+                        _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
                     else:
-                        _defaultDogPlay = True
+                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+                #elif _ens1ThreshPlay and _ens2ThreshPlay and _ens1ThreshPosition != _ens2ThreshPosition: 
+                    #Play stat only
+                    #_scionPOS = _ens2ThreshPosition
+                    #_scionCONF = _ens2VoteAgreement
+                    #_scionMultiplier = _ens2Multiplier
+                    #_scionStake = _ens2Stake
+                    #_scionEdge = _ens2ProbPointsEdge
+                    #predsObj.addComment(MLB_global.messageScionEns2PlayEns1Disagree)
+                    #_starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
+                elif _ens1ThreshPlay and not _ens2ThreshPlay:
+                    if _ens1ThreshPosition == MLB_global.ACTION_LINE_HD or _ens1ThreshPosition == MLB_global.ACTION_LINE_VD:
+                        predsObj.addComment(MLB_global.messageScionEns1NoDogPlay)
+                    else:
+                        _scionPOS = _ens1ThreshPosition
+                        _scionCONF = _ens1VoteAgreement
+                        predsObj.addComment(MLB_global.messageScionEns1Play)
+                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+                elif _ens1ThreshPlay and _ens2ThreshPlay and _ens1ThreshPosition != _ens2ThreshPosition:
+                    predsObj.addComment(MLB_global.messageScionEns1n2Disagree)
+                else:
+                    predsObj.addComment(MLB_global.messageScionNoStrategyPlay)
             else:
-                predsObj.addComment(MLB_global.messageScionInvalidTeamPrice)
+                if _hSP_Null and not _vSP_Null:
+                    predsObj.addComment(MLB_global.messageScionNullHSP)
+                elif not _hSP_Null and _vSP_Null:
+                    predsObj.addComment(MLB_global.messageScionNullVSP)
+                else:
+                    predsObj.addComment(MLB_global.messageScionNullBothSP)
         else:
-            predsObj.addComment(MLB_global.messageScionNoPlayNullPitcher)
-        #3. Get Scion Play
-        if _defaultDogPlay:
-            # Now let's see if the dog meets threshold requirement
-            _ensThreshPosition = getDefaultDogPlay(_hBookiePrice, _vBookiePrice, sysCfgObj, predsObj)
-            if _ensThreshPosition == MLB_global.ACTION_NOPLAY:
-                predsObj.addComment(MLB_global.messageScionNoDefaultDogPlay)
-            else:  
-                _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
-                predsObj.addComment(MLB_global.messageScionDefaultDogPlay)
-        _scionPOS = _ensThreshPosition
-        predsObj.setPreds_Scion_Side_Stars(_starPlay)
-        _scionCONF = sysCfgObj.getSysSidePredConf(_scionPOS)
-        #4. Update preds Obj
-        #Annotate team name in iPos file
+            predsObj.addComment(MLB_global.messageScionInvalidTeamPrice)
+        #3. Determine the stake and multiplier for each ensemble and update the predsObj with the stake and multiplier values
+        
+        #4. Update predsObj with Ens stake and multiplier; Scion position, stake/multiplier, confidence, and star rating
+        #Ens stake and multiplier
+        if _ens1ThreshPlay:
+            _ens1Multiplier = MLB_global.getStakeMultiplier(_hBookiePrice, _vBookiePrice, _ens1MajorityVote)
+            _ens1Stake = MLB_global.getStakeAmount(_stakeMode, _kellyFrac, _hBookiePrice, _ens1HProb, _ens1MajorityVote, _ens1Multiplier)
+        if _ens2ThreshPlay:
+            _ens2Multiplier = MLB_global.getStakeMultiplier(_hBookiePrice, _vBookiePrice, _ens2MajorityVote)
+            _ens2Stake = MLB_global.getStakeAmount(_stakeMode, _kellyFrac, _hBookiePrice, _ens2HProb, _ens2MajorityVote, _ens2Multiplier)
+        predsObj.setPreds_Ens1_PlayPayoutMultiplier(_ens1Multiplier)
+        predsObj.setPreds_Ens1_PlayStake(_ens1Stake)
+        predsObj.setPreds_Ens2_PlayPayoutMultiplier(_ens2Multiplier)
+        predsObj.setPreds_Ens2_PlayStake(_ens2Stake)
+        #Scion incl annotations
+        predsObj.setPreds_Scion_Side_Position(_scionPOS)
+        predsObj.setPreds_Scion_Side_Confidence(_scionCONF)
+        predsObj.setPreds_Scion_Side_Stars(MLB_global.getNumStars(_starPlay)) #convert from enum to int
         if _scionPOS != MLB_global.ACTION_NOPLAY:
+            #Get stake multiplier (will ALWAYS be based on Ens1) as this will be required to determine the stake amount for the Scion play
+            predsObj.setPreds_Scion_HProbabilityEdge(_ens1ProbPointsEdge)
+            predsObj.setPreds_Scion_PlayStake(_ens1Stake)
+            predsObj.setPreds_Scion_PlayPayoutMultiplier(_ens1Multiplier)
             _numStars = MLB_global.getNumStars(_starPlay)
             if _scionPOS == MLB_global.ACTION_LINE_HF or _scionPOS == MLB_global.ACTION_LINE_HD:
                 predsObj.setPreds_iPos_H_Team_Sname(MLB_global.annotateWithStars(predsObj.getPreds_iPos_H_Team_Sname(),_numStars))
             else:
                 predsObj.setPreds_iPos_V_Team_Sname(MLB_global.annotateWithStars(predsObj.getPreds_iPos_V_Team_Sname(),_numStars))
         else:
+            predsObj.setPreds_Scion_HProbabilityEdge(0)
+            predsObj.setPreds_Scion_PlayStake(0)
+            predsObj.setPreds_Scion_PlayPayoutMultiplier(0)
             predsObj.updateiPosNoPlayPrices()
-        predsObj.setPreds_Scion_Side_Position(_scionPOS)
-        predsObj.setPreds_Scion_Side_Confidence(_scionCONF)
-        predsObj.setPreds_Scion_Side_Stars(MLB_global.getNumStars(_starPlay)) #convert from enum to int
 
     except Exception:
         print("\ndetermineScionSidePosition(): Unexpected error determining the Scion side position using one or more of the ensembles!\n")
@@ -404,7 +434,7 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
 
 def applySideStrategy(sysCfgObj, predsObj, _mupComments=False):
     # Assumption 1: a) system is configured for model (sysCfgObj) b) data has been generated and transformed ready for ML model to process (transGameOnj) c) preds obj holds key game and prediction  infomration to apply probability-based voting strategy
-    # Assumption 2: The strategy predictions are stored in relevant predsObj dict e.g. predsObj.preds_ens2_vote_dict{}
+    # Assumption 2: The strategy predictions are stored in relevant predsObj dict e.g. predsObj.preds_ens1_vote_dict{}
     # Assumption 3: _mupsComment has already been written to preds dict and this func will only write it to pred plays dict IF it is not empty
     try:
         #1. Get ensemble positions and store in preds
@@ -470,9 +500,9 @@ def evaluateModelResponse(task, sysCfgObj, transGameObj, predsObj):
         _modelEns = sysCfgObj.getCurrentTaskModelEnsemble()
         _taskRndPred = int(sysCfgObj.getCurrentModelRoundPreds())
         _modelScaleType = sysCfgObj.getCurrentModelIpScaleType()
-        _h_bookie_price = predsObj.getPreds_H_Bookie_Price()
-        _h_bookie_prob = predsObj.getPreds_H_Bookie_Prob()
-        _v_bookie_price = predsObj.getPreds_V_Bookie_Price()
+        _h_bookie_price = predsObj.getPreds_H_Bookie_Bet_Price()
+        _h_bookie_prob = predsObj.getPreds_H_Bookie_Bet_Prob()
+        _v_bookie_price = predsObj.getPreds_V_Bookie_Bet_Price()
         playPos = MLB_global.ACTION_NOPLAY
         p = 0.0
         _modelProbs=[]
@@ -502,11 +532,8 @@ def evaluateModelResponse(task, sysCfgObj, transGameObj, predsObj):
                                 #descale and round if required
                                 sysMinP = float(sysCfgObj.getSysProbMin())
                                 sysMaxP = float(sysCfgObj.getSysProbMax())
-                                ens = sysCfgObj.getCurrentTaskModelEnsemble()
-                                if ens == MLB_global.MODEL_PROBENS1: #V113PM210
-                                    _probThresh = float(sysCfgObj.getSysProbPM210Thresh())
-                                else: #V113PM150
-                                    _probThresh = float(sysCfgObj.getSysProbThresh())
+                                ens = sysCfgObj.getCurrentTaskModelEnsemble() #No need to check this, as only one ensemble is supported.
+                                _probThresh = float(sysCfgObj.getSysProbThresh())
                                 p = float(token) #prediction (08May24: this is too blunt a value, so we use _modelProbs value)
                                 p = transGameObj.limitFeature(p, sysMinP, sysMaxP)
                                 if _modelTarget == "B1": #  Only "B1 Home Win" is supported
@@ -654,6 +681,7 @@ def getModelResponse(sysCfgObj, transGameObj):
     return success
 
 def _getStrengthValueAndCategory(dgenObj, fieldName, stats_df, avgIndex, stdevIndex, flipCategory=False):
+    # Note Higher value doesnt necessarily mean good hence the flip option (although I dont like this old sloppy programming and it needs to go)
     _strValue = _avgVal = _stdeVal = 0.0
     _strCateg = ""
     #a. get strength value
@@ -686,23 +714,23 @@ def updatePredsWithStrPriceCateg(dgenObj, predsObj, sysCfgObj):
     _strValue = _strPrice = 0.0
     _strCateg = ""
     #c. Update team-based Offense strength values and categories
-    _fieldName = MLB_dbvar.dbvar_V_MenOnBase_Strength_20G
+    _fieldName = MLB_dbvar.dbvar_V_MenOnBase_Strength_YTD
     _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex)
     predsObj.setPreds_V_Offense_StrengthCategory(_strCateg)
     _strPrice = predsObj.getPreds_V_OffensePrice()
     predsObj.setPreds_V_OffenseStrPrice(_annotatePrice(_strPrice, _strCateg))
-    _fieldName = MLB_dbvar.dbvar_H_MenOnBase_Strength_20G
+    _fieldName = MLB_dbvar.dbvar_H_MenOnBase_Strength_YTD
     _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex)
     predsObj.setPreds_H_Offense_StrengthCategory(_strCateg)
     _strPrice = predsObj.getPreds_H_OffensePrice()
     predsObj.setPreds_H_OffenseStrPrice(_annotatePrice(_strPrice, _strCateg))
     #d. Update team-based Defense/Pitcher strength values and categories
-    _fieldName = MLB_dbvar.dbvar_V_StartingPitcher_BaseOnBallsStrikeouts_Ratio_5G
-    _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex, True)
+    _fieldName = MLB_dbvar.dbvar_G_VHRatio_StartingPitcher_Strikeouts_YTD
+    _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex)
     predsObj.setPreds_V_DefenseStrengthCategory(_strCateg)
     _strPrice = predsObj.getPreds_V_DefensePrice()
     predsObj.setPreds_V_DefenseStrPrice(_annotatePrice(_strPrice, _strCateg))
-    _fieldName = MLB_dbvar.dbvar_H_StartingPitcher_BaseOnBallsStrikeouts_Ratio_5G
+    _fieldName = MLB_dbvar.dbvar_G_VHRatio_StartingPitcher_Strikeouts_YTD
     _strValue, _strCateg = _getStrengthValueAndCategory(dgenObj, _fieldName, _feature_insample_stats_df, _avgIndex, _stdevIndex, True)
     predsObj.setPreds_H_DefenseStrengthCategory(_strCateg)
     _strPrice = predsObj.getPreds_H_DefensePrice()
@@ -717,10 +745,10 @@ def updatePredsWithdGEN(dgenObj, predsObj, sysCfgObj):
     #a. Compound Date-based attributes
     predsObj.setPreds_monthweek(dgenObj._currentgame_df[MLB_dbvar.dbvar_G_MonthWeek].values[0])
     #b. Team-based Offense and Defense prices 
-    predsObj.setPreds_H_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_H_MenOnBase_Strength_20G].values[0]))
-    predsObj.setPreds_H_DefensePrice(MLB_global.convertProbtoMoneyLine(1 - dgenObj._currentgame_df[MLB_dbvar.dbvar_H_StartingPitcher_BaseOnBallsStrikeouts_Ratio_5G].values[0]))
-    predsObj.setPreds_V_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_V_MenOnBase_Strength_20G].values[0]))
-    predsObj.setPreds_V_DefensePrice(MLB_global.convertProbtoMoneyLine(1 - dgenObj._currentgame_df[MLB_dbvar.dbvar_V_StartingPitcher_BaseOnBallsStrikeouts_Ratio_5G].values[0]))
+    predsObj.setPreds_H_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_H_MenOnBase_Strength_YTD].values[0]))
+    predsObj.setPreds_H_DefensePrice(MLB_global.convertProbtoMoneyLine(1 - dgenObj._currentgame_df[MLB_dbvar.dbvar_G_VHRatio_StartingPitcher_Strikeouts_YTD].values[0]))
+    predsObj.setPreds_V_OffensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_V_MenOnBase_Strength_YTD].values[0]))
+    predsObj.setPreds_V_DefensePrice(MLB_global.convertProbtoMoneyLine(dgenObj._currentgame_df[MLB_dbvar.dbvar_G_VHRatio_StartingPitcher_Strikeouts_YTD].values[0]))
     predsObj = updatePredsWithStrPriceCateg(dgenObj, predsObj, sysCfgObj)
     #c. Initialise prediction vars
     predsObj.setPreds_Ens1_PlayPosition(MLB_global.ACTION_NOPLAY)
@@ -729,9 +757,11 @@ def updatePredsWithdGEN(dgenObj, predsObj, sysCfgObj):
     
     return predsObj
 
-def processBookieMiddleLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData):
-    #Assumption 1: gameData stores the original Middle Line (so we can roll back to it if we span in other direction)
-    #Assumption 2: MUPs object stores the revised MiddleLine
+def processBookieHomeLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData):
+    # THIS WILL NEED REDESIGNING TO TAKE ACCOUNT OF HOM_ML AND PROB DIFF FROM ORIGINAL OPENING PROB (SO WE EXTEND THE CLOSE)
+    #Assumption 1: gameData stores the original HOM Lines (so we can roll back to it if we span in other direction)
+    #Assumption 2: MUPs object stores the revised HOM and VIS Lines
+    #Assumption 3: Vis Lines are NOT altered in any way and there it is assumed there is no requirement to do so.
     #0. Init vars
     game_span_processed = False
     bookieHMiddleLine = mupsDB.getCurrentMUPBOOKIEML()
@@ -817,19 +847,17 @@ if __name__ == "__main__":
             gameData = MLB_dgen.scionDGEN(logs_out_dir, masterDB, mupsDB, sysCfg)
             gameDataWd = gameData.getWorkingDir()
             #3.3 Init preds with current game information from mupsDB
-
             predsObj.initPredsALL(mupsDB)
             #3.4 Report progress to the user
             per_complete = 0.00
             if numMups > 0:
                 per_complete = (mupIndex+1)/numMups*100
-            original_hml = predsObj.getPreds_opmidl()
-            original_vig = predsObj.getPreds_opvig()
-            print("\rGenerating predictions --> game {0} of {1} ({2:.1f}%)".format(mupIndex+1, numMups, per_complete) + " [ {0} {1} @ {2} | MIDDLE LINE {3} | VIG {4} ]".format(str(mupsDB.current_mup_dict[mupsDB.mup_date_attrib]), 
-                                                                                                                                                                                            str(mupsDB.current_mup_dict[mupsDB.mup_vis_sname_attrib]), 
-                                                                                                                                                                                            str(mupsDB.current_mup_dict[mupsDB.mup_hom_sname_attrib]), 
-                                                                                                                                                                                            original_hml,
-                                                                                                                                                                                            original_vig), end="                   ")
+            original_hml = predsObj.getPreds_H_Bookie_Bet_Price()
+            original_total = float(mupsDB.getCurrentMUPOverClose())
+            print("\rGenerating predictions --> game {0} of {1} ({2:.1f}%)".format(mupIndex+1, numMups, per_complete) + " [ {0} {1} @ {2} | HML {3} | TOTAL {4} ]".format(str(mupsDB.current_mup_dict[mupsDB.mup_date_attrib]), 
+                                                                                                                                                                    str(mupsDB.current_mup_dict[mupsDB.mup_vis_sname_attrib]), 
+                                                                                                                                                                    str(mupsDB.current_mup_dict[mupsDB.mup_hom_sname_attrib]), 
+                                                                                                                                                                    original_hml, original_total), end="                   ")
             sys.stdout.flush()
             #3.5 Validate inputs related to opl and opt and also MUP game date and comments
             skip_game = False #assume all is okay with the game until we have evidence to the contrary
@@ -837,7 +865,7 @@ if __name__ == "__main__":
             if _mupComments and str(MLB_dbvar.NO_DATA) not in _mupComments:
                 _mupComments = MLB_global.punctuateComment(_mupComments)
                 predsObj.addComment(_mupComments) #Add to comments field in preds file
-            if int(original_hml) == MLB_dbvar.NO_DATA or int(original_vig) == MLB_dbvar.NO_DATA:
+            if int(original_hml) == MLB_dbvar.NO_DATA or int(original_total) == MLB_dbvar.NO_DATA:
                 skip_game = True #skip game
                 #issue message in preds comments field
                 predsObj.addComment(MLB_global.messageGameSkipMissingOPLOPTOVIG)
@@ -938,7 +966,7 @@ if __name__ == "__main__":
                         predsObj.storeSummaryPreds()
                         predsObj.storePredsAsMarkdown()
                         #3.15 Process span
-                        game_span_processed, game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData = processBookieMiddleLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData)
+                        game_span_processed, game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData = processBookieHomeLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData)
                 else:
                     #we still want to store information about skipped games so create id and update verbose dataframe
                     _predId = predsObj._createPredId()

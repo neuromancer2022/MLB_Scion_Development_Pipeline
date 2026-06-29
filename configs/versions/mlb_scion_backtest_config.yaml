@@ -1,14 +1,12 @@
 # ============================================================
-# MLB Scion Development Configuration — Base
+# MLB Scion Development Configuration — Backtest
 # ============================================================
-# This is the baseline development config. It mirrors the
-# production config but points at development data and results.
+# Used by scripts/run_backtest.py to run Scion against a
+# historical mups file and evaluate performance.
 #
-# For experiments, copy this file to configs/experiments/
-# and modify the specific parameters you are testing.
-# Name experiment configs descriptively, e.g.:
-#   exp_001_agreethresh_0.75.yaml
-#   exp_002_modelthresh_0.55_pm210.yaml
+# data/backtest/insample/  — games from the model training period
+# data/backtest/outsample/ — games from after the training cutoff
+#                            (2024+ for models trained to 2023)
 #
 # ============================================================
 
@@ -19,7 +17,8 @@ config_fname: "MLB_Scion_CFG.txt"
 # --- Input data paths ---------------------------------------
 input:
   sciondata_file: "data/sciondata/mlbsciondata.csv"
-  mups_file:      "data/mups/mlbmups.csv"
+  # Switch between insample and outsample as needed:
+  mups_file:      "data/backtest/outsample/mlbmups_backtest.csv"
 
 # --- Output paths -------------------------------------------
 # These paths are passed as environment variables to MLB_Scion.py.
@@ -27,6 +26,6 @@ input:
 # to predictions_dir. Log files are written to logs_dir.
 # tempfiles_dir holds intermediate test pattern files during model runs.
 output:
-  predictions_dir: "results/experiments"
+  predictions_dir: "results/backtests"
   logs_dir:        "results/logs"
   tempfiles_dir:   "results/tempfiles"

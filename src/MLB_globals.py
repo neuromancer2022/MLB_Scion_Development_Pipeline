@@ -5,6 +5,7 @@ from datetime import datetime, date, time, timedelta
 import time
 import pandas as pd
 import math
+import numpy as np
 from pathlib import Path
 import enum
 import shlex #for splitting strings by white space but preserving words within quotes
@@ -14,6 +15,8 @@ import MLB_dbvar as MLB_dbvar
 
 MASK_ON = 1
 EPSILON = 0.00001 #this is to avoid divide by zero errors with iqr and log calculations; see https://blogs.sas.com/content/iml/2011/04/27/log-transformations-how-to-handle-negative-data-values.html
+FIP_FALLBACK = 4.0          # recent MLB league-average FIP
+BULLPEN_ERA_FALLBACK = 4.2  # recent MLB league-average bullpen ERA
 # Using enum class create enumerations
 class ScaleTypes(enum.Enum):
    NoScale = 0
@@ -106,6 +109,7 @@ ACTION_LINE_HF = "HomFave"
 ACTION_LINE_HD = "HomDog"
 ACTION_LINE_VF = "VisFave"
 ACTION_LINE_VD = "VisDog"
+ACTION_LINE_TIE= "Tie"
 ACTION_LINE_POS = "+"
 ACTION_LINE_NEG = "-"
 ACTION_LINE_ZERO = "0"
@@ -127,6 +131,7 @@ TEXT_HIGHLIGHT_DELIMITER3 = "^"
 DEFAULT_CONF_PROB = 0.50
 NN_DP_PRECISION = 9
 DROP_ATTRIB = 2
+RESULTS_SAVE_FACTOR = 3
 
 #System Messages (NOTE: OPP variables discontinued)
 messageGameDataSuccess = "Game data generated. "
@@ -285,22 +290,163 @@ def calcTotalBases(hits, runs2b, runs3b, homeruns):
     return float(hits+runs2b+(2*runs3b)+(3*homeruns))
 
 def calcRatio(x, y, zeroToMidPoint=False):
-    if y == 0:
+    """x / y, with fallback for near-zero denominators.
+
+    Returns:
+      - x / y  when |y| >= 1e-6
+      - 1.0    when |y| < 1e-6 and zeroToMidPoint=True
+      - 0.00   when |y| < 1e-6 and zeroToMidPoint=False
+
+    The |y| < 1e-6 zero-tolerance (tightened from the original `if y == 0`)
+    catches floating-point residue that the exact-equality check missed.
+
+    SEMANTIC LIMITATION - read before adding new call sites:
+
+    When |y| < 1e-6 and |x| > 0, the true value of x/y is mathematically
+    +/- infinity, but this function returns 0.00 (or 1.0). That fallback
+    is INFORMATION-LOSING and silently wrong for some call sites:
+
+      - Run_Pythag (FIXED at call site, not here): using this function for
+        R = calcRatio(Runs_Gained, Runs_Allowed) returns 0 when RA=0,
+        which mislabels a perfectly-dominant team (no runs allowed) as
+        worst-Pythag (Pythag=0). Cascades into Pythag_Luck_Factor as a
+        false 'maximally lucky' signal. FIX: use closed-form
+            Pythag = RG^2 / (RG^2 + RA^2)
+        directly, bypassing calcRatio entirely. Well-defined as 1.0
+        when RA=0 and RG>0. See pythag.py in the data-quality pipeline
+        for the drop-in pattern.
+
+      - Other MEDIUM-risk call sites (rare edge cases, no semantic
+        inversion like Pythag had - left to call-site fixes when
+        convenient):
+            EarnedRunAvg          = ER / IP  (IP=0 with ER>0 -> 0)
+            MenOnBase_Efficiency  = Runs / MOB  (MOB=0 with Runs>0 -> 0)
+            MenOnBaseTBRatio      = TotalBases / MOB
+            WalkStrikeoutRatio    = Walks / Strikeouts  (K=0 with BB>0 -> 0)
+
+    For LOW-risk call sites (NP, OutsPitched, AtBats, accumulated career
+    totals etc.) the denominator is never plausibly zero in real data,
+    so the fallback semantics are immaterial.
+    """
+    # If either input is NaN, the share is undefined, so return the neutral
+    if pd.isna(x) or pd.isna(y):
+        if zeroToMidPoint:
+            return 1.0
+        return 0
+    if abs(y) < 1e-6:
         if zeroToMidPoint:
             return 1.0
         return 0.00
-    else:
-        return float(x / y)
-
+    return float(x / y)
+    
 def calcProbRatio(x, y, zeroToMidPoint=False):
-    sum = float(x + y)
-    if not sum or not x:
+    """X/(X+Y) share with three-layer fallback when undefined.
+
+    Fallback layers (any one triggers the neutral 0.5 / 0.0 return):
+      1. Either input is NaN.
+      2. |X+Y| < 1e-6 (exact cancellation or FP residue from signed inputs).
+      3. Result < 0 or > 1 (signed inputs partially cancelled but |X+Y| > 1e-6,
+         producing a mathematically-valid but non-share value). Required for
+         signed centred-at-zero variables like Pythag_Luck_Factor and any other
+         feature whose H and V values can have opposite sign with similar
+         magnitude. Without this guard, X/(X+Y) can land anywhere in (-inf, inf)
+         when sum nearly cancels - previously seen at -1000 and +1551 in
+         G_VHRatio_Pythag_Luck_Factor data.
+
+    For non-negative inputs (counts, totals, magnitudes), layer 3 never fires:
+    X/(X+Y) is mathematically guaranteed to be in [0,1]. So this guard is a
+    no-op for the common case and a safety net for the signed case.
+    """
+    # Layer 1: NaN input -> neutral share
+    if pd.isna(x) or pd.isna(y):
+        return 0.5
+    # Layer 2: near-zero denominator (catches cancellation residue too)
+    denom = float(x + y)
+    if abs(denom) < 1e-6:
+        if zeroToMidPoint:
+            return 0.5          # neutral share - H and V indistinguishable
+        return 0.00
+    ratio = float(x / denom)
+    # Layer 3: out-of-[0,1] result -> sign-conflict between H and V
+    if ratio < 0.0 or ratio > 1.0:
         if zeroToMidPoint:
             return 0.5
         return 0.00
-    else:
-        return float(x / sum)
-    
+    return ratio
+
+def divByZeroCatch(numerator, denominator, min_denominator=1e-6):
+    """Safe division. Returns NaN if denominator is too close to
+    zero or if inputs/result are not finite."""
+    if pd.isna(numerator) or pd.isna(denominator):
+        return np.nan
+    if abs(denominator) < min_denominator:
+        return np.nan
+    result = numerator / denominator
+    if not np.isfinite(result):
+        return np.nan
+    return result
+ 
+def computeFIP(hr_allowed, walks_allowed, hbp_allowed, k_gained,
+               outs_pitched, min_ip=5.0):
+    """Compute Fielding-Independent Pitching with defensive guards.
+
+    Returns the formula result when inputs are valid and IP >= min_ip.
+    Otherwise returns FIP_FALLBACK (module-level constant, default 4.0)
+    rather than NaN, since dGEN runs standalone without the imputer
+    pipeline and every output cell must be a usable numeric value.
+
+    min_ip default 5.0 suits 10G windows; lower it (e.g. 3.0) for the
+    smaller YTD_HV home-only sample. To tune the fallback value globally,
+    edit FIP_FALLBACK at the top of this module.
+    """
+    inputs = [hr_allowed, walks_allowed, hbp_allowed, k_gained, outs_pitched]
+    if any(pd.isna(v) for v in inputs):
+        return FIP_FALLBACK
+    ip = outs_pitched / 3.0
+    if ip < min_ip:
+        return FIP_FALLBACK
+    fip = (13 * hr_allowed + 3 * (walks_allowed + hbp_allowed)
+           - 2 * k_gained) / ip + 3.12
+    if not np.isfinite(fip):
+        return FIP_FALLBACK
+    return fip
+ 
+def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3,
+                     era_cap=27.0):
+    """Compute approximate bullpen ERA with defensive guards.
+
+    Returns a value in [0, era_cap] in all cases. When inputs are invalid
+    (NaN, low IP, non-finite result), returns BULLPEN_ERA_FALLBACK (module-
+    level constant, default 4.2) rather than NaN. dGEN runs standalone here
+    without the imputer pipeline, so every output cell must be a usable
+    numeric value.
+
+    Why the floor + cap (added v5.7):
+
+    The arithmetic bullpen_er = team_er - sp_er pairs a TEAM-window stat
+    with an SP-window stat over different game sets, so sp_er > team_er
+    is entirely possible and produces negative bullpen_er. Floor at 0
+    (physical: bullpen cannot allow negative earned runs). The x27
+    multiplier inflates small-window noise into wild outliers; cap at
+    27.0 (per-inning physical ceiling) suppresses small-sample noise.
+
+    To tune the fallback value globally, edit BULLPEN_ERA_FALLBACK at
+    the top of this module.
+    """
+    if any(pd.isna(v) for v in [team_er, sp_er, bullpen_outs]):
+        return BULLPEN_ERA_FALLBACK
+    if bullpen_outs < min_outs:
+        return BULLPEN_ERA_FALLBACK
+    # Floor: bullpen cannot allow negative earned runs.
+    bullpen_er = max(0.0, team_er - sp_er)
+    era = 27.0 * bullpen_er / bullpen_outs
+    if not np.isfinite(era):
+        return BULLPEN_ERA_FALLBACK
+    # Cap: per-inning physical ceiling.
+    if era > era_cap:
+        era = era_cap
+    return era
+
 def calcAddFeatures(x, y):
     if x == MLB_dbvar.NO_DATA or y == MLB_dbvar.NO_DATA:
         return 0.00
@@ -410,4 +556,3 @@ def getNumStars(numStars):
         return 5
     else:
         return 0
-        

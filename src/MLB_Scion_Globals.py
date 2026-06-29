@@ -5,21 +5,25 @@ from datetime import datetime, date, time, timedelta
 import time
 import pandas as pd
 import math
+import numpy as np
 from pathlib import Path
 import enum
 import shlex #for splitting strings by white space but preserving words within quotes
 import MLB_dbvar as MLB_dbvar
 
 # Define key global vars
-APP_VER = "V25.08b2 (Standard Edition)"
-APP_VER_SHORT = "V25_08b2SE"
+APP_VER = "V26.06a (Standard Edition)"
+APP_VER_SHORT = "V26_06a2SE"
 APP_NAME = "MLB Scion" 
 APP_NAME_SHORT = "Scion" 
 APP_BANNER = "** " + APP_NAME + " " + APP_VER + " **"
-APP_OWNER = "Perceptronix Ltd (c) 2025"
+APP_OWNER = "Perceptronix Ltd (c) 2026"
 
 MASK_ON = 1
 EPSILON = 0.00001 #this is to avoid divide by zero errors with iqr and log calculations; see https://blogs.sas.com/content/iml/2011/04/27/log-transformations-how-to-handle-negative-data-values.html
+FIP_FALLBACK = 4.0          # recent MLB league-average FIP
+BULLPEN_ERA_FALLBACK = 4.2  # recent MLB league-average bullpen ERA
+
 # Using enum class create enumerations
 class ScaleTypes(enum.Enum):
    NoScale = 0
@@ -44,6 +48,11 @@ class MiddleLineTypes(enum.Enum):
    Unknown = 0
    Prob = 1
    Money = 2
+
+class StakeTypes(enum.Enum):
+   Unknown = 0
+   Flat = 1
+   Kelly = 2
 
 class ModelTypes(enum.Enum):
 	NN = 0
@@ -70,6 +79,11 @@ class ModelConfidenceTypes(enum.Enum):
 	FOURSTAR = 4
 	FIVESTAR = 5
 
+class EnsembleProbabilityTypes(enum.Enum):
+   Default = 0
+   MedianAllVoters = 1
+   AvgMajorityVotersOnly = 2
+
 GAME_ID_INDEX = 0  # relates to index of value in main dictionary
 GAME_THRESHOLD = 5 # different to NBA (which is 3)
 H_OR_V_INDEX = 1  # relates to index of value in main dictionary
@@ -85,6 +99,8 @@ SLEEPLEN = 3
 VIS_VIG_PRICE_PERC = 5
 OPT_MEDIAN = 8.5
 DEFAULT_SPAN_CENTS = 5
+DEFAULT_FLAT_STAKE_UNITS = 1.0
+DEFAULT_FRACT_KELLY = 0.25
 BOOKIEPROBADJVAL = 0.15
 BOOKIETOTADJVAL = 3.0
 AVG_H = "H"
@@ -125,8 +141,8 @@ ACTION_LINE_POS = "+"
 ACTION_LINE_NEG = "-"
 ACTION_LINE_ZERO = "0"
 MODEL_PRED_SEPARATOR = " "
-MODEL_PROBENS1 = "V113PM210_2023"
-MODEL_PROBENS2 = "V113PM150_2023"
+MODEL_PROBENS1 = "LINESTAT_PM150"
+MODEL_PROBENS2 = "STATONLY_PM150"
 MODEL_TOTALENS = "TOTALENS"
 MODEL_PROBENS = [MODEL_PROBENS1, MODEL_PROBENS2]
 HISTORY_LENGTHS = [5,10, 20, 365]
@@ -150,7 +166,7 @@ NN_DP_PRECISION = 9
 DROP_ATTRIB = 2
 
 #System Messages (NOTE: OPP variables discontinued)
-messageGameSkipMissingOPLOPTOVIG = "Game skipped - one or more of the following missing: BOOKIE H MIDDLE LINE, VIG, BOOKIE TOTAL. "
+messageGameSkipMissingOPLOPTOVIG = "Game skipped - Bookie line information missing. "
 messageGameDataSuccess = "Game data generated. "
 messageGameSkipDateOutOfRange = "Game skipped - The date range for the matchup is outside of the limits of the master database. "
 messageGameSkipMissingGame = "Game skipped - cannot find the game data for this game. "
@@ -165,38 +181,45 @@ messageOPLAdjusted = "Moneyline is a SPAN value. "
 messageGameHomePitcherNoData = "H_SP is Null, team-based avg used. "
 messageGameVisPitcherNoData = "V_SP is Null, team-based avg used. "
 #Ensemble play determination messages
-messageScionNoVFPlay = "VF plays are NOT supported. "
+messageScionNoVFPlay = "VF plays are disallowed. "
+messageScionNoStrategyPlay = "No play due to strategy constraints. "
 messageScionEnsNoFavePlay = "Fave plays are disallowed. "
-messageScionEns1Play = "Play determined by Ens1 only. "
-messageScionEns2Play = "Play determined by Ens2 only. "
-messageScionEns1n2Play = "Play determined by Ens1 and Ens2 agreement. "
-messageScionEns1n2Disagree = "No play as Ens1 and Ens2 have conflicting positions. "
+messageScionEns1NoDogPlay = "LineStatEns only dog plays disallowed. "
+messageScionEns1Play = "Play determined by LineStatEns only. "
+messageScionEns2Play = "Play determined by StatOnlyEns only. "
+messageScionEns2PlayEns1Disagree = "Play determined by StatOnlyEns when it disagrees with LineStatEns. "
+messageScionEns1n2Play = "Play determined by LineStatEns and StatOnlyEns agreement. "
+messageScionEns1n2Disagree = "No play as LineStatEns and StatOnlyEns disagree. "
 #Ensemble majority vote and price DISAGREE messages
-messageScionEns1PricePlayMismatch = "Ens1 price diagrees with Ens1 majority vote! "
-messageScionEns2PricePlayMismatch = "Ens2 price diagrees with Ens2 majority vote! "
-#Ensemble price not exceed gap
-messageScionEns1GapNotExceeded = "Ens1 price does not exceed cent_gap constraint! "
-messageScionEns2GapNotExceeded = "Ens2 price does not exceed cent_gap constraint! "
+messageScionEns1PricePlayMismatch = "LineStatEns price diagrees with LineStatEns majority vote! "
+messageScionEns2PricePlayMismatch = "StatOnlyEns price diagrees with StatOnlyEns majority vote! "
+#Ensemble probability-based restrictions
+messageScionEns1GapNotExceeded = "LineStatEns probability points gap does not exceed threshold (no edge found)! "
+messageScionEns1GapAgainstVote = "LineStatEns probability points gap exceeded but against its vote! "
+messageScionEns2GapNotExceeded = "StatOnlyEns probability points gap does not exceed threshold (no edge found)! "
+messageScionEns2GapAgainstVote = "StatOnlyEns probability points gap exceeded but against its vote! "
 #Ensemble price outside allowable range
-messageScionEns1OutsideRange = "Ens1 price is outside allowable range! "
-messageScionEns2OutsideRange = "Ens2 price is outside allowable range! "
+messageScionEns1OutsideRange = "LineStatEns price is outside allowable range! "
+messageScionEns2OutsideRange = "StatOnlyEns price is outside allowable range! "
 #Ensemble ignored due to either outside bookieline constraints 
-messageScionEns1BookieOutsideRange = "Ens1 is NoPlay as bookie-line outside range. "
-messageScionEns2BookieOutsideRange = "Ens2 is NoPlay as bookie-line outside range. "
-messageScionEns2NoFavePlay = "Ens2 is NoPlay as bookie-line outside range for Fave play. "
+messageScionEns1BookieOutsideRange = "LineStatEns is NoPlay as bookie-line outside range. "
+messageScionEns2BookieOutsideRange = "StatOnlyEns is NoPlay as bookie-line outside range. "
+messageScionEns2NoFavePlay = "StatOnlyEns is NoPlay as bookie-line outside range for Fave play. "
 #Ensemble ignored due to voter agreement threshold not satisfied
-messageScionEns1InsufficientVoters = "Ens1 is NoPlay due to insufficient voter agreement. "
-messageScionEns2InsufficientVoters = "Ens2 is NoPlay due to insufficient voter agreement. "
+messageScionEns1InsufficientVoters = "LineStatEns is NoPlay due to insufficient voter agreement. "
+messageScionEns2InsufficientVoters = "StatOnlyEns is NoPlay due to insufficient voter agreement. "
 #No play due to Null Pitcher
-messageScionNoPlayNullPitcher = "NoPlay due to a NULL Starting Pitcher. "
+messageScionNullHSP = "NoPlay as H_SP is Null. "
+messageScionNullVSP = "NoPlay as V_SP is Null. "
+messageScionNullBothSP = "NoPlay as BOTH H_SP and V_SP are Null. "
 #No play due to H or V price evaluating to an abs value within 0 to 99
-messageScionInvalidTeamPrice = "Ens2 is NoPlay due to an invalid bookie team price being calculated. Game skipped! "
+messageScionInvalidTeamPrice = "StatOnlyEns is NoPlay due to an invalid bookie team price being calculated. Game skipped! "
 #unknown
 messageScionEnsUnknownEnsemble = "Unknown ensemble. "
 #default DOG play   
 messageScionDefaultDogPlay = "Default dog play! "
 messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not met! "
-messageScionEns2MajorityVoteDogPlay = "Ens2 Majority Vote Dog play! "
+messageScionEns2MajorityVoteDogPlay = "StatOnlyEns Majority Vote Dog play! "
 
 def setColType(df, col_list, col_type):
     try:
@@ -233,6 +256,17 @@ def hasTaskTypeName(usrName):
     validNames = set(item.name for item in TaskTypes)
     return usrName in validNames
 
+def getStakeTypeName(stakeNo):
+    return StakeTypes(stakeNo).name
+
+def hasStakeTypeValue(usrValue):
+    validValues = set(item.value for item in StakeTypes)
+    return usrValue in validValues
+
+def hasStakeTypeName(usrName):
+    validNames = set(item.name for item in StakeTypes)
+    return usrName in validNames
+
 def isOppSide(price1, price2):
     if (price1 < 0 and price2 > 0) or (price1 > 0 and price2 < 0):
         return True
@@ -267,13 +301,6 @@ def calcPriceDiff(bookiePrice, modelPrice):
     else:
         priceDiff = math.fabs(modelPrice-bookiePrice)
     return round(priceDiff,2)
-
-def validTeamPrice(teamPrice):
-    _teamPrice = abs(teamPrice)
-    if _teamPrice >=100:
-        return True
-    else:
-        return False
 
 #This formula is as per the MLB strategy spreadsheet
 # =IF(HOMPRICE<=0,IF(HOMPRICE=-100,100,IF(ABS(HOMPRICE+(VIG/100*ABS(HOMPRICE)))<100,100,ABS(HOMPRICE+(VIG/100*ABS(HOMPRICE))))),-1*HOMPRICE-(VIG/100*ABS(HOMPRICE)))
@@ -339,6 +366,24 @@ def ConvertMiddleLineToPrices(mLine, centVig, mLineType=None):
     
     return _homePrice, _visPrice
 
+def validTeamPrice(teamPrice):
+    _teamPrice = abs(teamPrice)
+    if _teamPrice >=100:
+        return True
+    else:
+        return False
+    
+def calcDeVigProb(bookieHProb, bookieVProb, h_or_v):
+    _totalProb = bookieHProb + bookieVProb
+    deVigProb = 0.5
+    if _totalProb != 0:
+        if h_or_v == HOME:
+            deVigProb = bookieHProb / _totalProb
+        else:
+            deVigProb = bookieVProb / _totalProb
+
+    return deVigProb
+
 def punctuateComment(strComment):
     _punct = ". "
     if strComment:
@@ -377,23 +422,176 @@ def calcMOB(hits, walks, runs2b, homeruns, hitsbypitch, errors, doubleplays):
 def calcTotalBases(hits, runs2b, runs3b, homeruns):
     return float(hits+runs2b+(2*runs3b)+(3*homeruns))
 
+
+
 def calcRatio(x, y, zeroToMidPoint=False):
-    if y == 0:
+    """x / y, with fallback for near-zero denominators.
+
+    Returns:
+      - x / y  when |y| >= 1e-6
+      - 1.0    when |y| < 1e-6 and zeroToMidPoint=True
+      - 0.00   when |y| < 1e-6 and zeroToMidPoint=False
+
+    The |y| < 1e-6 zero-tolerance (tightened from the original `if y == 0`)
+    catches floating-point residue that the exact-equality check missed.
+
+    SEMANTIC LIMITATION - read before adding new call sites:
+
+    When |y| < 1e-6 and |x| > 0, the true value of x/y is mathematically
+    +/- infinity, but this function returns 0.00 (or 1.0). That fallback
+    is INFORMATION-LOSING and silently wrong for some call sites:
+
+      - Run_Pythag (FIXED at call site, not here): using this function for
+        R = calcRatio(Runs_Gained, Runs_Allowed) returns 0 when RA=0,
+        which mislabels a perfectly-dominant team (no runs allowed) as
+        worst-Pythag (Pythag=0). Cascades into Pythag_Luck_Factor as a
+        false 'maximally lucky' signal. FIX: use closed-form
+            Pythag = RG^2 / (RG^2 + RA^2)
+        directly, bypassing calcRatio entirely. Well-defined as 1.0
+        when RA=0 and RG>0. See pythag.py in the data-quality pipeline
+        for the drop-in pattern.
+
+      - Other MEDIUM-risk call sites (rare edge cases, no semantic
+        inversion like Pythag had - left to call-site fixes when
+        convenient):
+            EarnedRunAvg          = ER / IP  (IP=0 with ER>0 -> 0)
+            MenOnBase_Efficiency  = Runs / MOB  (MOB=0 with Runs>0 -> 0)
+            MenOnBaseTBRatio      = TotalBases / MOB
+            WalkStrikeoutRatio    = Walks / Strikeouts  (K=0 with BB>0 -> 0)
+
+    For LOW-risk call sites (NP, OutsPitched, AtBats, accumulated career
+    totals etc.) the denominator is never plausibly zero in real data,
+    so the fallback semantics are immaterial.
+    """
+    # If either input is NaN, the share is undefined, so return the neutral
+    if pd.isna(x) or pd.isna(y):
+        if zeroToMidPoint:
+            return 1.0
+        return 0
+    if abs(y) < 1e-6:
         if zeroToMidPoint:
             return 1.0
         return 0.00
-    else:
-        return float(x / y)
-
+    return float(x / y)
+    
 def calcProbRatio(x, y, zeroToMidPoint=False):
-    sum = float(x + y)
-    if not sum or not x:
+    """X/(X+Y) share with three-layer fallback when undefined.
+
+    Fallback layers (any one triggers the neutral 0.5 / 0.0 return):
+      1. Either input is NaN.
+      2. |X+Y| < 1e-6 (exact cancellation or FP residue from signed inputs).
+      3. Result < 0 or > 1 (signed inputs partially cancelled but |X+Y| > 1e-6,
+         producing a mathematically-valid but non-share value). Required for
+         signed centred-at-zero variables like Pythag_Luck_Factor and any other
+         feature whose H and V values can have opposite sign with similar
+         magnitude. Without this guard, X/(X+Y) can land anywhere in (-inf, inf)
+         when sum nearly cancels - previously seen at -1000 and +1551 in
+         G_VHRatio_Pythag_Luck_Factor data.
+
+    For non-negative inputs (counts, totals, magnitudes), layer 3 never fires:
+    X/(X+Y) is mathematically guaranteed to be in [0,1]. So this guard is a
+    no-op for the common case and a safety net for the signed case.
+    """
+    # Layer 1: NaN input -> neutral share
+    if pd.isna(x) or pd.isna(y):
+        return 0.5
+    # Layer 2: near-zero denominator (catches cancellation residue too)
+    denom = float(x + y)
+    if abs(denom) < 1e-6:
+        if zeroToMidPoint:
+            return 0.5          # neutral share - H and V indistinguishable
+        return 0.00
+    ratio = float(x / denom)
+    # Layer 3: out-of-[0,1] result -> sign-conflict between H and V
+    if ratio < 0.0 or ratio > 1.0:
         if zeroToMidPoint:
             return 0.5
         return 0.00
+    return ratio
+
+def divByZeroCatch(numerator, denominator, min_denominator=1e-6):
+    """Safe division. Returns NaN if denominator is too close to
+    zero or if inputs/result are not finite."""
+    if pd.isna(numerator) or pd.isna(denominator):
+        return np.nan
+    if abs(denominator) < min_denominator:
+        return np.nan
+    result = numerator / denominator
+    if not np.isfinite(result):
+        return np.nan
+    return result
+
+
+def computeFIP(hr_allowed, walks_allowed, hbp_allowed, k_gained,
+               outs_pitched, min_ip=5.0):
+    """Compute Fielding-Independent Pitching with defensive guards.
+
+    Returns the formula result when inputs are valid and IP >= min_ip.
+    Otherwise returns FIP_FALLBACK (module-level constant, default 4.0)
+    rather than NaN, since dGEN runs standalone without the imputer
+    pipeline and every output cell must be a usable numeric value.
+
+    min_ip default 5.0 suits 10G windows; lower it (e.g. 3.0) for the
+    smaller YTD_HV home-only sample. To tune the fallback value globally,
+    edit FIP_FALLBACK at the top of this module.
+    """
+    inputs = [hr_allowed, walks_allowed, hbp_allowed, k_gained, outs_pitched]
+    if any(pd.isna(v) for v in inputs):
+        return FIP_FALLBACK
+    ip = outs_pitched / 3.0
+    if ip < min_ip:
+        return FIP_FALLBACK
+    fip = (13 * hr_allowed + 3 * (walks_allowed + hbp_allowed)
+           - 2 * k_gained) / ip + 3.12
+    if not np.isfinite(fip):
+        return FIP_FALLBACK
+    return fip
+ 
+def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3,
+                     era_cap=27.0):
+    """Compute approximate bullpen ERA with defensive guards.
+
+    Returns a value in [0, era_cap] in all cases. When inputs are invalid
+    (NaN, low IP, non-finite result), returns BULLPEN_ERA_FALLBACK (module-
+    level constant, default 4.2) rather than NaN. dGEN runs standalone here
+    without the imputer pipeline, so every output cell must be a usable
+    numeric value.
+
+    Why the floor + cap (added v5.7):
+
+    The arithmetic bullpen_er = team_er - sp_er pairs a TEAM-window stat
+    with an SP-window stat over different game sets, so sp_er > team_er
+    is entirely possible and produces negative bullpen_er. Floor at 0
+    (physical: bullpen cannot allow negative earned runs). The x27
+    multiplier inflates small-window noise into wild outliers; cap at
+    27.0 (per-inning physical ceiling) suppresses small-sample noise.
+
+    To tune the fallback value globally, edit BULLPEN_ERA_FALLBACK at
+    the top of this module.
+    """
+    if any(pd.isna(v) for v in [team_er, sp_er, bullpen_outs]):
+        return BULLPEN_ERA_FALLBACK
+    if bullpen_outs < min_outs:
+        return BULLPEN_ERA_FALLBACK
+    # Floor: bullpen cannot allow negative earned runs.
+    bullpen_er = max(0.0, team_er - sp_er)
+    era = 27.0 * bullpen_er / bullpen_outs
+    if not np.isfinite(era):
+        return BULLPEN_ERA_FALLBACK
+    # Cap: per-inning physical ceiling.
+    if era > era_cap:
+        era = era_cap
+    return era
+
+def calcMedian(probList):
+    sortedList = sorted(probList)
+    listLen = len(sortedList)
+    if listLen % 2 == 0:
+        median = (sortedList[listLen//2 - 1] + sortedList[listLen//2]) / 2
     else:
-        return float(x / sum)
-        
+        median = sortedList[listLen//2]
+    return median   
+
 def calcAddFeatures(x, y):
     if x == MLB_dbvar.NO_DATA or y == MLB_dbvar.NO_DATA:
         return 0.00
@@ -431,6 +629,11 @@ def genStarStr(numStars):
         for x in range(numStars):
             _starStr += "*"
     return _starStr
+
+def annotateWithStars(textStr, numStars):
+    _starStr = genStarStr(numStars)
+    _starString = _starStr + " " + textStr + " " + _starStr
+    return _starString
 
 def calcStrengthCategory(strVal, insampleAVG, insampleSTDEV, flipCATEGORIES=False):
     #This function returns the strength category of strength value given the insample average and stdev.
@@ -503,8 +706,52 @@ def getNumStars(numStars):
         return 5
     else:
         return 0
-        
-def annotateWithStars(textStr, numStars):
-    _starStr = genStarStr(numStars)
-    _starString = _starStr + " " + textStr + " " + _starStr
-    return _starString
+    
+def calcPercBookieHold(bookieHProb, bookieVProb):
+    _probSum = bookieHProb + bookieVProb
+    if _probSum == 0:
+        return 0
+    else:
+        return (1 - (1/(_probSum)))
+    
+def calcKellyStake(bookiePrice, ensPrice):
+    _kellyStake = 0.0
+    if bookiePrice != MLB_dbvar.NODATA and ensPrice != MLB_dbvar.NO_DATA:
+        _bookieProb = convertMoneyLinetoProb(bookiePrice)
+        _ensProb = convertMoneyLinetoProb(ensPrice)
+        if _bookieProb != 0:
+            _kellyStake = (_ensProb - _bookieProb) / _bookieProb
+    return round(_kellyStake, 3)
+
+def getStakeMultiplier(hBookiePrice, vBookiePrice, ensMajorityVote):
+    _stakeMultiplier = 1.0
+    if hBookiePrice != MLB_dbvar.NO_DATA and vBookiePrice != MLB_dbvar.NO_DATA:
+        if ensMajorityVote ==  ACTION_LINE_HF or ensMajorityVote ==  ACTION_LINE_HD:
+            if hBookiePrice < 0:
+                _stakeMultiplier = 100/abs(hBookiePrice)
+            else:
+                _stakeMultiplier = hBookiePrice/100
+        else:
+            if vBookiePrice < 0:
+                _stakeMultiplier = 100/abs(vBookiePrice)
+            else:
+                _stakeMultiplier = vBookiePrice/100
+    return round(_stakeMultiplier, 3)
+    
+def getStakeAmount(stakeMode, kellyFrac, hBookiePrice, ensHProb, ensPos, stakeMultiplier):
+    _stakeAmount = 0.0
+    if stakeMode == StakeTypes.Flat.value:
+        _stakeAmount = DEFAULT_FLAT_STAKE_UNITS
+    elif stakeMode == StakeTypes.Kelly.value:
+        _kellyStake = 0.0
+        if ensPos == ACTION_LINE_HF or ensPos == ACTION_LINE_HD:
+            _kellyStake = kellyFrac * max(0, ensHProb - (1-ensHProb)/stakeMultiplier)
+            _kellyStake = round(_kellyStake, 5)
+        else:
+            _kellyStake = kellyFrac * max(0, (1-ensHProb) - ensHProb/stakeMultiplier)
+            _kellyStake = round(_kellyStake, 5)
+    else:
+        print("\nMLB_Scion_Globals.getStakeAmount: Unrecognised stake model!")
+        raise Exception
+
+    return _stakeAmount 

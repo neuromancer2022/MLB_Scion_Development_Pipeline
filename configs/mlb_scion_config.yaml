@@ -1,0 +1,32 @@
+# ============================================================
+# MLB Scion Development Configuration — Base
+# ============================================================
+# This is the baseline development config. It mirrors the
+# production config but points at development data and results.
+#
+# For experiments, copy this file to configs/experiments/
+# and modify the specific parameters you are testing.
+# Name experiment configs descriptively, e.g.:
+#   exp_001_agreethresh_0.75.yaml
+#   exp_002_modelthresh_0.55_pm210.yaml
+#
+# ============================================================
+
+# --- System paths -------------------------------------------
+system_path: "models/V26_06Dev_CleanModels"
+config_fname: "MLB_Scion_CFG.txt"
+
+# --- Input data paths ---------------------------------------
+input:
+  sciondata_file: "data/sciondata/mlbsciondata.csv"
+  mups_file:      "data/mups/mlbmups.csv"
+
+# --- Output paths -------------------------------------------
+# These paths are passed as environment variables to MLB_Scion.py.
+# Prediction files (VERBOSE, SUMMARY, iPLAYS, iPOS etc.) are written
+# to predictions_dir. Log files are written to logs_dir.
+# tempfiles_dir holds intermediate test pattern files during model runs.
+output:
+  predictions_dir: "results/experiments"
+  logs_dir:        "results/logs"
+  tempfiles_dir:   "results/tempfiles"

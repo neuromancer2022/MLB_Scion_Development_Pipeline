@@ -84,3 +84,31 @@ secrets.yaml
 # --- Archived version CFG files (always track these) ------
 !configs/versions/
 !configs/versions/*
+data/mups/mlbmups.csv
+models/V26_06Dev/Tepper_Prob/MLB_Scion_DT_TestPattern.csv
+models/V26_06Dev/Tepper_Prob/MLB_Scion_DT_Probabilities.txt
+data/mups/mlbmups.csv
+models/V26_06Dev/Tepper_Prob/MLB_Scion_DT_Probabilities.txt
+models/V26_06Dev/Tepper_Prob/MLB_Scion_DT_TestPattern.csv
+data/mups/mlbmups.csv
+data/mups/mlbmups.csv
+# --- Binary / regenerable artefacts: keep out of git (archived in Dropbox) ---
+*.pkl
+*.joblib
+*.lz4
+*.npy
+*.xlsx
+*.xls
+*.docx
+*.doc
+~$*          # Office lock/temp files
+.DS_Store
+mlruns/      # MLflow run store, if present
+*.zip
+*.png
+*.pdf
+*.csv
+tests/
+models/tmp/
+!models/**/*Mask.csv
+!docs/MLB_Home_Opening_Closing_Prices.csv

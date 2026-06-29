@@ -1,0 +1,28 @@
+# ============================================================
+# MLB dBASE Configuration
+# Updates mlbsciondata.csv (master) with new games from mlbprimitives.csv (dump)
+# ============================================================
+#
+# MLB_dBASE takes three distinct files:
+#
+#   master_file     — the EXISTING mlbsciondata.csv in G_Id format (1166 columns).
+#                     This is the historical master database that gets updated.
+#                     Must already exist — place your current mlbsciondata.csv here.
+#
+#   primitives_file — mlbprimitives.csv from the mlb-data-pipeline scraper.
+#                     This is the raw dump in game_id/date format that contains
+#                     new games to be merged into the master.
+#
+#   sciondata_file  — output path for the updated master database.
+#                     Typically the same path as master_file (overwrites it),
+#                     or a versioned path if you want to keep the old copy.
+#
+# ============================================================
+
+input:
+  master_file:     "data/sciondata/mlbsciondata.csv"   # existing master (G_Id format)
+  primitives_file: "data/primitives/mlbprimitives.csv" # new dump from scraper
+  comma_delimited: true                                 # true = CSV, false = TSV
+
+output:
+  sciondata_file:  "data/sciondata/mlbsciondata.csv"   # updated master (overwrites)

@@ -72,22 +72,21 @@ class scionDTRANS:
         self._game_date = self.mupDB.getCurrentMUPDate()
         self._home_id = self.mupDB.getCurrentMUPHomeId()
         self._vis_id = self.mupDB.getCurrentMUPVisId()
-        self._opmidl = self.mupDB.getCurrentMUPBOOKIEML()
-        self._opvig = self.mupDB.getCurrentMUPBookieVig()
-        self._opt = self.mupDB.getCurrentMUPBOOKIETOTAL()
         self._categ_insitu = int(self.modelCFG.getCurrentModelCategInsitu())
         self._categvar_bit_min = int(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_categvarval_min_attrib])
         self._categvar_bit_max = int(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_categvarval_max_attrib])
+        self._scaleType = int(self.modelCFG.getSysDefaultScale()) # only one scale type is recognised irrespective of what is stated in task settings
         self._nn_GId_nl = int(self.modelCFG.getSysNNGidNL())
         self._nn_bit_sep = str(self.modelCFG.getSysNNBitSep()).lower()
         self._feature_select_mask_fname_csv = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_mask_fname_attrib])
         self._feature_select_mask_fname_csv = os.path.join(self.modelCFG.system_path, self._feature_select_mask_fname_csv)
         self._feature_categvar_mask_fname_csv = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_categvar_mask_fname_attrib])
         self._feature_categvar_mask_fname_csv = os.path.join(self.modelCFG.system_path, self._feature_categvar_mask_fname_csv)
-        self._feature_insample_stats_fname_csv = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_varstats_fname_attrib])
-        self._feature_insample_stats_fname_csv = os.path.join(self.modelCFG.system_path, self._feature_insample_stats_fname_csv)
-        self._target_insample_stats_fname_csv = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_op_varstats_fname_attrib])
-        self._target_insample_stats_fname_csv = os.path.join(self.modelCFG.system_path, self._target_insample_stats_fname_csv)
+        if self._scaleType != MLB_global.ScaleTypes.NoScale.value:
+            self._feature_insample_stats_fname_csv = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_varstats_fname_attrib])
+            self._feature_insample_stats_fname_csv = os.path.join(self.modelCFG.system_path, self._feature_insample_stats_fname_csv)
+            self._target_insample_stats_fname_csv = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_op_varstats_fname_attrib])
+            self._target_insample_stats_fname_csv = os.path.join(self.modelCFG.system_path, self._target_insample_stats_fname_csv)
         self._inputdict_fname_json = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_ip_categvar_jsonlookup_fname_attrib])
         self._inputdict_fname_json = os.path.join(self.modelCFG.system_path, self._inputdict_fname_json)
         self._model_results_fname = os.path.join(self.modelCFG.task_model_settings[self.modelCFG.cfg_task_dir_attrib], self.modelCFG.task_model_settings[self.modelCFG.cfg_task_model_op_result_fname_attrib])
@@ -224,7 +223,7 @@ class scionDTRANS:
         _scaledValue = 0.0
         
         try:
-            #1. Check if scaleType is 4 (vanilla standardisation) and raise Exception if not (AS CURRENT VER OF SCION ONLY SUPPORTS Standardisation)
+            #1. Check if scaleType is 3 (vanilla standardisation) and raise Exception if not (AS CURRENT VER OF SCION ONLY SUPPORTS Standardisation)
             if scaleType != MLB_global.ScaleTypes.Standardize.value:
                     print("\nError! The current version of MLB Scion only supports vanilla standardisation of continuous variables, please ensure that the system config setting for the default scale is set to 4!")
                     raise Exception
@@ -386,7 +385,7 @@ class scionDTRANS:
             if not self._features_selected:
                 self._selectDesiredGameFeatures()
             #3. Check if data has been scaled
-            if not self._features_scaled:
+            if not self._features_scaled and self._scaleType != MLB_global.ScaleTypes.NoScale.value:
                 self._scaleContinuousFeatures()
             #4. All good so make a copy of the scaled data; this copy will be transformed and for them  feature pattern for the machine learning models
             self._scaled_categvartrans_game_df = self._scaled_game_df.copy()
@@ -559,7 +558,10 @@ class scionDTRANS:
         try:
             self._loadMaskData()
             self._selectDesiredGameFeatures()
-            self._scaleContinuousFeatures()
+            if self._scaleType != MLB_global.ScaleTypes.NoScale.value:
+                self._scaleContinuousFeatures()
+            else:
+                self._scaled_game_df = self._game_df.copy() #no scaling but we still want to have the scaled_game_df for consistency and in case we need to do rescaling later
             self._transformCategoricalFeatures()
             self._storeGameData(task_type, task_count, task_target)
             
@@ -658,15 +660,6 @@ class scionDTRANS:
     @property
     def vis_id(self):
         return self._vis_id
-    @property
-    def opmidl(self):
-        return self._opmidl
-    @property
-    def opvig(self):
-        return self._opvig
-    @property
-    def opt(self):
-        return self._opt
     @property
     def categvar_bit_min(self):
         return self._categvar_bit_min
