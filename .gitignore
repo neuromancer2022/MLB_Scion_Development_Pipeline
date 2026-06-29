@@ -104,3 +104,11 @@ data/mups/mlbmups.csv
 ~$*          # Office lock/temp files
 .DS_Store
 mlruns/      # MLflow run store, if present
+*.zip
+*.png
+*.pdf
+*.csv
+tests/
+models/tmp/
+!models/**/*Mask.csv
+!docs/MLB_Home_Opening_Closing_Prices.csv
