@@ -1,0 +1,19 @@
+# EditorConfig (https://editorconfig.org) — committed to the repo root so every
+# editor (VS Code with the EditorConfig extension, PyCharm, etc.) enforces the
+# same indentation automatically. This is the single most reliable guard against
+# tabs creeping back into the codebase.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.{md,yaml,yml,toml,json}]
+indent_style = space
+indent_size = 2

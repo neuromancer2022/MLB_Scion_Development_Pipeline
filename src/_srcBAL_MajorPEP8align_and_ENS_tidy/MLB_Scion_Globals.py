@@ -168,7 +168,7 @@ NN_DP_PRECISION = 9
 DROP_ATTRIB = 2
 
 # ─────────────────────────────────────────────────────────────────────────────
-# V26.06b (Standard Edition) play-strategy specification constants
+# V26.06b (Standard Edition) play-strategy specification constants (PDF §9)
 # ─────────────────────────────────────────────────────────────────────────────
 # A model (ensemble) is FLAGGED only when it backs the FAVE side (as defined by
 # the de-vigged CLOSING line), its probability-points gap over book_mid clears
@@ -251,25 +251,25 @@ messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not me
 messageScionEns2MajorityVoteDogPlay = "LeanStatOnlyEns Majority Vote Dog play! "
 
 # ─────────────────────────────────────────────────────────────────────────────
-# V26.06b (Standard Edition) play-strategy messages
+# V26.06b (Standard Edition) play-strategy messages (PDF §9)
 # ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129)
 # ─────────────────────────────────────────────────────────────────────────────
-# Per-ensemble state comments
-messageScionEns1StrongFlag  = "StatOnlyEns STRONG-FLAGs the fave (gap>=thr, vote>=0.93). "
-messageScionEns1Flag        = "StatOnlyEns FLAGs the fave (gap>=thr, vote>=0.83). "
-messageScionEns1SilentDog   = "StatOnlyEns SILENT - backs the dog."
-messageScionEns1SilentGate  = "StatOnlyEns SILENT - on the fave but below the gap/vote gates. "
-messageScionEns2StrongFlag  = "LeanStatOnlyEns STRONG-FLAGs the fave (gap>=thr, vote>=0.93). "
-messageScionEns2Flag        = "LeanStatOnlyEns FLAGs the fave (gap>=thr, vote>=0.83). "
-messageScionEns2SilentDog   = "LeanStatOnlyEns SILENT as it backs the dog. "
-messageScionEns2SilentGate  = "LeanStatOnlyEns SILENT as backs fave but below gap/vote gates. "
+# Per-ensemble state comments (PDF §9.2)
+messageScionEns1StrongFlag  = "StatOnlyEns STRONG-FLAGs the favourite (side=fave, gap>=thr, vote>=0.93). "
+messageScionEns1Flag        = "StatOnlyEns FLAGs the favourite (side=fave, gap>=thr, vote>=0.83). "
+messageScionEns1SilentDog   = "StatOnlyEns SILENT - backs the dog (not on the favourite side). "
+messageScionEns1SilentGate  = "StatOnlyEns SILENT - on the favourite but below the gap/vote gates. "
+messageScionEns2StrongFlag  = "LeanStatOnlyEns STRONG-FLAGs the favourite (side=fave, gap>=thr, vote>=0.93). "
+messageScionEns2Flag        = "LeanStatOnlyEns FLAGs the favourite (side=fave, gap>=thr, vote>=0.83). "
+messageScionEns2SilentDog   = "LeanStatOnlyEns SILENT - backs the dog (not on the favourite side). "
+messageScionEns2SilentGate  = "LeanStatOnlyEns SILENT - on the favourite but below the gap/vote gates. "
 # Decision-row comments (PDF §9.3 / §9.4). Exactly one fires per game.
-messageScionConsensusStrong = "Both ensembles STRONG-FLAG the fave (7-star consensus) play. "
-messageScionConsensusFlag   = "Both ensembles FLAG the fave (not BOTH strong so 5-star consensus play). "
-messageScionSingleHFOverride = "Single ensemble FLAGs the HomFave (3-star play. "
-messageScionSingleVFNoOverride = "Single ensemble FLAGs the VisFave BUT not enough to override default HomDog (1-star) "
-messageScionDefaultVisDog   = "No ensemble flag: default 1-star VisDog play. "
-messageScionDefaultHomeDog  = "No ensemble flag: default HomDog play based on bookie price tier. "
+messageScionConsensusStrong = "Both ensembles STRONG-FLAG the favourite: 7-star consensus favourite play. "
+messageScionConsensusFlag   = "Both ensembles FLAG the favourite (not both strong): 5-star consensus favourite play. "
+messageScionSingleHFOverride = "Single ensemble FLAGs the HOME favourite: 3-star home-favourite override play. "
+messageScionSingleVFNoOverride = "Single ensemble FLAGs the VISITOR favourite: no override - home dog kept, downgraded to 1-star. "
+messageScionDefaultVisDog   = "No ensemble flag: default 1-star visitor-dog play. "
+messageScionDefaultHomeDog  = "No ensemble flag: default home-dog play, closing-price tiered. "
 # Null starting-pitcher games are now ALLOWED (V26.06b) but flagged for awareness
 messageScionNullHSPAllowed  = "Note: H_SP is Null (team-based avg used); game still played. "
 messageScionNullVSPAllowed  = "Note: V_SP is Null (team-based avg used); game still played. "
