@@ -167,33 +167,6 @@ DEFAULT_CONF_PROB = 0.50
 NN_DP_PRECISION = 9
 DROP_ATTRIB = 2
 
-# ─────────────────────────────────────────────────────────────────────────────
-# V26.06b (Standard Edition) play-strategy specification constants (PDF §9)
-# ─────────────────────────────────────────────────────────────────────────────
-# A model (ensemble) is FLAGGED only when it backs the FAVE side (as defined by
-# the de-vigged CLOSING line), its probability-points gap over book_mid clears
-# the edge threshold, AND its side-vote share clears a vote gate:
-#   FLAG        : vote >= PROB_FLAG_VOTE_THRESHOLD  (0.83, from config agree thr)
-#   STRONG-FLAG : vote >= PROB_STRONG_VOTE_THRESHOLD (0.93)
-# The FLAG (0.83) gate is read from the config (getSysProb[STATSONLY]AgreeThresh);
-# the STRONG (0.93) gate is a fixed strategy constant defined here.
-PROB_STRONG_VOTE_THRESHOLD = 0.93
-
-# Ensemble states (PDF §9.2)
-ENS_STATE_SILENT = "SILENT"
-ENS_STATE_FLAG   = "FLAG"
-ENS_STATE_STRONG = "STRONG-FLAG"
-ENS_FLAGGED_STATES = [ENS_STATE_FLAG, ENS_STATE_STRONG]
-
-# Home-dog closing-line price tiers (PDF §9.3 / §9.5 note 3). U-shaped, NOT
-# monotone: the middle band is the weak one. hom_clml is the home CLOSING money
-# line (positive for a home dog).
-#   hom_clml <  +100                        -> 5 star
-#   HOMEDOG_PRICE_TIER_LOW <= hom_clml <= HOMEDOG_PRICE_TIER_HIGH -> 3 star
-#   hom_clml >= +120                        -> 5 star
-HOMEDOG_PRICE_TIER_LOW  = 100
-HOMEDOG_PRICE_TIER_HIGH = 119
-
 #System Messages (NOTE: OPP variables discontinued)
 messageGameSkipMissingOPLOPTOVIG = "Game skipped - Bookie line information missing. "
 messageGameDataSuccess = "Game data generated. "
@@ -249,31 +222,6 @@ messageScionEnsUnknownEnsemble = "Unknown ensemble. "
 messageScionDefaultDogPlay = "Default dog play! "
 messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not met! "
 messageScionEns2MajorityVoteDogPlay = "LeanStatOnlyEns Majority Vote Dog play! "
-
-# ─────────────────────────────────────────────────────────────────────────────
-# V26.06b (Standard Edition) play-strategy messages (PDF §9)
-# ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129)
-# ─────────────────────────────────────────────────────────────────────────────
-# Per-ensemble state comments (PDF §9.2)
-messageScionEns1StrongFlag  = "StatOnlyEns STRONG-FLAGs the favourite (side=fave, gap>=thr, vote>=0.93). "
-messageScionEns1Flag        = "StatOnlyEns FLAGs the favourite (side=fave, gap>=thr, vote>=0.83). "
-messageScionEns1SilentDog   = "StatOnlyEns SILENT - backs the dog (not on the favourite side). "
-messageScionEns1SilentGate  = "StatOnlyEns SILENT - on the favourite but below the gap/vote gates. "
-messageScionEns2StrongFlag  = "LeanStatOnlyEns STRONG-FLAGs the favourite (side=fave, gap>=thr, vote>=0.93). "
-messageScionEns2Flag        = "LeanStatOnlyEns FLAGs the favourite (side=fave, gap>=thr, vote>=0.83). "
-messageScionEns2SilentDog   = "LeanStatOnlyEns SILENT - backs the dog (not on the favourite side). "
-messageScionEns2SilentGate  = "LeanStatOnlyEns SILENT - on the favourite but below the gap/vote gates. "
-# Decision-row comments (PDF §9.3 / §9.4). Exactly one fires per game.
-messageScionConsensusStrong = "Both ensembles STRONG-FLAG the favourite: 7-star consensus favourite play. "
-messageScionConsensusFlag   = "Both ensembles FLAG the favourite (not both strong): 5-star consensus favourite play. "
-messageScionSingleHFOverride = "Single ensemble FLAGs the HOME favourite: 3-star home-favourite override play. "
-messageScionSingleVFNoOverride = "Single ensemble FLAGs the VISITOR favourite: no override - home dog kept, downgraded to 1-star. "
-messageScionDefaultVisDog   = "No ensemble flag: default 1-star visitor-dog play. "
-messageScionDefaultHomeDog  = "No ensemble flag: default home-dog play, closing-price tiered. "
-# Null starting-pitcher games are now ALLOWED (V26.06b) but flagged for awareness
-messageScionNullHSPAllowed  = "Note: H_SP is Null (team-based avg used); game still played. "
-messageScionNullVSPAllowed  = "Note: V_SP is Null (team-based avg used); game still played. "
-messageScionNullBothSPAllowed = "Note: BOTH H_SP and V_SP are Null (team-based avgs used); game still played. "
 
 def setColType(df, col_list, col_type):
     try:
@@ -748,8 +696,6 @@ def calcStrengthCategory(strVal, insampleAVG, insampleSTDEV, flipCATEGORIES=Fals
     return strCateg
 
 def getNumStars(numStars):
-    # V26.06b: the ModelConfidenceTypes enum value IS the star count, so 6 and 7
-    # are now covered (the 1/3/5/7 stake scale needs SEVENSTAR).
     if numStars == ModelConfidenceTypes.ONESTAR:
         return 1
     elif numStars == ModelConfidenceTypes.TWOSTAR:
@@ -760,10 +706,6 @@ def getNumStars(numStars):
         return 4
     elif numStars == ModelConfidenceTypes.FIVESTAR:
         return 5
-    elif numStars == ModelConfidenceTypes.SIXSTAR:
-        return 6
-    elif numStars == ModelConfidenceTypes.SEVENSTAR:
-        return 7
     else:
         return 0
     
