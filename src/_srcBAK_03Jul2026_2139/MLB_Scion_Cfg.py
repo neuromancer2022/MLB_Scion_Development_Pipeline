@@ -614,21 +614,21 @@ class scionCFG:
 		return self._cfg_variable_settings[self.cfg_sys_prob_edgepp_attrib]
 	def getSysProbBPVarDP(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_bpvardp_attrib]
-	def getSysProbLEANSTATSONLYThresh(self):
+	def getSysProbSTATSONLYThresh(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_thresh_attrib]
-	def getSysProbLEANSTATSONLYBookieMin(self):
+	def getSysProbSTATSONLYBookieMin(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_bookie_min_attrib]
-	def getSysProbLEANSTATSONLYBookieMax(self):
+	def getSysProbSTATSONLYBookieMax(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_bookie_max_attrib]
-	def getSysProbLEANSTATSONLYAgreeThresh(self):
+	def getSysProbSTATSONLYAgreeThresh(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_agreethresh_attrib]
-	def getSysProbLEANSTATSONLYModelMin(self):
+	def getSysProbSTATSONLYModelMin(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_minprice_attrib]
-	def getSysProbLEANSTATSONLYModelMax(self):
+	def getSysProbSTATSONLYModelMax(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_maxprice_attrib]
-	def getSysProbLEANSTATSONLYPointsGap(self):
+	def getSysProbSTATSONLYPointsGap(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_edgepp_attrib]
-	def getSysProbLEANSTATSONLYBPVarDP(self):
+	def getSysProbSTATSONLYBPVarDP(self):
 		return self._cfg_variable_settings[self.cfg_sys_prob_statsonly_bpvardp_attrib]
 	def getSysRunMin(self):
 		return self._cfg_variable_settings[self.cfg_sys_run_min_attrib]

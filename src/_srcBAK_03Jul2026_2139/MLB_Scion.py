@@ -146,7 +146,7 @@ def getEnsBPFeatureDP(modelCfg):
         bpvardp = int(modelCfg.getSysProbBPVarDP())
     else:
         if ens == MLB_global.MODEL_PROBENS2: 
-            bpvardp = int(modelCfg.getSysProbLEANSTATSONLYBPVarDP())
+            bpvardp = int(modelCfg.getSysProbSTATSONLYBPVarDP())
     
     return bpvardp
 
@@ -300,8 +300,8 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         _strongVoteThresh   = float(MLB_global.PROB_STRONG_VOTE_THRESHOLD)         # 0.93
         _ens1FlagVoteThresh = float(sysCfgObj.getSysProbAgreeThresh())             # 0.83
         _ens1GapThresh      = float(sysCfgObj.getSysProbPointsGap())               # 0.02
-        _ens2FlagVoteThresh = float(sysCfgObj.getSysProbLEANSTATSONLYAgreeThresh())    # 0.83
-        _ens2GapThresh      = float(sysCfgObj.getSysProbLEANSTATSONLYPointsGap())      # 0.02
+        _ens2FlagVoteThresh = float(sysCfgObj.getSysProbSTATSONLYAgreeThresh())    # 0.83
+        _ens2GapThresh      = float(sysCfgObj.getSysProbSTATSONLYPointsGap())      # 0.02
         # Ensemble outputs
         _ens1Med  = float(predsObj.getPreds_Ens1_HWinProb())      # med(V127)
         _ens1Vote = float(predsObj.getPreds_Ens1_VoteAgreement()) # vote(V127)
