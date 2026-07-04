@@ -26,65 +26,65 @@ BULLPEN_ERA_FALLBACK = 4.2  # recent MLB league-average bullpen ERA
 
 # Using enum class create enumerations
 class ScaleTypes(enum.Enum):
-   NoScale = 0
-   MinMax = 1
-   Robust = 2 
-   Standardize = 3
-   Centre = 4
-   Log = 5
-   LogStandardize = 6
-   PowerYeoJohnson = 7
-   
+    NoScale = 0
+    MinMax = 1
+    Robust = 2 
+    Standardize = 3
+    Centre = 4
+    Log = 5
+    LogStandardize = 6
+    PowerYeoJohnson = 7
+
 class VariableTypes(enum.Enum): # eg self._vartype = VariableTypes.Continuous_Feature
-   Continuous_Feature = 0 #this will also cover N/A or ""
-   Categorical_Feature = 1
-   Continuous_Target = 2
-   Categorical_Target = 3 
-   Drop = 4
-   Features = 5
-   Targets = 6
+    Continuous_Feature = 0 #this will also cover N/A or ""
+    Categorical_Feature = 1
+    Continuous_Target = 2
+    Categorical_Target = 3 
+    Drop = 4
+    Features = 5
+    Targets = 6
 
 class MiddleLineTypes(enum.Enum):
-   Unknown = 0
-   Prob = 1
-   Money = 2
+    Unknown = 0
+    Prob = 1
+    Money = 2
 
 class StakeTypes(enum.Enum):
-   Unknown = 0
-   Flat = 1
-   Kelly = 2
+    Unknown = 0
+    Flat = 1
+    Kelly = 2
 
 class ModelTypes(enum.Enum):
-	NN = 0
-	OLS = 1
-	RFREG = 2 
-	RFCLA = 3
-	CATBREG = 4
-	CATBCLA = 5
-	LGBMREG = 6
-	LGBMCLA = 7
-	XGBREG = 8
-	XGBCLA = 9
-   
+    NN = 0
+    OLS = 1
+    RFREG = 2 
+    RFCLA = 3
+    CATBREG = 4
+    CATBCLA = 5
+    LGBMREG = 6
+    LGBMCLA = 7
+    XGBREG = 8
+    XGBCLA = 9
+
 class TaskTypes(enum.Enum):
-	TRUN = 0
-	TTOTAL = 1
-	TPROB = 2
+    TRUN = 0
+    TTOTAL = 1
+    TPROB = 2
 
 class ModelConfidenceTypes(enum.Enum):
-	ZEROSTAR = 0
-	ONESTAR = 1
-	TWOSTAR = 2 
-	THREESTAR = 3
-	FOURSTAR = 4
-	FIVESTAR = 5
-	SIXSTAR = 6
-	SEVENSTAR = 7
+    ZEROSTAR = 0
+    ONESTAR = 1
+    TWOSTAR = 2 
+    THREESTAR = 3
+    FOURSTAR = 4
+    FIVESTAR = 5
+    SIXSTAR = 6
+    SEVENSTAR = 7
 
 class EnsembleProbabilityTypes(enum.Enum):
-   Default = 0
-   MedianAllVoters = 1
-   AvgMajorityVotersOnly = 2
+    Default = 0
+    MedianAllVoters = 1
+    AvgMajorityVotersOnly = 2
 
 GAME_ID_INDEX = 0  # relates to index of value in main dictionary
 GAME_THRESHOLD = 5 # different to NBA (which is 3)
@@ -168,7 +168,7 @@ NN_DP_PRECISION = 9
 DROP_ATTRIB = 2
 
 # ─────────────────────────────────────────────────────────────────────────────
-# V26.06b (Standard Edition) play-strategy specification constants (PDF §9)
+# V26.06b (Standard Edition) play-strategy specification constants
 # ─────────────────────────────────────────────────────────────────────────────
 # A model (ensemble) is FLAGGED only when it backs the FAVE side (as defined by
 # the de-vigged CLOSING line), its probability-points gap over book_mid clears
@@ -249,31 +249,52 @@ messageScionEnsUnknownEnsemble = "Unknown ensemble. "
 messageScionDefaultDogPlay = "Default dog play! "
 messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not met! "
 messageScionEns2MajorityVoteDogPlay = "LeanStatOnlyEns Majority Vote Dog play! "
+messageScionRiskMinNoPlay = "No play due to risk minimisation constraints. "
+messageScionEns1DogChoice = "Dog play determined by StatOnlyEns. "
+messageScionEns2DogChoice = "Dog play determined by LeanStatOnlyEns. "
 
 # ─────────────────────────────────────────────────────────────────────────────
-# V26.06b (Standard Edition) play-strategy messages (PDF §9)
+# V26.06b (Standard Edition) play-strategy messages
 # ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129)
 # ─────────────────────────────────────────────────────────────────────────────
-# Per-ensemble state comments (PDF §9.2)
-messageScionEns1StrongFlag  = "StatOnlyEns STRONG-FLAGs the favourite (side=fave, gap>=thr, vote>=0.93). "
-messageScionEns1Flag        = "StatOnlyEns FLAGs the favourite (side=fave, gap>=thr, vote>=0.83). "
-messageScionEns1SilentDog   = "StatOnlyEns SILENT - backs the dog (not on the favourite side). "
-messageScionEns1SilentGate  = "StatOnlyEns SILENT - on the favourite but below the gap/vote gates. "
-messageScionEns2StrongFlag  = "LeanStatOnlyEns STRONG-FLAGs the favourite (side=fave, gap>=thr, vote>=0.93). "
-messageScionEns2Flag        = "LeanStatOnlyEns FLAGs the favourite (side=fave, gap>=thr, vote>=0.83). "
-messageScionEns2SilentDog   = "LeanStatOnlyEns SILENT - backs the dog (not on the favourite side). "
-messageScionEns2SilentGate  = "LeanStatOnlyEns SILENT - on the favourite but below the gap/vote gates. "
+# Per-ensemble state comments
+messageScionEns1StrongFlag  = "StatOnlyEns STRONG-FLAGs the fave (gap>=thr, vote>=0.93). "
+messageScionEns1Flag        = "StatOnlyEns FLAGs the fave (gap>=thr, vote>=0.83). "
+messageScionEns1SilentDog   = "StatOnlyEns SILENT - backs the dog."
+messageScionEns1SilentGate  = "StatOnlyEns SILENT - on the fave but below the gap/vote gates. "
+messageScionEns2StrongFlag  = "LeanStatOnlyEns STRONG-FLAGs the fave (gap>=thr, vote>=0.93). "
+messageScionEns2Flag        = "LeanStatOnlyEns FLAGs the fave (gap>=thr, vote>=0.83). "
+messageScionEns2SilentDog   = "LeanStatOnlyEns SILENT as it backs the dog. "
+messageScionEns2SilentGate  = "LeanStatOnlyEns SILENT as backs fave but below gap/vote gates. "
 # Decision-row comments (PDF §9.3 / §9.4). Exactly one fires per game.
-messageScionConsensusStrong = "Both ensembles STRONG-FLAG the favourite: 7-star consensus favourite play. "
-messageScionConsensusFlag   = "Both ensembles FLAG the favourite (not both strong): 5-star consensus favourite play. "
-messageScionSingleHFOverride = "Single ensemble FLAGs the HOME favourite: 3-star home-favourite override play. "
-messageScionSingleVFNoOverride = "Single ensemble FLAGs the VISITOR favourite: no override - home dog kept, downgraded to 1-star. "
-messageScionDefaultVisDog   = "No ensemble flag: default 1-star visitor-dog play. "
-messageScionDefaultHomeDog  = "No ensemble flag: default home-dog play, closing-price tiered. "
+messageScionConsensusStrong = "Both ensembles STRONG-FLAG the fave (7-star consensus) play. "
+messageScionConsensusFlag   = "Both ensembles FLAG the fave (not BOTH strong so 5-star consensus play). "
+messageScionSingleHFOverride = "Single ensemble FLAGs the HomFave (3-star play. "
+messageScionSingleVFNoOverride = "Single ensemble FLAGs the VisFave BUT not enough to override default HomDog (1-star) "
+messageScionDefaultVisDog   = "No ensemble flag: default 1-star VisDog play. "
+messageScionDefaultHomeDog  = "No ensemble flag: default HomDog play based on bookie price tier. "
 # Null starting-pitcher games are now ALLOWED (V26.06b) but flagged for awareness
 messageScionNullHSPAllowed  = "Note: H_SP is Null (team-based avg used); game still played. "
 messageScionNullVSPAllowed  = "Note: V_SP is Null (team-based avg used); game still played. "
 messageScionNullBothSPAllowed = "Note: BOTH H_SP and V_SP are Null (team-based avgs used); game still played. "
+
+# Registry mapping (ensemble id, state/reason) -> comment, so per-ensemble comment
+# selection is a single lookup rather than an if/else branch (PDF section 9.2).
+# ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129).
+messageScionEnsStateComment = {
+    MODEL_PROBENS1: {
+        ENS_STATE_STRONG: messageScionEns1StrongFlag,
+        ENS_STATE_FLAG:   messageScionEns1Flag,
+        "silent_gate":    messageScionEns1SilentGate,
+        "silent_dog":     messageScionEns1SilentDog,
+    },
+    MODEL_PROBENS2: {
+        ENS_STATE_STRONG: messageScionEns2StrongFlag,
+        ENS_STATE_FLAG:   messageScionEns2Flag,
+        "silent_gate":    messageScionEns2SilentGate,
+        "silent_dog":     messageScionEns2SilentDog,
+    },
+}
 
 def setColType(df, col_list, col_type):
     try:
@@ -287,7 +308,7 @@ def setColType(df, col_list, col_type):
     except Exception:
         raise
     return df
-  
+
 def getModelTypeName(typeNo):
     return ModelTypes(typeNo).name
 
@@ -326,7 +347,7 @@ def isOppSide(price1, price2):
         return True
     else:
         return False
-    
+
 def convertProbtoMoneyLine(probValue):
     probValue = float(probValue)
     if probValue == 0: probValue = 0.5
@@ -417,7 +438,7 @@ def ConvertMiddleLineToPrices(mLine, centVig, mLineType=None):
         _visPrice = calcTeamPrice(_middleLinePrice, centVig, VISITOR)
         if _homePrice == 100 and _visPrice == 100:
             _visPrice = -100
-    
+
     return _homePrice, _visPrice
 
 def validTeamPrice(teamPrice):
@@ -426,7 +447,7 @@ def validTeamPrice(teamPrice):
         return True
     else:
         return False
-    
+
 def calcDeVigProb(bookieHProb, bookieVProb, h_or_v):
     _totalProb = bookieHProb + bookieVProb
     deVigProb = 0.5
@@ -446,7 +467,7 @@ def punctuateComment(strComment):
 
 def convertNumpytoNative(numpy_var):
     native_var = getattr(numpy_var, "tolist", lambda x=numpy_var: x)()
-    
+
     return native_var
 
 #function for subtract one list from another
@@ -455,7 +476,7 @@ def filterList(full_list, excludes):
     return (x for x in full_list if x not in s)
 
 def roundModelPred(number):
-        return float(round(number * 2.0) / 2.0)
+    return float(round(number * 2.0) / 2.0)
 
 def checkMatch(teamA_ld, teamB_ld):
     if teamA_ld == teamB_ld:
@@ -469,7 +490,7 @@ def calcRunEfficiency(runsgained, hits, runs2b, homeruns):
         return float(runsgained / denominator)
     else:
         return 0.0
-    
+
 def calcMOB(hits, walks, runs2b, homeruns, hitsbypitch, errors, doubleplays):
     return float(hits + walks + runs2b + homeruns + hitsbypitch - (errors + doubleplays))
 
@@ -527,7 +548,7 @@ def calcRatio(x, y, zeroToMidPoint=False):
             return 1.0
         return 0.00
     return float(x / y)
-    
+
 def calcProbRatio(x, y, zeroToMidPoint=False):
     """X/(X+Y) share with three-layer fallback when undefined.
 
@@ -600,7 +621,7 @@ def computeFIP(hr_allowed, walks_allowed, hbp_allowed, k_gained,
     if not np.isfinite(fip):
         return FIP_FALLBACK
     return fip
- 
+
 def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3,
                      era_cap=27.0):
     """Compute approximate bullpen ERA with defensive guards.
@@ -675,7 +696,7 @@ def limitProb0109(prob):
         return prob
 
 def isElite(strCategory):
-	return strCategory in ELITE_LIST
+    return strCategory in ELITE_LIST
 
 def genStarStr(numStars):
     _starStr = ""
@@ -766,14 +787,14 @@ def getNumStars(numStars):
         return 7
     else:
         return 0
-    
+
 def calcPercBookieHold(bookieHProb, bookieVProb):
     _probSum = bookieHProb + bookieVProb
     if _probSum == 0:
         return 0
     else:
         return (1 - (1/(_probSum)))
-    
+
 def calcKellyStake(bookiePrice, ensPrice):
     _kellyStake = 0.0
     if bookiePrice != MLB_dbvar.NODATA and ensPrice != MLB_dbvar.NO_DATA:
@@ -797,7 +818,7 @@ def getStakeMultiplier(hBookiePrice, vBookiePrice, ensMajorityVote):
             else:
                 _stakeMultiplier = vBookiePrice/100
     return round(_stakeMultiplier, 3)
-    
+
 def getStakeAmount(stakeMode, kellyFrac, hBookiePrice, ensHProb, ensPos, stakeMultiplier):
     _stakeAmount = 0.0
     if stakeMode == StakeTypes.Flat.value:

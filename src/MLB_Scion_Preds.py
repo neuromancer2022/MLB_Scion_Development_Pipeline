@@ -33,15 +33,6 @@ class scionPREDS:
 		self._preds_eplays_txt_fname = os.path.join(self.preds_subfolder_path, (self._preds_stem_fname + "_ePLAYS_" + self._preds_timestamp.strftime('%Y%m%d%H%M%S') + ".txt"))
 		self._preds_iplays_txt_fname = os.path.join(self.preds_subfolder_path, (self._preds_stem_fname + "_iPLAYS_" + self._preds_timestamp.strftime('%Y%m%d%H%M%S') + ".txt"))
 		self._preds_ipos_txt_fname = os.path.join(self.preds_subfolder_path, (self._preds_stem_fname + "_iPOS_" + self._preds_timestamp.strftime('%Y%m%d%H%M%S') + ".txt"))
-		#preds filenames that will be stored in the predspath (cwd) rather than subfolder
-		self._preds_iplays_cwd_txt_fname = os.path.join(self.preds_path, (self._preds_stem_fname + "_iPLAYS" + ".txt"))
-		self._preds_ipos_cwd_txt_fname = os.path.join(self.preds_path, (self._preds_stem_fname + "_iPOS" + ".txt"))
-		self._preds_eplays_cwd_txt_fname = os.path.join(self.preds_path, (self._preds_stem_fname + "_ePLAYS" + ".txt"))
-		self._preds_summary_cwd_csv_fname = os.path.join(self.preds_path, (self._preds_stem_fname + "_SUMMARY" + ".csv"))	
-		#preds filenames that will be stored in the MLB_global.DESKTOP_PATH
-		self._preds_iplays_desktop_txt_fname = os.path.join(os.path.expanduser('~'),'Desktop',(self._preds_stem_fname + "_iPLAYS" + ".txt"))
-		self._preds_ipos_desktop_txt_fname = os.path.join(os.path.expanduser('~'),'Desktop',(self._preds_stem_fname + "_iPOS" + ".txt"))
-		self._preds_eplays_desktop_txt_fname = os.path.join(os.path.expanduser('~'),'Desktop',(self._preds_stem_fname + "_ePLAYS" + ".txt"))
 		#2. cols for pred output
 		self._preds_Id_attrib = "Pred_Id"
 		self._preds_date_attrib = "Date"
@@ -1102,8 +1093,6 @@ class scionPREDS:
 			self._createSummaryDataFrame()
 			#2. store its data to file
 			self._storePredsCSV(self.preds_summary_df,self._preds_summary_csv_fname,self._preds_summary_cols)
-			#3. store summary file in cwd
-			self._storePredsCSV(self.preds_summary_df,self._preds_summary_cwd_csv_fname,self._preds_summary_cols)
 		except:
 			print("\nscionPREDS.storeSummaryPreds(): Fatal error writing prediction data to " + self._preds_summary_csv_fname)
 			raise
@@ -1139,15 +1128,6 @@ class scionPREDS:
 			self._storeAsMarkdownTxt(self.preds_iplays_df, self._preds_iplay_cols, self._preds_iplays_txt_fname)
 			self._storeAsMarkdownTxt(self.preds_ipos_df, self._preds_ipos_cols, self._preds_ipos_txt_fname)
 			#self._storeAsMarkdownTxt(self.preds_iposml_df, self._preds_iposml_cols, self._preds_iposml_txt_fname)
-			#Store to cwd
-			self._storeAsMarkdownTxt(self.preds_eplays_df, self._preds_eplay_cols, self._preds_eplays_cwd_txt_fname)
-			self._storeAsMarkdownTxt(self.preds_iplays_df, self._preds_iplay_cols, self._preds_iplays_cwd_txt_fname)
-			self._storeAsMarkdownTxt(self.preds_ipos_df, self._preds_ipos_cols, self._preds_ipos_cwd_txt_fname)
-			#self._storeAsMarkdownTxt(self.preds_iposml_df, self._preds_iposml_cols, self._preds_iposml_cwd_txt_fname)
-			#Store to Desktop
-			#self._storeAsMarkdownTxt(self.preds_eplays_df, self._preds_eplay_cols, self._preds_eplays_desktop_txt_fname)
-			#self._storeAsMarkdownTxt(self.preds_iplays_df, self._preds_iplay_cols, self._preds_iplays_desktop_txt_fname)
-
 		except:
 			print("\nscionPREDS.storePredsAsMarkdown(): Fatal error writing preds to markdown text files!")
 			raise
@@ -1163,9 +1143,14 @@ class scionPREDS:
 		print ("\nFor details, please review the following files:")
 		print("Summary results can be found in the file " + self._preds_summary_csv_fname)
 		print("Verbose results can be found in the file " + self._preds_verbose_csv_fname)
-		print("Tracking report can be found in the file " + self._preds_ipos_cwd_txt_fname)
-		print("Plays for EXTERNAL bettors can be found in the file " + self._preds_eplays_cwd_txt_fname)
-		print("Plays for INTERNAL bettors can be found in the file " + self._preds_iplays_cwd_txt_fname + "\n")
+
+		self._preds_eplays_txt_fname = os.path.join(self.preds_subfolder_path, (self._preds_stem_fname + "_ePLAYS_" + self._preds_timestamp.strftime('%Y%m%d%H%M%S') + ".txt"))
+		self._preds_iplays_txt_fname = os.path.join(self.preds_subfolder_path, (self._preds_stem_fname + "_iPLAYS_" + self._preds_timestamp.strftime('%Y%m%d%H%M%S') + ".txt"))
+		self._preds_ipos_txt_fname = os.path.join(self.preds_subfolder_path, (self._preds_stem_fname + "_iPOS_" + self._preds_timestamp.strftime('%Y%m%d%H%M%S') + ".txt"))
+		
+		print("Scion decision report can be found in the file " + self._preds_ipos_txt_fname)
+		print("Plays for EXTERNAL bettors can be found in the file " + self._preds_eplays_txt_fname)
+		print("Plays for INTERNAL bettors can be found in the file " + self._preds_iplays_txt_fname + "\n")
 
 	def getBookieOpeningPrice(self, _sidePos):
 		# get remaining info for side play based on Scion side position and the bookie's position
@@ -1466,14 +1451,6 @@ class scionPREDS:
 	def preds_eplays_txt_fname(self):return self._preds_eplays_txt_fname
 	@property
 	def preds_iplays_txt_fname(self):return self._preds_iplays_txt_fname
-	@property
-	def preds_iplays_cwd_txt_fname(self):return self._preds_iplays_cwd_txt_fname
-	@property
-	def preds_eplays_cwd_txt_fname(self):return self._preds_eplays_cwd_txt_fname
-	@property
-	def preds_iplays_desktop_txt_fname(self):return self._preds_iplays_desktop_txt_fname
-	@property
-	def preds_eplays_desktop_txt_fname(self):return self._preds_eplays_desktop_txt_fname
 	@property
 	def preds_Id_attrib(self): return self._preds_Id_attrib
 	@property

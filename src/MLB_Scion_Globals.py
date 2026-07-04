@@ -249,6 +249,10 @@ messageScionEnsUnknownEnsemble = "Unknown ensemble. "
 messageScionDefaultDogPlay = "Default dog play! "
 messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not met! "
 messageScionEns2MajorityVoteDogPlay = "LeanStatOnlyEns Majority Vote Dog play! "
+messageScionRiskMinNoPlay = "No play due to risk minimisation constraints. "
+messageScionRiskMinVisDogNoPlay = "No play - split-silent VisDog skipped to reduce risk. "
+messageScionEns1DogChoice = "Dog play determined by StatOnlyEns. "
+messageScionEns2DogChoice = "Dog play determined by LeanStatOnlyEns. "
 
 # ─────────────────────────────────────────────────────────────────────────────
 # V26.06b (Standard Edition) play-strategy messages

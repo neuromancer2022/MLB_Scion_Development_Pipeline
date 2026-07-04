@@ -1,0 +1,34 @@
+PHASE I: Get dump and mups from mlb-data-pipeline
+In console, navigate to: ~/boxes/git_mlbdata/mlb-data-pipeline
+At beginning ofthe day you must do: git pull
+make csv SEASON=2026 START_DATE=2026-05-28 END_DATE=2026-07-04
+make matchup ODDS=ON
+
+if you want updated mups later in day, I recommend:
+git pull
+make matchup ODDS=ON
+
+The dump and mups will be stored in seperate subfolders under the /output folder (eg mlb_scrape_20260704_162906)
+
+PHASE II: Copy the dump and mups files from relevant output subfolder(~/boxes/git_mlbdata/mlb-data-pipeline) to HAPPY/data subfolders
+#1) copy dump file to HAPPY/data/primitives/mlbprimitives.csv
+Note: a typical name for a DUMP file is: mlb_games_20260528_20260704.csv
+so command might be:cp mlb_games_20260528_20260704.csv ~/tepper/mlb/HAPPY/data/primitives/mlbprimitives.csv
+
+#2) copy mups to HAPPY/data/mups/mlbmups.csv
+Note: a typical name for a MUPS file is: mlb_matchup_2026-07-04.csv
+so command might be:cp mlb_matchup_2026-07-04.csv ~/tepper/mlb/HAPPY/data/mups/mlbmups.csv
+
+PHASE III: Run Scion
+In console window, navigate to: ~/tepper/mlb/HAPPY
+Check the correct mups and dump have been copied to the data/primitives and data/mups subfolders
+#1) To update data AND run Scion
+make all
+#2) To just update data
+make scion_data
+#3) To just run Scion
+make scion_predict
+#4) To remove all outputs in results (clean results folder)
+make clean
+:w
+
