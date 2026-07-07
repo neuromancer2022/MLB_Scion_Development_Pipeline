@@ -274,11 +274,6 @@ messageScionSingleHFOverride = "Single ensemble FLAGs the HomFave (3-star play. 
 messageScionSingleVFNoOverride = "Single ensemble FLAGs the VisFave BUT not enough to override default HomDog (1-star) "
 messageScionDefaultVisDog   = "No ensemble flag: default 1-star VisDog play. "
 messageScionDefaultHomeDog  = "No ensemble flag: default HomDog play based on bookie price tier. "
-# Null starting-pitcher games are now ALLOWED (V26.06b) but flagged for awareness
-messageScionNullHSPAllowed  = "Note: H_SP is Null (team-based avg used); game still played. "
-messageScionNullVSPAllowed  = "Note: V_SP is Null (team-based avg used); game still played. "
-messageScionNullBothSPAllowed = "Note: BOTH H_SP and V_SP are Null (team-based avgs used); game still played. "
-
 # Registry mapping (ensemble id, state/reason) -> comment, so per-ensemble comment
 # selection is a single lookup rather than an if/else branch (PDF section 9.2).
 # ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129).

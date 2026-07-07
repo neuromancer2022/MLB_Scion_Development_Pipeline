@@ -312,16 +312,20 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         _ens1Med = 0.5
         _favePOS = MLB_global.ACTION_NOPLAY
 
-        # 2. Only decide if valid H and V bookie prices were calculated
-        if MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice):
-            # 2a. Note (do NOT suppress) null-pitcher games - V26.06b allows them
+        # 2. Only play when BOTH starting pitchers are known AND valid H and V
+        #    bookie prices were calculated.
+        # 2a. Policy: do NOT play when either starting pitcher (SP) is NULL.
+        if _hSP_Null or _vSP_Null:
+            # NULL starting pitcher -> No Play (starting-pitcher policy). This is
+            # checked first, so a missing SP is never overridden into a dog play.
             if _hSP_Null and _vSP_Null:
-                predsObj.addComment(MLB_global.messageScionNullBothSPAllowed)
+                predsObj.addComment(MLB_global.messageScionNullBothSP)
             elif _hSP_Null:
-                predsObj.addComment(MLB_global.messageScionNullHSPAllowed)
-            elif _vSP_Null:
-                predsObj.addComment(MLB_global.messageScionNullVSPAllowed)
-
+                predsObj.addComment(MLB_global.messageScionNullHSP)
+            else:
+                predsObj.addComment(MLB_global.messageScionNullVSP)
+            # _scionPOS remains ACTION_NOPLAY (default) - no play is computed.
+        elif MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice):
             # 2b. Derived book probabilities (section 9.1)
             _bookCloseHome, _bookMidHome = deriveBookProbabilities(predsObj)
             _faveIsHome = (_bookCloseHome > 0.5)      # ties (==0.5) -> visitor fave
@@ -375,23 +379,21 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                     _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
                     predsObj.addComment(MLB_global.messageScionSingleVFNoOverride)
             else:
-                # Both ensembles SILENT (neither flags the favourite).
-                # Reinstated home-dog policy: whenever the dog is the HOME team
-                # (i.e. the favourite is the visitor), play the home dog at 3* — it
-                # rides the robust, multi-season market-wide home-dog bias. A
-                # both-SILENT visitor-favourite game is almost always 'both models on
-                # the visitor favourite but under-gated', exactly the live home-dog
-                # spot. When the dog is the visitor (home favourite) we still stand
-                # down: visitor dogs are flat-to-negative.
-                if _dogPOS == MLB_global.ACTION_LINE_HD:
-                    _scionPOS = MLB_global.ACTION_LINE_HD
-                    _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
-                    predsObj.addComment(MLB_global.messageScionRiskMinHomeDog)
+                # Neither flags -> play the DOG
+                if _dogPOS == MLB_global.ACTION_LINE_VD:
+                    # Visitor dog: flat 1* (no price structure)
+                    _scionPOS = MLB_global.ACTION_LINE_VD
+                    _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
+                    predsObj.addComment(MLB_global.messageScionDefaultVisDog)
                 else:
-                    # Dog side is the visitor dog -> no bet.
-                    _scionPOS = MLB_global.ACTION_NOPLAY
-                    _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-                    predsObj.addComment(MLB_global.messageScionRiskMinVisDogNoPlay)
+                    # Home dog: closing-price-tiered stars (U-shaped 5*/3*/5*)
+                    _scionPOS = MLB_global.ACTION_LINE_HD
+                    _homCLML = round(float(_hBookiePrice))
+                    if MLB_global.HOMEDOG_PRICE_TIER_LOW <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_HIGH:
+                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+                    else:
+                        _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
+                    predsObj.addComment(MLB_global.messageScionDefaultHomeDog)
 
             # 2f. Confidence + reported edge (book_mid-based, on the played side)
             _scionCONF = round(max(_ensVote.values()), 2)

@@ -22,14 +22,25 @@ class scionMUP:
         self._mup_nightgame_attrib = "NIGHTGAME"
         self._mup_vid_attrib = "VIS_ID"
         self._mup_hid_attrib = "HOM_ID"
+        self._mup_vis_sp_id_attrib = "VIS_SP_ID"
+        self._mup_hom_sp_id_attrib = "HOM_SP_ID"
         self._mup_vis_ml_open_attrib = "vis_ml_open"
         self._mup_vis_ml_close_attrib = "vis_ml_close"
         self._mup_hom_ml_open_attrib = "home_ml_open"
         self._mup_hom_ml_close_attrib = "home_ml_close"
-        self._mup_vis_sp_id_attrib = "VIS_SP_ID"
-        self._mup_hom_sp_id_attrib = "HOM_SP_ID"
+        self._mup_over_open_attrib = "over_open"
+        self._mup_over_open_odds_attrib = "over_open_odds"
+        self._mup_over_close_attrib = "over_close"
+        self._mup_over_close_odds_attrib = "over_close_odds"
+        self._mup_over_open_attrib = "under_open"
         self._mup_bookietotal_attrib = "BOOKIE_TOTAL"
+        self._mup_bookieml_attrib = "BOOKIE_H_MIDDLE_LINE"
         self._mup_bookiemlspan_attrib = "BOOKIEHLINE_SPAN_CENTS"
+        self._mup_bookievig_attrib = "BOOKIE_VIG"
+        self._mup_bpdefense_attrib = "BPHP_DEFENSE"
+        self._mup_bpoffense_attrib = "BPHP_OFFENSE"
+        self._mup_bpnull_attrib = "BPHP_NULL"
+        self._mup_bpnoline_attrib = "BPHP_NOLINE"
         self._mup_comments_attrib = "COMMENTS"
 
         self._mup_cols =    [  
@@ -37,14 +48,25 @@ class scionMUP:
                                 self._mup_nightgame_attrib,
                                 self._mup_vid_attrib,
                                 self._mup_hid_attrib,
+                                self._mup_vis_sp_id_attrib,
+                                self._mup_hom_sp_id_attrib,
                                 self._mup_vis_ml_open_attrib,
                                 self._mup_vis_ml_close_attrib,
                                 self._mup_hom_ml_open_attrib,
                                 self._mup_hom_ml_close_attrib,
-                                self._mup_vis_sp_id_attrib,
-                                self._mup_hom_sp_id_attrib,
+                                self._mup_over_open_attrib,
+                                self._mup_over_open_odds_attrib,
+                                self._mup_over_close_attrib,
+                                self._mup_over_close_odds_attrib,
+                                self._mup_over_open_attrib,
                                 self._mup_bookietotal_attrib,
+                                self._mup_bookieml_attrib,
                                 self._mup_bookiemlspan_attrib,
+                                self._mup_bookievig_attrib,
+                                self._mup_bpdefense_attrib,
+                                self._mup_bpoffense_attrib,
+                                self._mup_bpnull_attrib,
+                                self._mup_bpnoline_attrib,
                                 self._mup_comments_attrib
                             ]
         
@@ -61,8 +83,19 @@ class scionMUP:
                                     self._mup_vis_ml_close_attrib,
                                     self._mup_hom_ml_open_attrib,
                                     self._mup_hom_ml_close_attrib,
+                                    self._mup_over_open_attrib,
+                                    self._mup_over_open_odds_attrib,
+                                    self._mup_over_close_attrib,
+                                    self._mup_over_close_odds_attrib,
+                                    self._mup_over_open_attrib,
+                                    self._mup_bookietotal_attrib,
+                                    self._mup_bookieml_attrib,
                                     self._mup_bookiemlspan_attrib,
-                                    self._mup_bookietotal_attrib
+                                    self._mup_bookievig_attrib,
+                                    self._mup_bpdefense_attrib,
+                                    self._mup_bpoffense_attrib,
+                                    self._mup_bpnull_attrib,
+                                    self._mup_bpnoline_attrib,
                                 ]
         
         self._mup_str_cols =    [  
@@ -192,6 +225,24 @@ class scionMUP:
         return int(self.current_mup_dict[self._mup_hom_ml_open_attrib])
     def getCurrentMUPHomeMLClose(self):
         return int(self.current_mup_dict[self._mup_hom_ml_close_attrib])
+    def getCurrentMUPOverOpen(self):
+        return int(self.current_mup_dict[self._mup_over_open_attrib])
+    def getCurrentMUPOverClose(self):
+        return int(self.current_mup_dict[self._mup_over_close_attrib])
+    def getCurrentMUPOverOpenOdds(self):
+        return int(self.current_mup_dict[self._mup_over_open_odds_attrib])
+    def getCurrentMUPOverCloseOdds(self):
+        return int(self.current_mup_dict[self._mup_over_close_odds_attrib])
+    def getCurrentMUPBOOKIEML(self):
+        return float(self.current_mup_dict[self._mup_bookieml_attrib])
+    def setCurrentMUPBookieML(self, opl):
+        self.current_mup_dict[self._mup_bookieml_attrib] = float(opl)
+    def getCurrentMUPBookieVig(self):
+        return float(self.current_mup_dict[self._mup_bookievig_attrib])
+    def setCurrentMUPBookieVig(self, ovig):
+        self.current_mup_dict[self._mup_bookievig_attrib] = float(ovig)
+    def getCurrentMUPBOOKIESPAN(self):
+        return float(self.current_mup_dict[self._mup_bookiemlspan_attrib])
     def setCurrentMUPBOOKIETOTAL(self, opt):
         self.current_mup_dict[self._mup_bookietotal_attrib] = float(opt)
     def getCurrentMUPBOOKIETOTAL(self):
@@ -199,8 +250,16 @@ class scionMUP:
         if self.current_mup_dict[self._mup_bookietotal_attrib] == MLB_dbvar.NO_DATA:
             self.setCurrentMUPBOOKIETOTAL(MLB_global.OPT_MEDIAN)
         return float(self.current_mup_dict[self._mup_bookietotal_attrib])
-    def getCurrentMUPBOOKIESPAN(self):
-        return float(self.current_mup_dict[self._mup_bookiemlspan_attrib])
+    def getCurrentMUPOvig(self):
+        return int(self.current_mup_dict[self._mup_bookievig_attrib])
+    def getCurrentMUPBPDefense(self):
+        return float(self.current_mup_dict[self._mup_bpdefense_attrib])
+    def getCurrentMUPBPOffense(self):
+        return float(self.current_mup_dict[self._mup_bpoffense_attrib])
+    def getCurrentMUPBPNull(self):
+        return float(self.current_mup_dict[self._mup_bpnull_attrib])
+    def getCurrentMUPBPNoLine(self):
+        return float(self.current_mup_dict[self._mup_bpnoline_attrib])
     def getCurrentMUPComments(self):
         return str(self.current_mup_dict[self._mup_comments_attrib])
     
@@ -213,6 +272,18 @@ class scionMUP:
         self.current_mup_dict[self._mup_hom_ml_open_attrib] = float(newValue)
     def setCurrentMUPHomeMLClose(self, newValue):
         self.current_mup_dict[self._mup_hom_ml_close_attrib] = float(newValue)
+    def setCurrentMUPOverOpen(self, newValue):
+        self.current_mup_dict[self._mup_over_open_attrib] = float(newValue)
+    def setCurrentMUPOverClose(self, newValue):
+        self.current_mup_dict[self._mup_over_close_attrib] = float(newValue)
+    def setCurrentMUPOverOpenOdds(self, newValue):
+        self.current_mup_dict[self._mup_over_open_odds_attrib] = float(newValue)
+    def setCurrentMUPOverCloseOdds(self, newValue):
+        self.current_mup_dict[self._mup_over_close_odds_attrib] = float(newValue)
+    def setCurrentMUPBookieML(self, opl):
+        self.current_mup_dict[self._mup_bookieml_attrib] = float(opl)
+    def setCurrentMUPBookieVig(self, ovig):
+        self.current_mup_dict[self._mup_bookievig_attrib] = float(ovig)
     def setCurrentMUPBOOKIETOTAL(self, opt):
         self.current_mup_dict[self._mup_bookietotal_attrib] = float(opt)
     
@@ -316,6 +387,21 @@ class scionMUP:
         except Exception:
             print("\nscionMUPS.recoverOriginalMUPBOOKIEML():: Unexpected error encountered when retrieving opl for a specific matchup!")
             raise
+        
+    def recoverOriginalMUPOVIG(self, row_index):
+        #Assumes data has been loaded into _mup_df
+        #This function is useful in case matchup dict has been altered due to span
+        try:
+            #1. check valid index
+            if not self._isMUPIndexValid(row_index):
+                print("\nscionMUPS.recoverOriginalMUPOVIG(): Error - invalid row index given to access the matchup file! Please ensure the row index is between 0 and " + str(self._mup_df.shape[0]-1) + "\n")
+                raise Exception
+            #2. recover opl
+            self.current_mup_dict[self._mup_bookievig_attrib] = float(self._mup_df[self._mup_bookievig_attrib].iloc[row_index])
+                        
+        except Exception:
+            print("\nscionMUPS.recoverOriginalMUPOVIG():: Unexpected error encountered when retrieving opl for a specific matchup!")
+            raise
     
     def recoverOriginalMUPBOOKIETOTAL(self, row_index):
         #Assumes data has been loaded into _mup_df
@@ -373,11 +459,38 @@ class scionMUP:
     def mup_hom_ml_close_attrib(self):
         return self._mup_hom_ml_close_attrib
     @property
+    def mup_over_open_attrib(self):
+        return self._mup_over_open_attrib
+    @property
+    def mup_over_close_attrib(self):
+        return self._mup_over_close_odds_attrib
+    @property
+    def mup_over_open_odds_attrib(self):
+        return self._mup_over_open_odds_attrib
+    @property
+    def mup_bookieml_attrib(self):
+        return self._mup_bookieml_attrib
+    @property
     def mup_bookiemlspan_attrib(self):
         return self._mup_bookiemlspan_attrib
     @property
     def mup_bookietotal_attrib(self):
         return self._mup_bookietotal_attrib
+    @property
+    def mup_bookievig_attrib(self):
+        return self._mup_bookievig_attrib
+    @property
+    def mup_bpdefense_attrib(self):
+        return self._mup_bpdefense_attrib
+    @property
+    def mup_bpoffense_attrib(self):
+        return self._mup_bpoffense_attrib
+    @property
+    def mup_bpnull_attrib(self):
+        return self._mup_bpnull_attrib
+    @property
+    def mup_bpnoline_attrib(self):
+        return self._mup_bpnoline_attrib
     @property
     def mup_comments_attrib(self):
         return self._mup_comments_attrib

@@ -1,0 +1,6 @@
+|    | Game_Id          | Team   |   ML | Play   |
+|---:|:-----------------|:-------|-----:|:-------|
+|  0 | 20260707_CHC@BAL | BAL    | -101 | HomDog |
+|  0 | 20260707_PHI@CIN | CIN    |  150 | HomDog |
+|  0 | 20260707_BOS@CWS | CWS    |  109 | HomDog |
+|  0 | 20260707_OAK@DET | OAK    |  189 | VisDog |

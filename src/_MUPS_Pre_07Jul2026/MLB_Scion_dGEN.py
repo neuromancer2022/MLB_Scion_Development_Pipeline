@@ -83,8 +83,8 @@ class scionDGEN:
         self._v_cprob = MLB_global.convertMoneyLinetoProb(self._v_ml_close)
         self._h_cll_opl_prob_diff = self._h_cprob - self._h_oprob
         self._v_cll_opl_prob_diff = self._v_cprob - self._v_oprob
-        self._total_over_open = float(self.mupDB.getCurrentMUPBOOKIETOTAL()) #TOTALS not actively updated in the MUPs so we will use the same value for open and close
-        self._total_over_close = float(self.mupDB.getCurrentMUPBOOKIETOTAL())
+        self._total_over_open = float(self.mupDB.getCurrentMUPOverOpen())
+        self._total_over_close = float(self.mupDB.getCurrentMUPOverClose())
         self._nightgame = int(self.mupDB.getCurrentMUPNightGame())
         #get flag from config file re whether or not lookahead info is required
         self._lookahead_active = int(cfgObj.getSysLookAheadStatus())
@@ -238,12 +238,12 @@ class scionDGEN:
         self._currentgame_df[MLB_dbvar.dbvar_G_V_Closing_MoneyLine].values[0] = x = float(mupsObj.getCurrentMUPVisMLClose())
         self._currentgame_df[MLB_dbvar.dbvar_G_V_ClosingProbabilityLine].values[0] = cl = MLB_global.convertMoneyLinetoProb(x)
         self._currentgame_df[MLB_dbvar.dbvar_G_V_CLL_OPL_Prob_Diff].values[0] = float(cl - op)
-        self._currentgame_df[MLB_dbvar.dbvar_G_Opening_TotalOver].values[0] = float(mupsObj.getCurrentMUPBOOKIETOTAL()) #Totals are not actively updated in the MUPs so we will use the same value for open and close
+        self._currentgame_df[MLB_dbvar.dbvar_G_Opening_TotalOver].values[0] = float(mupsObj.getCurrentMUPOverOpen())
         self._currentgame_df[MLB_dbvar.dbvar_G_Opening_TotalOverLine].values[0] = MLB_dbvar.NO_DATA
-        self._currentgame_df[MLB_dbvar.dbvar_G_Closing_TotalOver].values[0] = float(mupsObj.getCurrentMUPBOOKIETOTAL()) #Totals are not actively updated in the MUPs so we will use the same value for open and close
+        self._currentgame_df[MLB_dbvar.dbvar_G_Closing_TotalOver].values[0] = float(mupsObj.getCurrentMUPOverClose())
         self._currentgame_df[MLB_dbvar.dbvar_G_Closing_TotalOverLine].values[0] = MLB_dbvar.NO_DATA
         # Now, the lines we are playing on is ALWAYS the closing lines (that appear in the mups, which should be updated during span)
-        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_TotalOver].values[0] = float(mupsObj.getCurrentMUPBOOKIETOTAL()) #Totals are not actively updated in the MUPs so we will use the same value for open and close
+        self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_TotalOver].values[0] = float(mupsObj.getCurrentMUPOverClose())
         self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_TotalOverLine].values[0] = MLB_dbvar.NO_DATA
         self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_H_MoneyLine].values[0] = x = float(mupsObj.getCurrentMUPHomeMLClose())
         self._currentgame_df[MLB_dbvar.dbvar_G_Bookie_H_Probability].values[0] = MLB_global.convertMoneyLinetoProb(x)
@@ -366,12 +366,11 @@ class scionDGEN:
                 self._setCurrent_MUPsMoneyLines(mupsObj)
                 #b. set window_size for current model (VERY important otherwise the default will be used)
                 self._window_size = int(modelCfg.getCurrentTaskModelWindowSize())
-                #c. Update probabilities from Boys Program.
-                # 7th Jul 2026: BP no longer in use or in the mups, so set to 0.5 for all probabilities (as if no information available)
-                self._currentgame_df[MLB_dbvar.dbvar_G_Ivan_BP_DefenseProbability].values[0] = 0.5
-                self._currentgame_df[MLB_dbvar.dbvar_G_Ivan_BP_OffenseProbability].values[0] = 0.5
-                self._currentgame_df[MLB_dbvar.dbvar_G_Ivan_BP_NullProbability].values[0] = 0.5
-                self._currentgame_df[MLB_dbvar.dbvar_G_Ivan_BP_NoLineProbability].values[0] = 0.5
+                #c. Update probabilities from Boys Program
+                self._currentgame_df[MLB_dbvar.dbvar_G_Ivan_BP_DefenseProbability].values[0] = mupsObj.getCurrentMUPBPDefense()
+                self._currentgame_df[MLB_dbvar.dbvar_G_Ivan_BP_OffenseProbability].values[0] = mupsObj.getCurrentMUPBPOffense()
+                self._currentgame_df[MLB_dbvar.dbvar_G_Ivan_BP_NullProbability].values[0] = mupsObj.getCurrentMUPBPNull()
+                self._currentgame_df[MLB_dbvar.dbvar_G_Ivan_BP_NoLineProbability].values[0] = mupsObj.getCurrentMUPBPNoLine()
         except Exception:
             print("\nscionDGEN._initGameData(): unexpected error when initialising the dataframe for the current game.\n")
             raise
