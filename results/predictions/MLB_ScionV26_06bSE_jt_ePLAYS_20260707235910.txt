@@ -1,0 +1,18 @@
+|    | Game_Id          | Team     |   ML | Play     |
+|---:|:-----------------|:---------|-----:|:---------|
+|  1 | 20260707_CHC@BAL | BAL      | -101 | HomDog   |
+|  2 | 20260707_PHI@CIN | CIN      |  150 | HomDog   |
+|  3 | 20260707_BOS@CWS | CWS      |  109 | HomDog   |
+|  4 | 20260707_OAK@DET | OAK      |  189 | VisDog   |
+|  5 | 20260707_SEA@FLO | -1000000 |  nan | -1000000 |
+|  6 | 20260707_COL@LA  | COL      |  243 | VisDog   |
+|  7 | 20260707_CLE@MIN | CLE      |  100 | VisDog   |
+|  8 | 20260707_HOU@WAS | HOU      |  107 | VisDog   |
+|  9 | 20260707_KC@NYM  | -1000000 |  nan | -1000000 |
+| 10 | 20260707_ATL@PIT | ATL      |  131 | VisDog   |
+| 11 | 20260707_ARZ@SD  | ARZ      |  105 | VisDog   |
+| 12 | 20260707_TOR@SF  | SF       |  103 | HomDog   |
+| 13 | 20260707_MLW@STL | -1000000 |  nan | -1000000 |
+| 14 | 20260707_MLW@STL | STL      |  184 | HomDog   |
+| 15 | 20260707_NYY@TB  | NYY      |  108 | VisDog   |
+| 16 | 20260707_LAA@TEX | LAA      |  145 | VisDog   |
