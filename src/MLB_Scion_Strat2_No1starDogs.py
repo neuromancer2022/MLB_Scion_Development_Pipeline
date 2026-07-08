@@ -312,16 +312,20 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         _ens1Med = 0.5
         _favePOS = MLB_global.ACTION_NOPLAY
 
-        # 2. Only decide if valid H and V bookie prices were calculated
-        if MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice):
-            # 2a. Note (do NOT suppress) null-pitcher games - V26.06b allows them
+        # 2. Only play when BOTH starting pitchers are known AND valid H and V
+        #    bookie prices were calculated.
+        # 2a. Policy: do NOT play when either starting pitcher (SP) is NULL.
+        if _hSP_Null or _vSP_Null:
+            # NULL starting pitcher -> No Play (starting-pitcher policy). This is
+            # checked first, so a missing SP is never overridden into a dog play.
             if _hSP_Null and _vSP_Null:
-                predsObj.addComment(MLB_global.messageScionNullBothSPAllowed)
+                predsObj.addComment(MLB_global.messageScionNullBothSP)
             elif _hSP_Null:
-                predsObj.addComment(MLB_global.messageScionNullHSPAllowed)
-            elif _vSP_Null:
-                predsObj.addComment(MLB_global.messageScionNullVSPAllowed)
-
+                predsObj.addComment(MLB_global.messageScionNullHSP)
+            else:
+                predsObj.addComment(MLB_global.messageScionNullVSP)
+            # _scionPOS remains ACTION_NOPLAY (default) - no play is computed.
+        elif MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice):
             # 2b. Derived book probabilities (section 9.1)
             _bookCloseHome, _bookMidHome = deriveBookProbabilities(predsObj)
             _faveIsHome = (_bookCloseHome > 0.5)      # ties (==0.5) -> visitor fave
@@ -370,28 +374,32 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                     _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
                     predsObj.addComment(MLB_global.messageScionSingleHFOverride)
                 else:
-                    # Single VISITOR-fave flag does NOT override -> home dog, 1*
-                    _scionPOS = MLB_global.ACTION_LINE_HD
-                    _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
-                    predsObj.addComment(MLB_global.messageScionSingleVFNoOverride)
-            else:
-                # Both ensembles SILENT (neither flags the favourite).
-                # Reinstated home-dog policy: whenever the dog is the HOME team
-                # (i.e. the favourite is the visitor), play the home dog at 3* — it
-                # rides the robust, multi-season market-wide home-dog bias. A
-                # both-SILENT visitor-favourite game is almost always 'both models on
-                # the visitor favourite but under-gated', exactly the live home-dog
-                # spot. When the dog is the visitor (home favourite) we still stand
-                # down: visitor dogs are flat-to-negative.
-                if _dogPOS == MLB_global.ACTION_LINE_HD:
-                    _scionPOS = MLB_global.ACTION_LINE_HD
-                    _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
-                    predsObj.addComment(MLB_global.messageScionRiskMinHomeDog)
-                else:
-                    # Dog side is the visitor dog -> no bet.
+                    # Single VISITOR-fave flag: NO PLAY (was a 1* home dog).
+                    # This is the home dog that one ensemble actively opposes (it
+                    # backs the visitor favourite). Corrected outsample: the weakest
+                    # home-dog tier (+1.5%, n=58, CI straddling zero). The 1* tier is
+                    # the no-conviction tier and is stood down.
                     _scionPOS = MLB_global.ACTION_NOPLAY
                     _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-                    predsObj.addComment(MLB_global.messageScionRiskMinVisDogNoPlay)
+                    predsObj.addComment(MLB_global.messageScionNoPlaySingleVF)
+            else:
+                # Neither flags -> the DOG is the default, but only the HOME dog
+                # is played. The visitor dog is the no-conviction 1* tier: corrected
+                # outsample +0.5% (n=951, CI straddling zero), i.e. no edge over a
+                # blind visitor-dog bet. It is stood down.
+                if _dogPOS == MLB_global.ACTION_LINE_VD:
+                    _scionPOS = MLB_global.ACTION_NOPLAY
+                    _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
+                    predsObj.addComment(MLB_global.messageScionNoPlayVisDog)
+                else:
+                    # Home dog: closing-price-tiered stars (U-shaped 5*/3*/5*)
+                    _scionPOS = MLB_global.ACTION_LINE_HD
+                    _homCLML = round(float(_hBookiePrice))
+                    if MLB_global.HOMEDOG_PRICE_TIER_LOW <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_HIGH:
+                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+                    else:
+                        _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
+                    predsObj.addComment(MLB_global.messageScionDefaultHomeDog)
 
             # 2f. Confidence + reported edge (book_mid-based, on the played side)
             _scionCONF = round(max(_ensVote.values()), 2)
@@ -770,7 +778,7 @@ def updatePredsWithdGEN(dgenObj, predsObj, sysCfgObj):
     return predsObj
 
 def processBookieHomeLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData):
-    # THIS WILL NEED REDESIGNING TO TAKE ACCOUNT OF HOM_ML AND PROB DIFF FROM ORIGINAL OPENING PROB (SO WE EXTEND THE CLOSE)
+    # THIS NEEDS REDESIGNING!!!!
     #Assumption 1: gameData stores the original HOM Lines (so we can roll back to it if we span in other direction)
     #Assumption 2: MUPs object stores the revised HOM and VIS Lines
     #Assumption 3: Vis Lines are NOT altered in any way and there it is assumed there is no requirement to do so.
@@ -865,7 +873,7 @@ if __name__ == "__main__":
             if numMups > 0:
                 per_complete = (mupIndex+1)/numMups*100
             original_hml = predsObj.getPreds_H_Bookie_Bet_Price()
-            original_total = float(mupsDB.getCurrentMUPOverClose())
+            original_total = float(mupsDB.getCurrentMUPBOOKIETOTAL())
             print("\rGenerating predictions --> game {0} of {1} ({2:.1f}%)".format(mupIndex+1, numMups, per_complete) + " [ {0} {1} @ {2} | HML {3} | TOTAL {4} ]".format(str(mupsDB.current_mup_dict[mupsDB.mup_date_attrib]), 
                                                                                                                                                                     str(mupsDB.current_mup_dict[mupsDB.mup_vis_sname_attrib]), 
                                                                                                                                                                     str(mupsDB.current_mup_dict[mupsDB.mup_hom_sname_attrib]), 
@@ -894,7 +902,7 @@ if __name__ == "__main__":
             game_positive_span_processed = False #This is first iteration of span
             spanCtr = 0 # 0 refers to game without any mods
             #3.8 Process the current game (including spanning either side of the opl)
-            while not game_span_processed:  #only opl is active for span
+            while not game_span_processed:  
                 if not skip_game:
                     #3.8.1 For each active task type, process each model and get responses 
                     success = True
@@ -934,7 +942,7 @@ if __name__ == "__main__":
                                 if not skip_game:
                                     #d. round BP features based on ensemble
                                     bpdp = getEnsBPFeatureDP(sysCfg)
-                                    gameData.roundBPFeatures(mupsDB, bpdp)
+                                    #gameData.roundBPFeatures(mupsDB, bpdp) #7th Jul 2026: BP variables are not actively used in the model so no need to round them
                                     #e. transform the data (selected features, scaling, categ var processing will be different per model so this func will be called many times per matchup)
                                     transformedGameData = MLB_dtrans.scionDTRANS(gameDataWd, gameData.getGameData(), masterDB, mupsDB, sysCfg)
                                     transformedGameData.transformGameData(task, model_count, sysCfg.getCurrentModelTarget())
@@ -978,7 +986,8 @@ if __name__ == "__main__":
                         predsObj.storeSummaryPreds()
                         predsObj.storePredsAsMarkdown()
                         #3.15 Process span
-                        game_span_processed, game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData = processBookieHomeLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData)
+                        #game_span_processed, game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData = processBookieHomeLineSpan(game_positive_span_processed, spanCtr, spanGradations, predsObj, mupsDB, gameData)
+                        game_span_processed = True #for now we are not doing any spanning so just set to true
                 else:
                     #we still want to store information about skipped games so create id and update verbose dataframe
                     _predId = predsObj._createPredId()

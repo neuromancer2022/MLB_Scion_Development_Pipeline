@@ -374,17 +374,23 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                     _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
                     predsObj.addComment(MLB_global.messageScionSingleHFOverride)
                 else:
-                    # Single VISITOR-fave flag does NOT override -> home dog, 1*
-                    _scionPOS = MLB_global.ACTION_LINE_HD
-                    _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
-                    predsObj.addComment(MLB_global.messageScionSingleVFNoOverride)
+                    # Single VISITOR-fave flag: NO PLAY (was a 1* home dog).
+                    # This is the home dog that one ensemble actively opposes (it
+                    # backs the visitor favourite). Corrected outsample: the weakest
+                    # home-dog tier (+1.5%, n=58, CI straddling zero). The 1* tier is
+                    # the no-conviction tier and is stood down.
+                    _scionPOS = MLB_global.ACTION_NOPLAY
+                    _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
+                    predsObj.addComment(MLB_global.messageScionNoPlaySingleVF)
             else:
-                # Neither flags -> play the DOG
+                # Neither flags -> the DOG is the default, but only the HOME dog
+                # is played. The visitor dog is the no-conviction 1* tier: corrected
+                # outsample +0.5% (n=951, CI straddling zero), i.e. no edge over a
+                # blind visitor-dog bet. It is stood down.
                 if _dogPOS == MLB_global.ACTION_LINE_VD:
-                    # Visitor dog: flat 1* (no price structure)
-                    _scionPOS = MLB_global.ACTION_LINE_VD
-                    _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
-                    predsObj.addComment(MLB_global.messageScionDefaultVisDog)
+                    _scionPOS = MLB_global.ACTION_NOPLAY
+                    _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
+                    predsObj.addComment(MLB_global.messageScionNoPlayVisDog)
                 else:
                     # Home dog: closing-price-tiered stars (U-shaped 5*/3*/5*)
                     _scionPOS = MLB_global.ACTION_LINE_HD

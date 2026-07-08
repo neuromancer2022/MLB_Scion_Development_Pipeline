@@ -274,6 +274,8 @@ messageScionSingleHFOverride = "Single ensemble FLAGs the HomFave (3-star play. 
 messageScionSingleVFNoOverride = "Single ensemble FLAGs the VisFave BUT not enough to override default HomDog (1-star) "
 messageScionDefaultVisDog   = "No ensemble flag: default 1-star VisDog play. "
 messageScionDefaultHomeDog  = "No ensemble flag: default HomDog play based on bookie price tier. "
+messageScionNoPlaySingleVF = "No play - single VisFave flag; home dog opposed by an ensemble (1-star tier stood down). "
+messageScionNoPlayVisDog = "No play - both SILENT, visitor dog (1-star no-conviction tier stood down). "
 # Registry mapping (ensemble id, state/reason) -> comment, so per-ensemble comment
 # selection is a single lookup rather than an if/else branch (PDF section 9.2).
 # ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129).
