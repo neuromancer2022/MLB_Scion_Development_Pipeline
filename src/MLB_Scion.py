@@ -170,10 +170,13 @@ def getPriceVoteMatchStatus(hBookiePrice, vBookiePrice, modelHPrice, modelVote):
 
 def getDefaultDogPlay(hBookiePrice, vBookiePrice, sysCfgObj=None, predsObj=None):
     # V26.06b (PDF §9.4): when NEITHER ensemble flags the favourite, the default
-    # play is the DOG (the side opposite the favourite). Under the new strategy
-    # every in-scope game is played, so the old win-loss-price threshold gate
-    # (which could suppress the dog to NoPlay) is REMOVED. sysCfgObj/predsObj are
-    # retained as optional args for call-site compatibility but are unused.
+    # play is the DOG (the side opposite the favourite). This helper only names
+    # the dog side; eligibility is enforced UPSTREAM in
+    # determineScionSidePosition(): the +-150 game scope (from 7 Aug 2026), the
+    # NULL-SP rule and the 1* stand-downs all apply before any default dog play
+    # fires. The old win-loss-price threshold gate (which could suppress the dog
+    # to NoPlay) is REMOVED. sysCfgObj/predsObj are retained as optional args
+    # for call-site compatibility but are unused.
     #
     # Favourite side is taken from the bookie prices (shorter/more-negative price
     # = favourite). Ties (equal prices) => home dog, matching §9.1's tie rule
@@ -275,15 +278,22 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
     #        STRONG-FLAG : side==FAVE and gap>=gapThr and vote>=0.93
     #        FLAG        : side==FAVE and gap>=gapThr and vote>=0.83
     #        SILENT      : otherwise (backs the dog, or on the fave but under-gated)
-    #   2) Apply the section 9.4 decision table (exactly one row fires; every game
-    #      is played - NoPlay only when the bookie prices are invalid):
+    #   2) Apply the section 9.4 decision table (exactly one row fires). NoPlay
+    #      when: either starting pitcher is NULL, a bookie price is invalid, the
+    #      game is outside the +-150 scope, or the play falls in a stood-down
+    #      1* tier. Otherwise:
     #        both flagged        -> play FAVE; 7* if both STRONG else 5*
     #        exactly one flagged -> if FAVE==HOME: play HF 3*
-    #                               else (FAVE==VIS): play HOME DOG 1* (no override)
-    #        none flagged        -> play DOG; if DOG==VIS: 1*
+    #                               else (FAVE==VIS): NO PLAY (1* home-dog
+    #                               tier stood down)
+    #        none flagged        -> if DOG==VIS: NO PLAY (1* tier stood down)
     #                               else (HOME dog): closing-price tiered 5*/3*/5*
-    #   3) VF (visitor-favourite) plays are now ALLOWED (both-flagged, vis fave).
-    #   4) NULL starting-pitcher games are ALLOWED (noted in comments only).
+    #   3) VF (visitor-favourite) plays are ALLOWED on consensus (both-flagged,
+    #      vis fave).
+    #   4) NULL starting-pitcher games are NOT played (checked first).
+    #   5) +-150 GAME SCOPE: both closing prices must be within +-150 inclusive
+    #      (SCOPE_MAX_ABS_PRICE); out-of-scope games are NoPlay. Enforced in
+    #      code from 7 Aug 2026.
     #
     # ASSUMPTION 1: sysCfgObj and predsObj have the required component data stored.
     # ASSUMPTION 2: bookie prices are rounded to the nearest integer for decisions.
@@ -325,12 +335,27 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
             else:
                 predsObj.addComment(MLB_global.messageScionNullVSP)
             # _scionPOS remains ACTION_NOPLAY (default) - no play is computed.
-        elif MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice):
-            # 2b. Derived book probabilities (section 9.1)
+        elif not (MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice)):
+            # 2b. Valid H and V bookie prices are required - else NoPlay.
+            predsObj.addComment(MLB_global.messageScionInvalidTeamPrice)
+        elif (abs(round(float(_hBookiePrice))) > MLB_global.SCOPE_MAX_ABS_PRICE
+              or abs(round(float(_vBookiePrice))) > MLB_global.SCOPE_MAX_ABS_PRICE):
+            # 2c. +-150 GAME SCOPE (23 Jul 2026 report: "a game is not played
+            # when ... it falls outside +-150"). Checked AFTER price validity
+            # (so abs/round are safe) and BEFORE the decision table, so no
+            # branch - fave flag, default home dog or otherwise - can fire on
+            # an out-of-scope game. Boundary is INCLUSIVE: |price| <= 150 is in
+            # scope; +-151 is out. Rounding matches ASSUMPTION 2 (integer-
+            # rounded prices drive decisions). Scope enforced from 7 Aug 2026;
+            # earlier plays above +150 (e.g. BAL +207, 6 Aug) predate this gate.
+            predsObj.addComment(MLB_global.messageScionNoPlayOutOfScope)
+            # _scionPOS remains ACTION_NOPLAY - no play is computed.
+        else:
+            # 2d. Derived book probabilities (section 9.1)
             _bookCloseHome, _bookMidHome = deriveBookProbabilities(predsObj)
             _faveIsHome = (_bookCloseHome > 0.5)      # ties (==0.5) -> visitor fave
 
-            # 2c/2d. Per-ensemble side, gap and state (section 9.1/9.2) - ONE loop
+            # 2e. Per-ensemble side, gap and state (section 9.1/9.2) - ONE loop
             # over both ensembles instead of duplicated ENS1/ENS2 blocks.
             for _ens in MLB_global.MODEL_PROBENS:
                 _med  = float(_ensGet(predsObj, _ens, "HWinProb"))       # med(M)
@@ -356,7 +381,7 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
             _favePOS = MLB_global.ACTION_LINE_HF if _faveIsHome else MLB_global.ACTION_LINE_VF
             _dogPOS  = getDefaultDogPlay(_hBookiePrice, _vBookiePrice)   # VD if home fave else HD
 
-            # 2e. Decision table (section 9.4) - exactly one branch fires
+            # 2f. Decision table (section 9.4) - exactly one branch fires
             if _ens1Flagged and _ens2Flagged:
                 # Both flag the favourite -> consensus favourite play
                 _scionPOS = _favePOS
@@ -398,18 +423,19 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                     if MLB_global.HOMEDOG_PRICE_TIER_LOW <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_HIGH:
                         _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
                     else:
+                        # < +100 (short dogs) or +120..+150 (long band). Prices
+                        # above +150 can no longer reach here - the +-150 scope
+                        # gate upstream (2c) filters them to NoPlay.
                         _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
                     predsObj.addComment(MLB_global.messageScionDefaultHomeDog)
 
-            # 2f. Confidence + reported edge (book_mid-based, on the played side)
+            # 2g. Confidence + reported edge (book_mid-based, on the played side)
             _scionCONF = round(max(_ensVote.values()), 2)
             _ens1HomeEdgeMid = _ensHomeEdgeMid[MLB_global.MODEL_PROBENS1]
             if _scionPOS == MLB_global.ACTION_LINE_HF or _scionPOS == MLB_global.ACTION_LINE_HD:
                 _scionEdge = _ens1HomeEdgeMid
             else:
                 _scionEdge = -_ens1HomeEdgeMid
-        else:
-            predsObj.addComment(MLB_global.messageScionInvalidTeamPrice)
 
         # 3. Stake + payout multiplier for the played side (stars are the stake scale)
         if _scionPOS != MLB_global.ACTION_NOPLAY:

@@ -194,14 +194,6 @@ ENS_FLAGGED_STATES = [ENS_STATE_FLAG, ENS_STATE_STRONG]
 HOMEDOG_PRICE_TIER_LOW  = 100
 HOMEDOG_PRICE_TIER_HIGH = 119
 
-# Game scope (23 Jul 2026 trade report / outsample definition): a game is only
-# in scope when BOTH closing prices sit within +-150 INCLUSIVE (|price| <= 150,
-# so +150/-150 are in scope and +151/-151 are out). Enforced ahead of the
-# decision table in determineScionSidePosition() so that NO branch (fave flag,
-# default dog or otherwise) can fire on an out-of-scope game.
-# +-150 scope enforced in code from 7 Aug 2026.
-SCOPE_MAX_ABS_PRICE = 150
-
 #System Messages (NOTE: OPP variables discontinued)
 messageGameSkipMissingOPLOPTOVIG = "Game skipped - Bookie line information missing. "
 messageGameDataSuccess = "Game data generated. "
@@ -251,8 +243,6 @@ messageScionNullVSP = "NoPlay as V_SP is Null. "
 messageScionNullBothSP = "NoPlay as BOTH H_SP and V_SP are Null. "
 #No play due to H or V price evaluating to an abs value within 0 to 99
 messageScionInvalidTeamPrice = "LeanStatOnlyEns is NoPlay due to an invalid bookie team price being calculated. Game skipped! "
-#No play due to a closing price outside the +-150 game scope (SCOPE_MAX_ABS_PRICE)
-messageScionNoPlayOutOfScope = "NoPlay: closing price outside +-150 scope. "
 #unknown
 messageScionEnsUnknownEnsemble = "Unknown ensemble. "
 #default DOG play   
