@@ -13,7 +13,7 @@
 # ============================================================
 
 # --- System paths -------------------------------------------
-system_path: "models/V26_06bSE"
+system_path: "models/V26_06bSE_ACTIVE"
 config_fname: "MLB_Scion_CFG.txt"
 
 # --- Input data paths ---------------------------------------

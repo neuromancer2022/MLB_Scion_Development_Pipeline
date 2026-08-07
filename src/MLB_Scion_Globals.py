@@ -215,8 +215,8 @@ messageGameSkipUnrecogGId = "Game skipped - game id cannot be located in the mas
 messageGameSkipUnrecogGId = "Game skipped - game id cannot be located in the master database. "
 messageGameSkipdGEN = "Game skipped - scionDGEN() did not have the required data to fully process the game. "
 messageOPLAdjusted = "Moneyline is a SPAN value. "
-messageGameHomePitcherNoData = "H_SP is Null, team-based avg used. "
-messageGameVisPitcherNoData = "V_SP is Null, team-based avg used. "
+messageGameHomePitcherNoData = "H_SP is Null. "
+messageGameVisPitcherNoData = "V_SP is Null. "
 #Ensemble play determination messages
 messageScionNoVFPlay = "VF plays are disallowed. "
 messageScionNoStrategyPlay = "No play due to strategy constraints. "

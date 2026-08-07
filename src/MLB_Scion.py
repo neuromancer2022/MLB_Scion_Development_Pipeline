@@ -262,7 +262,7 @@ def _addEnsStateComment(ens, ensState, backsFave, predsObj):
         key = ensState
     else:
         key = "silent_gate" if backsFave else "silent_dog"
-    predsObj.addComment(MLB_global.messageScionEnsStateComment[ens][key])
+    predsObj.addComment(MLB_global.messageScionEnsStateComment[ens][key],True)
     return predsObj
 
 def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
@@ -329,15 +329,15 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
             # NULL starting pitcher -> No Play (starting-pitcher policy). This is
             # checked first, so a missing SP is never overridden into a dog play.
             if _hSP_Null and _vSP_Null:
-                predsObj.addComment(MLB_global.messageScionNullBothSP)
+                predsObj.addComment(MLB_global.messageScionNullBothSP, True)
             elif _hSP_Null:
-                predsObj.addComment(MLB_global.messageScionNullHSP)
+                predsObj.addComment(MLB_global.messageScionNullHSP, True)
             else:
-                predsObj.addComment(MLB_global.messageScionNullVSP)
+                predsObj.addComment(MLB_global.messageScionNullVSP, True)
             # _scionPOS remains ACTION_NOPLAY (default) - no play is computed.
         elif not (MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice)):
             # 2b. Valid H and V bookie prices are required - else NoPlay.
-            predsObj.addComment(MLB_global.messageScionInvalidTeamPrice)
+            predsObj.addComment(MLB_global.messageScionInvalidTeamPrice, True)
         elif (abs(round(float(_hBookiePrice))) > MLB_global.SCOPE_MAX_ABS_PRICE
               or abs(round(float(_vBookiePrice))) > MLB_global.SCOPE_MAX_ABS_PRICE):
             # 2c. +-150 GAME SCOPE (23 Jul 2026 report: "a game is not played
@@ -348,7 +348,7 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
             # scope; +-151 is out. Rounding matches ASSUMPTION 2 (integer-
             # rounded prices drive decisions). Scope enforced from 7 Aug 2026;
             # earlier plays above +150 (e.g. BAL +207, 6 Aug) predate this gate.
-            predsObj.addComment(MLB_global.messageScionNoPlayOutOfScope)
+            predsObj.addComment(MLB_global.messageScionNoPlayOutOfScope, True)
             # _scionPOS remains ACTION_NOPLAY - no play is computed.
         else:
             # 2d. Derived book probabilities (section 9.1)
@@ -387,17 +387,17 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                 _scionPOS = _favePOS
                 if _ens1State == MLB_global.ENS_STATE_STRONG and _ens2State == MLB_global.ENS_STATE_STRONG:
                     _starPlay = MLB_global.ModelConfidenceTypes.SEVENSTAR
-                    predsObj.addComment(MLB_global.messageScionConsensusStrong)
+                    predsObj.addComment(MLB_global.messageScionConsensusStrong, True)
                 else:
                     _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
-                    predsObj.addComment(MLB_global.messageScionConsensusFlag)
+                    predsObj.addComment(MLB_global.messageScionConsensusFlag, True)
             elif _ens1Flagged or _ens2Flagged:
                 # Exactly one ensemble flags the favourite
                 if _faveIsHome:
                     # Single HOME-fave flag DOES override -> play HF 3*
                     _scionPOS = MLB_global.ACTION_LINE_HF
                     _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
-                    predsObj.addComment(MLB_global.messageScionSingleHFOverride)
+                    predsObj.addComment(MLB_global.messageScionSingleHFOverride, True)
                 else:
                     # Single VISITOR-fave flag: NO PLAY (was a 1* home dog).
                     # This is the home dog that one ensemble actively opposes (it
@@ -406,7 +406,7 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                     # the no-conviction tier and is stood down.
                     _scionPOS = MLB_global.ACTION_NOPLAY
                     _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-                    predsObj.addComment(MLB_global.messageScionNoPlaySingleVF)
+                    predsObj.addComment(MLB_global.messageScionNoPlaySingleVF, True)
             else:
                 # Neither flags -> the DOG is the default, but only the HOME dog
                 # is played. The visitor dog is the no-conviction 1* tier: corrected
@@ -415,7 +415,7 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                 if _dogPOS == MLB_global.ACTION_LINE_VD:
                     _scionPOS = MLB_global.ACTION_NOPLAY
                     _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-                    predsObj.addComment(MLB_global.messageScionNoPlayVisDog)
+                    predsObj.addComment(MLB_global.messageScionNoPlayVisDog, True)
                 else:
                     # Home dog: closing-price-tiered stars (U-shaped 5*/3*/5*)
                     _scionPOS = MLB_global.ACTION_LINE_HD
@@ -427,7 +427,7 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                         # above +150 can no longer reach here - the +-150 scope
                         # gate upstream (2c) filters them to NoPlay.
                         _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
-                    predsObj.addComment(MLB_global.messageScionDefaultHomeDog)
+                    predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
 
             # 2g. Confidence + reported edge (book_mid-based, on the played side)
             _scionCONF = round(max(_ensVote.values()), 2)
@@ -847,7 +847,7 @@ def processBookieHomeLineSpan(game_positive_span_processed, spanCtr, spanGradati
         #5. update Preds
         predsObj.setOPLAdjustedFlag()
         predsObj.initPredsALL(mupsDB)
-        predsObj.addComment(MLB_global.messageOPLAdjusted)
+        predsObj.addComment(MLB_global.messageOPLAdjusted, True)
         #6. reset GenerateGameStatus as we need to regen data with new line
         gameData.resetGenerateGameStatus()
 
@@ -914,13 +914,13 @@ if __name__ == "__main__":
             if int(original_hml) == MLB_dbvar.NO_DATA or int(original_total) == MLB_dbvar.NO_DATA:
                 skip_game = True #skip game
                 #issue message in preds comments field
-                predsObj.addComment(MLB_global.messageGameSkipMissingOPLOPTOVIG)
+                predsObj.addComment(MLB_global.messageGameSkipMissingOPLOPTOVIG, True)
             #3.6 validate mup date with respect to the Master DB
             if not skip_game:
                 if (mupsDB.current_mup_dict[mupsDB.mup_date_attrib] < masterDB.masterdb_oldest_game):
                     skip_game = True #skip game
                     #issue message in preds comments field
-                    predsObj.addComment(MLB_global.messageGameSkipDateOutOfRange)    
+                    predsObj.addComment(MLB_global.messageGameSkipDateOutOfRange, True)    
             #3.7 Validate opl span value and initialise associated variables
             mupsDB.validateCurrentBOOKIESPAN(mupIndex)
             spanGradations = math.ceil(mupsDB.getCurrentMUPBOOKIESPAN()/MLB_global.DEFAULT_SPAN_CENTS) #as SPAN indicates max value in cents eg 100
@@ -962,8 +962,8 @@ if __name__ == "__main__":
                                     skip_game = gameData.getSkipGameStatus()
                                     if skip_game:
                                         skip_game_reason = gameData.getSkipGameReason()
-                                        predsObj.addComment(MLB_global.messageGameSkipdGEN)
-                                        predsObj.addComment(skip_game_reason)
+                                        predsObj.addComment(MLB_global.messageGameSkipdGEN, True)
+                                        predsObj.addComment(skip_game_reason, True)
                                         break
                                 if not skip_game:
                                     #d. round BP features based on ensemble
