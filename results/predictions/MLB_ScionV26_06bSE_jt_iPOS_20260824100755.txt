@@ -1,0 +1,17 @@
+|    | GID              | VIS   |   VLINE | HOM         |   HLINE |   DEF_H |   OFF_H |   ENS1_HPrice |   ENS2_HPrice | PRED                   |   PRED_HPROB_EDGE | NOTES                                    |
+|---:|:-----------------|:------|--------:|:------------|--------:|--------:|--------:|--------------:|--------------:|:-----------------------|------------------:|:-----------------------------------------|
+|  1 | 20260822_ATL@MLW | ATL   |     156 | MLW         |    -175 |    -174 |    -115 |          -113 |          -117 | No Play                |           0       | 823743. ATL-PERE MLW-HEND.               |
+|  2 | 20260822_WAS@FLO | WAS   |     157 | FLO         |    -176 |    -132 |    -103 |          -108 |          -113 | No Play                |           0       | 823831. WAS-IRVI FLO-PERE.               |
+|  3 | 20260822_STL@PHI | STL   |     116 | PHI         |    -128 |     116 |    -100 |          -113 |          -108 | No Play                |           0       | 823422. STL- PHI-PAIN. V_SP is Null.     |
+|  4 | 20260822_CIN@ARZ | CIN   |     152 | ARZ         |    -170 |    -126 |    -101 |          -117 |          -127 | No Play                |           0       | 825044. CIN-LOWD ARZ-SORO.               |
+|  5 | 20260822_PIT@LA  | PIT   |     220 | LA          |    -253 |    -123 |    -118 |          -108 |          -122 | No Play                |           0       | 823910. PIT-JONE LA-SKUB.                |
+|  6 | 20260822_TOR@NYY | TOR   |    -107 | NYY         |    -103 |     150 |    -110 |          -108 |          -113 | No Play                |           0       | 823509. TOR-CEAS NYY-WEAT.               |
+|  7 | 20260822_TB@BAL  | TB    |    -121 | BAL         |     110 |    -103 |     103 |           104 |          -100 | No Play                |           0       | 824798. TB-MCCL BAL-YOUN.                |
+|  8 | 20260822_LAA@TEX | LAA   |     150 | TEX         |    -167 |     110 |     101 |          -108 |          -113 | No Play                |           0       | 822858. LAA-JOHN TEX-BRAD.               |
+|  9 | 20260822_OAK@HOU | OAK   |     206 | HOU         |    -235 |    -136 |     104 |          -117 |          -133 | No Play                |           0       | 824151. OAK-LOPE HOU-BROW.               |
+| 10 | 20260822_DET@KC  | DET   |    -105 | KC          |    -105 |    -109 |     106 |           104 |          -104 | No Play                |           0       | 824073. DET-ANDE KC-WACH.                |
+| 11 | 20260822_NYM@CWS | NYM   |    -102 | *** CWS *** |    -108 |     109 |     100 |          -113 |          -117 | *** -108.0 HomFave *** |           0.01561 | 824560. NYM-SCOT CWS-CAST.               |
+| 12 | 20260822_CHC@SEA | CHC   |     102 | SEA         |    -112 |    -138 |    -104 |          -100 |          -104 | No Play                |           0       | 823100. CHC-PETE SEA-ANDE. H_SP is Null. |
+| 13 | 20260822_SF@BOS  | SF    |     180 | BOS         |    -203 |    -150 |    -108 |          -133 |          -133 | No Play                |           0       | 824718. SF-TIDW BOS-SAND.                |
+| 14 | 20260822_CLE@COL | CLE   |    -139 | *** COL *** |     126 |     104 |     121 |           122 |           122 | *** 126.0 HomDog ***   |           0.01792 | 824316. CLE-BIBE COL-HUGH.               |
+| 15 | 20260822_MIN@SD  | MIN   |     140 | SD          |    -155 |     150 |     102 |          -100 |          -104 | No Play                |           0       | 823261. MIN-KREM SD-MIZE.                |

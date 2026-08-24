@@ -1,5 +1,0 @@
-|    | Game_Id          | Play_Team   | Play_ML                   | NOTES                      |
-|---:|:-----------------|:------------|:--------------------------|:---------------------------|
-|  1 | 20260806_SD@ARZ  | ARZ         | ***** -103.0 HomDog ***** | 825053. SD-BUEH ARZ-DRAK.  |
-|  2 | 20260806_MIN@KC  | KC          | *** -122.0 HomFave ***    | 824080. MIN-OBER KC-WACH.  |
-|  3 | 20260806_TOR@CHC | CHC         | *** -107.0 HomFave ***    | 824664. TOR-CEAS CHC-PETE. |
