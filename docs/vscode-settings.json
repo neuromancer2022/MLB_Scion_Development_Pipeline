@@ -1,0 +1,19 @@
+{
+  // Commit this as .vscode/settings.json in the repo root so the project
+  // carries its own indentation + formatting rules for anyone who opens it.
+  "[python]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  // Make stray tabs visible while editing.
+  "editor.renderWhitespace": "boundary",
+  // Ruff for linting/import-sorting; reads your pyproject.toml.
+  "ruff.enable": true,
+  "black-formatter.args": ["--config", "pyproject.toml"]
+}

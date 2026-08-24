@@ -12,8 +12,8 @@ import shlex #for splitting strings by white space but preserving words within q
 import MLB_dbvar as MLB_dbvar
 
 # Define key global vars
-APP_VER = "V26.06a (Standard Edition)"
-APP_VER_SHORT = "V26_06a2SE"
+APP_VER = "V26.06b (Standard Edition)"
+APP_VER_SHORT = "V26_06bSE"
 APP_NAME = "MLB Scion" 
 APP_NAME_SHORT = "Scion" 
 APP_BANNER = "** " + APP_NAME + " " + APP_VER + " **"
@@ -26,63 +26,65 @@ BULLPEN_ERA_FALLBACK = 4.2  # recent MLB league-average bullpen ERA
 
 # Using enum class create enumerations
 class ScaleTypes(enum.Enum):
-   NoScale = 0
-   MinMax = 1
-   Robust = 2 
-   Standardize = 3
-   Centre = 4
-   Log = 5
-   LogStandardize = 6
-   PowerYeoJohnson = 7
-   
+    NoScale = 0
+    MinMax = 1
+    Robust = 2 
+    Standardize = 3
+    Centre = 4
+    Log = 5
+    LogStandardize = 6
+    PowerYeoJohnson = 7
+
 class VariableTypes(enum.Enum): # eg self._vartype = VariableTypes.Continuous_Feature
-   Continuous_Feature = 0 #this will also cover N/A or ""
-   Categorical_Feature = 1
-   Continuous_Target = 2
-   Categorical_Target = 3 
-   Drop = 4
-   Features = 5
-   Targets = 6
+    Continuous_Feature = 0 #this will also cover N/A or ""
+    Categorical_Feature = 1
+    Continuous_Target = 2
+    Categorical_Target = 3 
+    Drop = 4
+    Features = 5
+    Targets = 6
 
 class MiddleLineTypes(enum.Enum):
-   Unknown = 0
-   Prob = 1
-   Money = 2
+    Unknown = 0
+    Prob = 1
+    Money = 2
 
 class StakeTypes(enum.Enum):
-   Unknown = 0
-   Flat = 1
-   Kelly = 2
+    Unknown = 0
+    Flat = 1
+    Kelly = 2
 
 class ModelTypes(enum.Enum):
-	NN = 0
-	OLS = 1
-	RFREG = 2 
-	RFCLA = 3
-	CATBREG = 4
-	CATBCLA = 5
-	LGBMREG = 6
-	LGBMCLA = 7
-	XGBREG = 8
-	XGBCLA = 9
-   
+    NN = 0
+    OLS = 1
+    RFREG = 2 
+    RFCLA = 3
+    CATBREG = 4
+    CATBCLA = 5
+    LGBMREG = 6
+    LGBMCLA = 7
+    XGBREG = 8
+    XGBCLA = 9
+
 class TaskTypes(enum.Enum):
-	TRUN = 0
-	TTOTAL = 1
-	TPROB = 2
+    TRUN = 0
+    TTOTAL = 1
+    TPROB = 2
 
 class ModelConfidenceTypes(enum.Enum):
-	ZEROSTAR = 0
-	ONESTAR = 1
-	TWOSTAR = 2 
-	THREESTAR = 3
-	FOURSTAR = 4
-	FIVESTAR = 5
+    ZEROSTAR = 0
+    ONESTAR = 1
+    TWOSTAR = 2 
+    THREESTAR = 3
+    FOURSTAR = 4
+    FIVESTAR = 5
+    SIXSTAR = 6
+    SEVENSTAR = 7
 
 class EnsembleProbabilityTypes(enum.Enum):
-   Default = 0
-   MedianAllVoters = 1
-   AvgMajorityVotersOnly = 2
+    Default = 0
+    MedianAllVoters = 1
+    AvgMajorityVotersOnly = 2
 
 GAME_ID_INDEX = 0  # relates to index of value in main dictionary
 GAME_THRESHOLD = 5 # different to NBA (which is 3)
@@ -141,8 +143,8 @@ ACTION_LINE_POS = "+"
 ACTION_LINE_NEG = "-"
 ACTION_LINE_ZERO = "0"
 MODEL_PRED_SEPARATOR = " "
-MODEL_PROBENS1 = "LINESTAT_PM150"
-MODEL_PROBENS2 = "STATONLY_PM150"
+MODEL_PROBENS1 = "STATSONLY_PM150"
+MODEL_PROBENS2 = "LEANSTATSONLY_PM150"
 MODEL_TOTALENS = "TOTALENS"
 MODEL_PROBENS = [MODEL_PROBENS1, MODEL_PROBENS2]
 HISTORY_LENGTHS = [5,10, 20, 365]
@@ -165,6 +167,47 @@ DEFAULT_CONF_PROB = 0.50
 NN_DP_PRECISION = 9
 DROP_ATTRIB = 2
 
+# ─────────────────────────────────────────────────────────────────────────────
+# V26.06b (Standard Edition) play-strategy specification constants
+# ─────────────────────────────────────────────────────────────────────────────
+# A model (ensemble) is FLAGGED only when it backs the FAVE side (as defined by
+# the de-vigged CLOSING line), its probability-points gap over book_mid clears
+# the edge threshold, AND its side-vote share clears a vote gate:
+#   FLAG        : vote >= PROB_FLAG_VOTE_THRESHOLD  (0.83, from config agree thr)
+#   STRONG-FLAG : vote >= PROB_STRONG_VOTE_THRESHOLD (0.93)
+# The FLAG (0.83) gate is read from the config (getSysProb[STATSONLY]AgreeThresh);
+# the STRONG (0.93) gate is a fixed strategy constant defined here.
+PROB_STRONG_VOTE_THRESHOLD = 0.93
+
+# Ensemble states (PDF §9.2)
+ENS_STATE_SILENT = "SILENT"
+ENS_STATE_FLAG   = "FLAG"
+ENS_STATE_STRONG = "STRONG-FLAG"
+ENS_FLAGGED_STATES = [ENS_STATE_FLAG, ENS_STATE_STRONG]
+
+# Pre 24th Aug 2026: default home dog was considered profitable across the full +100 to 150 range, but this was based on incorrect prices. 
+# Home-dog closing-line price tiers (PDF §9.3 / §9.5 note 3). U-shaped, NOT
+# monotone: the middle band is the weak one. hom_clml is the home CLOSING money
+# line (positive for a home dog).
+#   hom_clml <  +100                        -> 5 star
+#   HOMEDOG_PRICE_TIER_LOW <= hom_clml <= HOMEDOG_PRICE_TIER_HIGH -> 3 star
+#   hom_clml >= +120                        -> 5 star
+
+#Post 24th Aug 2026, the default home dog is only profitable within +115 to 150:
+# So 5-star when 115 to 125 and three star 126 to 150
+HOMEDOG_PRICE_TIER_5STAR_START  = 115
+HOMEDOG_PRICE_TIER_5STAR_END    = 125   
+HOMEDOG_PRICE_TIER_3STAR_START  = 126
+HOMEDOG_PRICE_TIER_3STAR_END    = 150
+
+# Game scope (23 Jul 2026 trade report / outsample definition): a game is only
+# in scope when BOTH closing prices sit within +-150 INCLUSIVE (|price| <= 150,
+# so +150/-150 are in scope and +151/-151 are out). Enforced ahead of the
+# decision table in determineScionSidePosition() so that NO branch (fave flag,
+# default dog or otherwise) can fire on an out-of-scope game.
+# +-150 scope enforced in code from 7 Aug 2026.
+SCOPE_MAX_ABS_PRICE = 150
+
 #System Messages (NOTE: OPP variables discontinued)
 messageGameSkipMissingOPLOPTOVIG = "Game skipped - Bookie line information missing. "
 messageGameDataSuccess = "Game data generated. "
@@ -178,48 +221,96 @@ messageGameSkipUnrecogGId = "Game skipped - game id cannot be located in the mas
 messageGameSkipUnrecogGId = "Game skipped - game id cannot be located in the master database. "
 messageGameSkipdGEN = "Game skipped - scionDGEN() did not have the required data to fully process the game. "
 messageOPLAdjusted = "Moneyline is a SPAN value. "
-messageGameHomePitcherNoData = "H_SP is Null, team-based avg used. "
-messageGameVisPitcherNoData = "V_SP is Null, team-based avg used. "
+messageGameHomePitcherNoData = "H_SP is Null. "
+messageGameVisPitcherNoData = "V_SP is Null. "
 #Ensemble play determination messages
 messageScionNoVFPlay = "VF plays are disallowed. "
 messageScionNoStrategyPlay = "No play due to strategy constraints. "
 messageScionEnsNoFavePlay = "Fave plays are disallowed. "
-messageScionEns1NoDogPlay = "LineStatEns only dog plays disallowed. "
-messageScionEns1Play = "Play determined by LineStatEns only. "
-messageScionEns2Play = "Play determined by StatOnlyEns only. "
-messageScionEns2PlayEns1Disagree = "Play determined by StatOnlyEns when it disagrees with LineStatEns. "
-messageScionEns1n2Play = "Play determined by LineStatEns and StatOnlyEns agreement. "
-messageScionEns1n2Disagree = "No play as LineStatEns and StatOnlyEns disagree. "
+messageScionEns1NoDogPlay = "StatOnlyEns only dog plays disallowed. "
+messageScionEns1Play = "Play determined by StatOnlyEns only. "
+messageScionEns2Play = "Play determined by LeanStatOnlyEns only. "
+messageScionEns2PlayEns1Disagree = "Play determined by LeanStatOnlyEns when it disagrees with StatOnlyEns. "
+messageScionEns1n2Play = "Play determined by StatOnlyEns and LeanStatOnlyEns agreement. "
+messageScionEns1n2Disagree = "No play as StatOnlyEns and LeanStatOnlyEns disagree. "
 #Ensemble majority vote and price DISAGREE messages
-messageScionEns1PricePlayMismatch = "LineStatEns price diagrees with LineStatEns majority vote! "
-messageScionEns2PricePlayMismatch = "StatOnlyEns price diagrees with StatOnlyEns majority vote! "
+messageScionEns1PricePlayMismatch = "StatOnlyEns price diagrees with StatOnlyEns majority vote! "
+messageScionEns2PricePlayMismatch = "LeanStatOnlyEns price diagrees with LeanStatOnlyEns majority vote! "
 #Ensemble probability-based restrictions
-messageScionEns1GapNotExceeded = "LineStatEns probability points gap does not exceed threshold (no edge found)! "
-messageScionEns1GapAgainstVote = "LineStatEns probability points gap exceeded but against its vote! "
-messageScionEns2GapNotExceeded = "StatOnlyEns probability points gap does not exceed threshold (no edge found)! "
-messageScionEns2GapAgainstVote = "StatOnlyEns probability points gap exceeded but against its vote! "
+messageScionEns1GapNotExceeded = "StatOnlyEns probability points gap does not exceed threshold (no edge found)! "
+messageScionEns1GapAgainstVote = "StatOnlyEns probability points gap exceeded but against its vote! "
+messageScionEns2GapNotExceeded = "LeanStatOnlyEns probability points gap does not exceed threshold (no edge found)! "
+messageScionEns2GapAgainstVote = "LeanStatOnlyEns probability points gap exceeded but against its vote! "
 #Ensemble price outside allowable range
-messageScionEns1OutsideRange = "LineStatEns price is outside allowable range! "
-messageScionEns2OutsideRange = "StatOnlyEns price is outside allowable range! "
+messageScionEns1OutsideRange = "StatOnlyEns price is outside allowable range! "
+messageScionEns2OutsideRange = "LeanStatOnlyEns price is outside allowable range! "
 #Ensemble ignored due to either outside bookieline constraints 
-messageScionEns1BookieOutsideRange = "LineStatEns is NoPlay as bookie-line outside range. "
-messageScionEns2BookieOutsideRange = "StatOnlyEns is NoPlay as bookie-line outside range. "
-messageScionEns2NoFavePlay = "StatOnlyEns is NoPlay as bookie-line outside range for Fave play. "
+messageScionEns1BookieOutsideRange = "StatOnlyEns is NoPlay as bookie-line outside range. "
+messageScionEns2BookieOutsideRange = "LeanStatOnlyEns is NoPlay as bookie-line outside range. "
+messageScionEns2NoFavePlay = "LeanStatOnlyEns is NoPlay as bookie-line outside range for Fave play. "
 #Ensemble ignored due to voter agreement threshold not satisfied
-messageScionEns1InsufficientVoters = "LineStatEns is NoPlay due to insufficient voter agreement. "
-messageScionEns2InsufficientVoters = "StatOnlyEns is NoPlay due to insufficient voter agreement. "
+messageScionEns1InsufficientVoters = "StatOnlyEns is NoPlay due to insufficient voter agreement. "
+messageScionEns2InsufficientVoters = "LeanStatOnlyEns is NoPlay due to insufficient voter agreement. "
 #No play due to Null Pitcher
 messageScionNullHSP = "NoPlay as H_SP is Null. "
 messageScionNullVSP = "NoPlay as V_SP is Null. "
 messageScionNullBothSP = "NoPlay as BOTH H_SP and V_SP are Null. "
 #No play due to H or V price evaluating to an abs value within 0 to 99
-messageScionInvalidTeamPrice = "StatOnlyEns is NoPlay due to an invalid bookie team price being calculated. Game skipped! "
+messageScionInvalidTeamPrice = "LeanStatOnlyEns is NoPlay due to an invalid bookie team price being calculated. Game skipped! "
+#No play due to a closing price outside the +-150 game scope (SCOPE_MAX_ABS_PRICE)
+messageScionNoPlayOutOfScope = "NoPlay: closing price outside +-150 scope. "
 #unknown
 messageScionEnsUnknownEnsemble = "Unknown ensemble. "
+
+# ─────────────────────────────────────────────────────────────────────────────
+# V26.06b (Standard Edition) play-strategy messages
+# ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129)
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-ensemble state comments
+messageScionEns1StrongFlag  = "StatOnlyEns STRONG-FLAGs the fave (gap>=thr, vote>=0.93). "
+messageScionEns1Flag        = "StatOnlyEns FLAGs the fave (gap>=thr, vote>=0.83). "
+messageScionEns1SilentDog   = "StatOnlyEns SILENT - backs the dog."
+messageScionEns1SilentGate  = "StatOnlyEns SILENT - on the fave but below the gap/vote gates. "
+messageScionEns2StrongFlag  = "LeanStatOnlyEns STRONG-FLAGs the fave (gap>=thr, vote>=0.93). "
+messageScionEns2Flag        = "LeanStatOnlyEns FLAGs the fave (gap>=thr, vote>=0.83). "
+messageScionEns2SilentDog   = "LeanStatOnlyEns SILENT as it backs the dog. "
+messageScionEns2SilentGate  = "LeanStatOnlyEns SILENT as backs fave but below gap/vote gates. "
+# Decision-row comments (PDF §9.3 / §9.4). Exactly one fires per game.
+messageScionConsensusStrong = "Both ensembles STRONG-FLAG the fave (7-star consensus) play. "
+messageScionConsensusFlag   = "Both ensembles FLAG the fave (not BOTH strong so 5-star consensus play). "
+messageScionSingleHFOverride = "Single ensemble FLAGs the HomFave (3-star play. "
+messageScionSingleVFNoOverride = "Single ensemble FLAGs the VisFave BUT not enough to override default HomDog (1-star) "
+messageScionDefaultVisDog   = "No ensemble flag: default 1-star VisDog play. "
+messageScionDefaultHomeDog  = "No ensemble flag: default HomDog play based on bookie price tier. "
+messageScionNoPlaySingleVF = "No play - single VisFave flag; home dog opposed by an ensemble (1-star tier stood down). "
+messageScionNoPlayVisDog = "No play - both SILENT, visitor dog (1-star no-conviction tier stood down). "
 #default DOG play   
 messageScionDefaultDogPlay = "Default dog play! "
 messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not met! "
-messageScionEns2MajorityVoteDogPlay = "StatOnlyEns Majority Vote Dog play! "
+messageScionNoDefaultDogPlay_outOfRange = "No default dog play as bookie price out of range! "
+messageScionEns2MajorityVoteDogPlay = "LeanStatOnlyEns Majority Vote Dog play! "
+messageScionRiskMinNoPlay = "No play due to risk minimisation constraints. "
+messageScionRiskMinVisDogNoPlay = "No play - split-silent VisDog skipped to reduce risk. "
+messageScionEns1DogChoice = "Dog play determined by StatOnlyEns. "
+messageScionEns2DogChoice = "Dog play determined by LeanStatOnlyEns. "
+
+# Registry mapping (ensemble id, state/reason) -> comment, so per-ensemble comment
+# selection is a single lookup rather than an if/else branch (PDF section 9.2).
+# ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129).
+messageScionEnsStateComment = {
+    MODEL_PROBENS1: {
+        ENS_STATE_STRONG: messageScionEns1StrongFlag,
+        ENS_STATE_FLAG:   messageScionEns1Flag,
+        "silent_gate":    messageScionEns1SilentGate,
+        "silent_dog":     messageScionEns1SilentDog,
+    },
+    MODEL_PROBENS2: {
+        ENS_STATE_STRONG: messageScionEns2StrongFlag,
+        ENS_STATE_FLAG:   messageScionEns2Flag,
+        "silent_gate":    messageScionEns2SilentGate,
+        "silent_dog":     messageScionEns2SilentDog,
+    },
+}
 
 def setColType(df, col_list, col_type):
     try:
@@ -233,7 +324,7 @@ def setColType(df, col_list, col_type):
     except Exception:
         raise
     return df
-  
+
 def getModelTypeName(typeNo):
     return ModelTypes(typeNo).name
 
@@ -272,7 +363,7 @@ def isOppSide(price1, price2):
         return True
     else:
         return False
-    
+
 def convertProbtoMoneyLine(probValue):
     probValue = float(probValue)
     if probValue == 0: probValue = 0.5
@@ -363,7 +454,7 @@ def ConvertMiddleLineToPrices(mLine, centVig, mLineType=None):
         _visPrice = calcTeamPrice(_middleLinePrice, centVig, VISITOR)
         if _homePrice == 100 and _visPrice == 100:
             _visPrice = -100
-    
+
     return _homePrice, _visPrice
 
 def validTeamPrice(teamPrice):
@@ -372,7 +463,7 @@ def validTeamPrice(teamPrice):
         return True
     else:
         return False
-    
+
 def calcDeVigProb(bookieHProb, bookieVProb, h_or_v):
     _totalProb = bookieHProb + bookieVProb
     deVigProb = 0.5
@@ -392,7 +483,7 @@ def punctuateComment(strComment):
 
 def convertNumpytoNative(numpy_var):
     native_var = getattr(numpy_var, "tolist", lambda x=numpy_var: x)()
-    
+
     return native_var
 
 #function for subtract one list from another
@@ -401,7 +492,7 @@ def filterList(full_list, excludes):
     return (x for x in full_list if x not in s)
 
 def roundModelPred(number):
-        return float(round(number * 2.0) / 2.0)
+    return float(round(number * 2.0) / 2.0)
 
 def checkMatch(teamA_ld, teamB_ld):
     if teamA_ld == teamB_ld:
@@ -415,7 +506,7 @@ def calcRunEfficiency(runsgained, hits, runs2b, homeruns):
         return float(runsgained / denominator)
     else:
         return 0.0
-    
+
 def calcMOB(hits, walks, runs2b, homeruns, hitsbypitch, errors, doubleplays):
     return float(hits + walks + runs2b + homeruns + hitsbypitch - (errors + doubleplays))
 
@@ -473,7 +564,7 @@ def calcRatio(x, y, zeroToMidPoint=False):
             return 1.0
         return 0.00
     return float(x / y)
-    
+
 def calcProbRatio(x, y, zeroToMidPoint=False):
     """X/(X+Y) share with three-layer fallback when undefined.
 
@@ -546,7 +637,7 @@ def computeFIP(hr_allowed, walks_allowed, hbp_allowed, k_gained,
     if not np.isfinite(fip):
         return FIP_FALLBACK
     return fip
- 
+
 def computeBullpenERA(team_er, sp_er, bullpen_outs, min_outs=3,
                      era_cap=27.0):
     """Compute approximate bullpen ERA with defensive guards.
@@ -621,7 +712,7 @@ def limitProb0109(prob):
         return prob
 
 def isElite(strCategory):
-	return strCategory in ELITE_LIST
+    return strCategory in ELITE_LIST
 
 def genStarStr(numStars):
     _starStr = ""
@@ -694,6 +785,8 @@ def calcStrengthCategory(strVal, insampleAVG, insampleSTDEV, flipCATEGORIES=Fals
     return strCateg
 
 def getNumStars(numStars):
+    # V26.06b: the ModelConfidenceTypes enum value IS the star count, so 6 and 7
+    # are now covered (the 1/3/5/7 stake scale needs SEVENSTAR).
     if numStars == ModelConfidenceTypes.ONESTAR:
         return 1
     elif numStars == ModelConfidenceTypes.TWOSTAR:
@@ -704,16 +797,20 @@ def getNumStars(numStars):
         return 4
     elif numStars == ModelConfidenceTypes.FIVESTAR:
         return 5
+    elif numStars == ModelConfidenceTypes.SIXSTAR:
+        return 6
+    elif numStars == ModelConfidenceTypes.SEVENSTAR:
+        return 7
     else:
         return 0
-    
+
 def calcPercBookieHold(bookieHProb, bookieVProb):
     _probSum = bookieHProb + bookieVProb
     if _probSum == 0:
         return 0
     else:
         return (1 - (1/(_probSum)))
-    
+
 def calcKellyStake(bookiePrice, ensPrice):
     _kellyStake = 0.0
     if bookiePrice != MLB_dbvar.NODATA and ensPrice != MLB_dbvar.NO_DATA:
@@ -737,7 +834,7 @@ def getStakeMultiplier(hBookiePrice, vBookiePrice, ensMajorityVote):
             else:
                 _stakeMultiplier = vBookiePrice/100
     return round(_stakeMultiplier, 3)
-    
+
 def getStakeAmount(stakeMode, kellyFrac, hBookiePrice, ensHProb, ensPos, stakeMultiplier):
     _stakeAmount = 0.0
     if stakeMode == StakeTypes.Flat.value:

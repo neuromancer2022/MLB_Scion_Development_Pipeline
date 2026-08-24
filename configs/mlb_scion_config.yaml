@@ -13,7 +13,7 @@
 # ============================================================
 
 # --- System paths -------------------------------------------
-system_path: "models/V26_06Dev_CleanModels"
+system_path: "models/V26_06bSE_ACTIVE"
 config_fname: "MLB_Scion_CFG.txt"
 
 # --- Input data paths ---------------------------------------
@@ -27,6 +27,6 @@ input:
 # to predictions_dir. Log files are written to logs_dir.
 # tempfiles_dir holds intermediate test pattern files during model runs.
 output:
-  predictions_dir: "results/experiments"
+  predictions_dir: "results/predictions"
   logs_dir:        "results/logs"
   tempfiles_dir:   "results/tempfiles"
