@@ -185,14 +185,20 @@ ENS_STATE_FLAG   = "FLAG"
 ENS_STATE_STRONG = "STRONG-FLAG"
 ENS_FLAGGED_STATES = [ENS_STATE_FLAG, ENS_STATE_STRONG]
 
+# Pre 24th Aug 2026: default home dog was considered profitable across the full +100 to 150 range, but this was based on incorrect prices. 
 # Home-dog closing-line price tiers (PDF §9.3 / §9.5 note 3). U-shaped, NOT
 # monotone: the middle band is the weak one. hom_clml is the home CLOSING money
 # line (positive for a home dog).
 #   hom_clml <  +100                        -> 5 star
 #   HOMEDOG_PRICE_TIER_LOW <= hom_clml <= HOMEDOG_PRICE_TIER_HIGH -> 3 star
 #   hom_clml >= +120                        -> 5 star
-HOMEDOG_PRICE_TIER_LOW  = 100
-HOMEDOG_PRICE_TIER_HIGH = 119
+
+#Post 24th Aug 2026, the default home dog is only profitable within +115 to 150:
+# So 5-star when 115 to 125 and three star 126 to 150
+HOMEDOG_PRICE_TIER_5STAR_START  = 115
+HOMEDOG_PRICE_TIER_5STAR_END    = 125   
+HOMEDOG_PRICE_TIER_3STAR_START  = 126
+HOMEDOG_PRICE_TIER_3STAR_END    = 150
 
 # Game scope (23 Jul 2026 trade report / outsample definition): a game is only
 # in scope when BOTH closing prices sit within +-150 INCLUSIVE (|price| <= 150,
@@ -255,14 +261,6 @@ messageScionInvalidTeamPrice = "LeanStatOnlyEns is NoPlay due to an invalid book
 messageScionNoPlayOutOfScope = "NoPlay: closing price outside +-150 scope. "
 #unknown
 messageScionEnsUnknownEnsemble = "Unknown ensemble. "
-#default DOG play   
-messageScionDefaultDogPlay = "Default dog play! "
-messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not met! "
-messageScionEns2MajorityVoteDogPlay = "LeanStatOnlyEns Majority Vote Dog play! "
-messageScionRiskMinNoPlay = "No play due to risk minimisation constraints. "
-messageScionRiskMinVisDogNoPlay = "No play - split-silent VisDog skipped to reduce risk. "
-messageScionEns1DogChoice = "Dog play determined by StatOnlyEns. "
-messageScionEns2DogChoice = "Dog play determined by LeanStatOnlyEns. "
 
 # ─────────────────────────────────────────────────────────────────────────────
 # V26.06b (Standard Edition) play-strategy messages
@@ -286,6 +284,16 @@ messageScionDefaultVisDog   = "No ensemble flag: default 1-star VisDog play. "
 messageScionDefaultHomeDog  = "No ensemble flag: default HomDog play based on bookie price tier. "
 messageScionNoPlaySingleVF = "No play - single VisFave flag; home dog opposed by an ensemble (1-star tier stood down). "
 messageScionNoPlayVisDog = "No play - both SILENT, visitor dog (1-star no-conviction tier stood down). "
+#default DOG play   
+messageScionDefaultDogPlay = "Default dog play! "
+messageScionNoDefaultDogPlay = "No default dog play as win-loss threshold not met! "
+messageScionNoDefaultDogPlay_outOfRange = "No default dog play as bookie price out of range! "
+messageScionEns2MajorityVoteDogPlay = "LeanStatOnlyEns Majority Vote Dog play! "
+messageScionRiskMinNoPlay = "No play due to risk minimisation constraints. "
+messageScionRiskMinVisDogNoPlay = "No play - split-silent VisDog skipped to reduce risk. "
+messageScionEns1DogChoice = "Dog play determined by StatOnlyEns. "
+messageScionEns2DogChoice = "Dog play determined by LeanStatOnlyEns. "
+
 # Registry mapping (ensemble id, state/reason) -> comment, so per-ensemble comment
 # selection is a single lookup rather than an if/else branch (PDF section 9.2).
 # ENS1 = StatsOnly (V127); ENS2 = LeanStatsOnly (V129).

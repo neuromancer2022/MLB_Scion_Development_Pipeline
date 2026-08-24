@@ -418,16 +418,21 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                     predsObj.addComment(MLB_global.messageScionNoPlayVisDog, True)
                 else:
                     # Home dog: closing-price-tiered stars (U-shaped 5*/3*/5*)
+                    # 24 Aug 2026: default home dog for 2026 only profitable within +115 to 150
                     _scionPOS = MLB_global.ACTION_LINE_HD
                     _homCLML = round(float(_hBookiePrice))
-                    if MLB_global.HOMEDOG_PRICE_TIER_LOW <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_HIGH:
-                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
-                    else:
-                        # < +100 (short dogs) or +120..+150 (long band). Prices
-                        # above +150 can no longer reach here - the +-150 scope
-                        # gate upstream (2c) filters them to NoPlay.
+                    #24th Aug 2026: the default home dog is only profitable within +115 to 150:
+                    #5-star when 115 to 125 and three star 126 to 150
+                    if MLB_global.HOMEDOG_PRICE_TIER_5STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_5STAR_END:
                         _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
-                    predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
+                        predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
+                    elif MLB_global.HOMEDOG_PRICE_TIER_3STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_3STAR_END:  
+                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+                        predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
+                    else:
+                        _scionPOS = MLB_global.ACTION_NOPLAY
+                        _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
+                        predsObj.addComment(MLB_global.messageScionNoDefaultDogPlay_outOfRange, True)
 
             # 2g. Confidence + reported edge (book_mid-based, on the played side)
             _scionCONF = round(max(_ensVote.values()), 2)
