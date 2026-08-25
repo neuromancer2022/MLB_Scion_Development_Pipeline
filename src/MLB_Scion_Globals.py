@@ -12,8 +12,8 @@ import shlex #for splitting strings by white space but preserving words within q
 import MLB_dbvar as MLB_dbvar
 
 # Define key global vars
-APP_VER = "V26.06b (Standard Edition)"
-APP_VER_SHORT = "V26_06bSE"
+APP_VER = "V26.06c (Standard Edition)"
+APP_VER_SHORT = "V26_06cSE"
 APP_NAME = "MLB Scion" 
 APP_NAME_SHORT = "Scion" 
 APP_BANNER = "** " + APP_NAME + " " + APP_VER + " **"
@@ -199,6 +199,8 @@ HOMEDOG_PRICE_TIER_5STAR_START  = 115
 HOMEDOG_PRICE_TIER_5STAR_END    = 125   
 HOMEDOG_PRICE_TIER_3STAR_START  = 126
 HOMEDOG_PRICE_TIER_3STAR_END    = 150
+BIGDOG_FAVEPRICE_TIER_1STAR_START  = -151
+BIGDOG_FAVEPRICE_TIER_1STAR_END    = -200
 
 # Game scope (23 Jul 2026 trade report / outsample definition): a game is only
 # in scope when BOTH closing prices sit within +-150 INCLUSIVE (|price| <= 150,
@@ -282,6 +284,7 @@ messageScionSingleHFOverride = "Single ensemble FLAGs the HomFave (3-star play. 
 messageScionSingleVFNoOverride = "Single ensemble FLAGs the VisFave BUT not enough to override default HomDog (1-star) "
 messageScionDefaultVisDog   = "No ensemble flag: default 1-star VisDog play. "
 messageScionDefaultHomeDog  = "No ensemble flag: default HomDog play based on bookie price tier. "
+messageScionDefaultBigDog   = "CAUTION URGED as default >150 Dog play "
 messageScionNoPlaySingleVF = "No play - single VisFave flag; home dog opposed by an ensemble (1-star tier stood down). "
 messageScionNoPlayVisDog = "No play - both SILENT, visitor dog (1-star no-conviction tier stood down). "
 #default DOG play   
@@ -714,11 +717,11 @@ def limitProb0109(prob):
 def isElite(strCategory):
     return strCategory in ELITE_LIST
 
-def genStarStr(numStars):
+def genStarStr(numStars,sym="*"):
     _starStr = ""
     if numStars > 0:
         for x in range(numStars):
-            _starStr += "*"
+            _starStr += sym
     return _starStr
 
 def annotateWithStars(textStr, numStars):

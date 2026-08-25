@@ -1,0 +1,3 @@
+|    | Game_Id          | Play_Team   | Play_ML          | NOTES                                                                   |
+|---:|:-----------------|:------------|:-----------------|:------------------------------------------------------------------------|
+|  0 | 20260822_ATL@MLW | ATL         | ^ 156.0 VisDog ^ | 823743. ATL-PERE MLW-HEND. OBSERVE ONLY as default 1-star >150 Dog play |

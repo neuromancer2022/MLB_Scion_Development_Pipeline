@@ -1179,7 +1179,10 @@ class scionPREDS:
 			#check whether we need to annotate it with 1, 3 or 5 stars
 			_numStars = self.getPreds_Scion_Side_Stars()
 			if _numStars:
-				_starStr = MLB_global.genStarStr(_numStars)
+				if _numStars == 1:
+					_starStr = MLB_global.genStarStr(_numStars,"^")
+				else:
+					_starStr = MLB_global.genStarStr(_numStars)
 				_bookiePricePlay = _starStr + " " + _bookiePricePlay + " " + _starStr
 
 		except Exception:

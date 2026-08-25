@@ -295,8 +295,10 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
     #      (SCOPE_MAX_ABS_PRICE); out-of-scope games are NoPlay. Enforced in
     #      code from 7 Aug 2026.
     #
-    # ASSUMPTION 1: sysCfgObj and predsObj have the required component data stored.
-    # ASSUMPTION 2: bookie prices are rounded to the nearest integer for decisions.
+    # V26.06c (Standard Edition) play strategy.
+    #
+    # As per V26.06b however, default dog plays are supported for games where bookie price is between +/-151 and 200.
+    #    NOTE: these plays will be annotated differently to the standard plays within +/-150
     try:
         # 1. Key bookie inputs
         _hBookiePrice = predsObj.getPreds_H_Bookie_Bet_Price()    # hom_clml (closing)
@@ -321,10 +323,9 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         _ens1State = _ens2State = MLB_global.ENS_STATE_SILENT
         _ens1Med = 0.5
         _favePOS = MLB_global.ACTION_NOPLAY
+        _bigDogPlay = False
 
-        # 2. Only play when BOTH starting pitchers are known AND valid H and V
-        #    bookie prices were calculated.
-        # 2a. Policy: do NOT play when either starting pitcher (SP) is NULL.
+        # 2. Base level checks first (Null pitcher, valid prices and is there a possible big dog play?)
         if _hSP_Null or _vSP_Null:
             # NULL starting pitcher -> No Play (starting-pitcher policy). This is
             # checked first, so a missing SP is never overridden into a dog play.
@@ -334,13 +335,21 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                 predsObj.addComment(MLB_global.messageScionNullHSP, True)
             else:
                 predsObj.addComment(MLB_global.messageScionNullVSP, True)
-            # _scionPOS remains ACTION_NOPLAY (default) - no play is computed.
+            # _scionPOS remains ACTION_NOPLAY (default) - no play is computed.     
         elif not (MLB_global.validTeamPrice(_hBookiePrice) and MLB_global.validTeamPrice(_vBookiePrice)):
             # 2b. Valid H and V bookie prices are required - else NoPlay.
             predsObj.addComment(MLB_global.messageScionInvalidTeamPrice, True)
-        elif (abs(round(float(_hBookiePrice))) > MLB_global.SCOPE_MAX_ABS_PRICE
-              or abs(round(float(_vBookiePrice))) > MLB_global.SCOPE_MAX_ABS_PRICE):
-            # 2c. +-150 GAME SCOPE (23 Jul 2026 report: "a game is not played
+        elif (_hBookiePrice <= MLB_global.BIGDOG_FAVEPRICE_TIER_1STAR_START and _hBookiePrice >= MLB_global.BIGDOG_FAVEPRICE_TIER_1STAR_END):
+            # Play big Vis Dogs (# Definition: big dogs = hBookieLine is within the range -151 to -200)
+            _bigDogPlay = True
+        else:
+            if(_vBookiePrice <= MLB_global.BIGDOG_FAVEPRICE_TIER_1STAR_START and _vBookiePrice >= MLB_global.BIGDOG_FAVEPRICE_TIER_1STAR_END):
+                # Play big Home Dogs (# Definition: big dogs = vBookieLine is within the range -151 to -200)
+                _bigDogPlay = True
+    
+        # 3. Second Phase of Checks (if out of range re lines, then no play, else determine play)
+        if not _bigDogPlay and abs(round(float(_hBookiePrice))) > MLB_global.SCOPE_MAX_ABS_PRICE: #filter in training and test sets was based only on hprice
+            # 3.1 +-150 GAME SCOPE (23 Jul 2026 report: "a game is not played
             # when ... it falls outside +-150"). Checked AFTER price validity
             # (so abs/round are safe) and BEFORE the decision table, so no
             # branch - fave flag, default home dog or otherwise - can fire on
@@ -351,97 +360,106 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
             predsObj.addComment(MLB_global.messageScionNoPlayOutOfScope, True)
             # _scionPOS remains ACTION_NOPLAY - no play is computed.
         else:
-            # 2d. Derived book probabilities (section 9.1)
-            _bookCloseHome, _bookMidHome = deriveBookProbabilities(predsObj)
-            _faveIsHome = (_bookCloseHome > 0.5)      # ties (==0.5) -> visitor fave
+            #3.2 Establish core play within +/-150 scope (hBookiePrice is used for scope check, but both prices are used for play logic)
+            if abs(round(float(_hBookiePrice))) <= MLB_global.SCOPE_MAX_ABS_PRICE: 
+                # a. Derived book probabilities (section 9.1)
+                _bookCloseHome, _bookMidHome = deriveBookProbabilities(predsObj)
+                _faveIsHome = (_bookCloseHome > 0.5)      # ties (==0.5) -> visitor fave
 
-            # 2e. Per-ensemble side, gap and state (section 9.1/9.2) - ONE loop
-            # over both ensembles instead of duplicated ENS1/ENS2 blocks.
-            for _ens in MLB_global.MODEL_PROBENS:
-                _med  = float(_ensGet(predsObj, _ens, "HWinProb"))       # med(M)
-                _vote = float(_ensGet(predsObj, _ens, "VoteAgreement"))  # vote(M)
-                _sideIsHome = (_med >= 0.5)
-                _homeEdgeMid = round(float(_med - _bookMidHome), 5)
-                _gap = _homeEdgeMid if _sideIsHome else -_homeEdgeMid
-                _flagThr = float(sysCfgObj.getEnsProbAgreeThresh(_ens))
-                _gapThr  = float(sysCfgObj.getEnsProbPointsGap(_ens))
-                _state, predsObj = validateEnsemblePosition(_ens, _faveIsHome, _sideIsHome, _vote, _gap, _flagThr, _strongVoteThresh, _gapThr, predsObj)
-                _ensState[_ens] = _state
-                _ensMed[_ens] = _med
-                _ensVote[_ens] = _vote
-                _ensHomeEdgeMid[_ens] = _homeEdgeMid
+                # b. Per-ensemble side, gap and state (section 9.1/9.2) - ONE loop
+                # over both ensembles instead of duplicated ENS1/ENS2 blocks.
+                for _ens in MLB_global.MODEL_PROBENS:
+                    _med  = float(_ensGet(predsObj, _ens, "HWinProb"))       # med(M)
+                    _vote = float(_ensGet(predsObj, _ens, "VoteAgreement"))  # vote(M)
+                    _sideIsHome = (_med >= 0.5)
+                    _homeEdgeMid = round(float(_med - _bookMidHome), 5)
+                    _gap = _homeEdgeMid if _sideIsHome else -_homeEdgeMid
+                    _flagThr = float(sysCfgObj.getEnsProbAgreeThresh(_ens))
+                    _gapThr  = float(sysCfgObj.getEnsProbPointsGap(_ens))
+                    _state, predsObj = validateEnsemblePosition(_ens, _faveIsHome, _sideIsHome, _vote, _gap, _flagThr, _strongVoteThresh, _gapThr, predsObj)
+                    _ensState[_ens] = _state
+                    _ensMed[_ens] = _med
+                    _ensVote[_ens] = _vote
+                    _ensHomeEdgeMid[_ens] = _homeEdgeMid
 
-            _ens1State = _ensState[MLB_global.MODEL_PROBENS1]
-            _ens2State = _ensState[MLB_global.MODEL_PROBENS2]
-            _ens1Med   = _ensMed[MLB_global.MODEL_PROBENS1]
-            _ens1Flagged = _ens1State in MLB_global.ENS_FLAGGED_STATES
-            _ens2Flagged = _ens2State in MLB_global.ENS_FLAGGED_STATES
+                _ens1State = _ensState[MLB_global.MODEL_PROBENS1]
+                _ens2State = _ensState[MLB_global.MODEL_PROBENS2]
+                _ens1Med   = _ensMed[MLB_global.MODEL_PROBENS1]
+                _ens1Flagged = _ens1State in MLB_global.ENS_FLAGGED_STATES
+                _ens2Flagged = _ens2State in MLB_global.ENS_FLAGGED_STATES
 
-            # Fave / dog positions for this game
-            _favePOS = MLB_global.ACTION_LINE_HF if _faveIsHome else MLB_global.ACTION_LINE_VF
-            _dogPOS  = getDefaultDogPlay(_hBookiePrice, _vBookiePrice)   # VD if home fave else HD
+                #c.Fave / dog positions for this game
+                _favePOS = MLB_global.ACTION_LINE_HF if _faveIsHome else MLB_global.ACTION_LINE_VF
+                _dogPOS  = getDefaultDogPlay(_hBookiePrice, _vBookiePrice)   # VD if home fave else HD
 
-            # 2f. Decision table (section 9.4) - exactly one branch fires
-            if _ens1Flagged and _ens2Flagged:
-                # Both flag the favourite -> consensus favourite play
-                _scionPOS = _favePOS
-                if _ens1State == MLB_global.ENS_STATE_STRONG and _ens2State == MLB_global.ENS_STATE_STRONG:
-                    _starPlay = MLB_global.ModelConfidenceTypes.SEVENSTAR
-                    predsObj.addComment(MLB_global.messageScionConsensusStrong, True)
-                else:
-                    _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
-                    predsObj.addComment(MLB_global.messageScionConsensusFlag, True)
-            elif _ens1Flagged or _ens2Flagged:
-                # Exactly one ensemble flags the favourite
-                if _faveIsHome:
-                    # Single HOME-fave flag DOES override -> play HF 3*
-                    _scionPOS = MLB_global.ACTION_LINE_HF
-                    _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
-                    predsObj.addComment(MLB_global.messageScionSingleHFOverride, True)
-                else:
-                    # Single VISITOR-fave flag: NO PLAY (was a 1* home dog).
-                    # This is the home dog that one ensemble actively opposes (it
-                    # backs the visitor favourite). Corrected outsample: the weakest
-                    # home-dog tier (+1.5%, n=58, CI straddling zero). The 1* tier is
-                    # the no-conviction tier and is stood down.
-                    _scionPOS = MLB_global.ACTION_NOPLAY
-                    _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-                    predsObj.addComment(MLB_global.messageScionNoPlaySingleVF, True)
-            else:
-                # Neither flags -> the DOG is the default, but only the HOME dog
-                # is played. The visitor dog is the no-conviction 1* tier: corrected
-                # outsample +0.5% (n=951, CI straddling zero), i.e. no edge over a
-                # blind visitor-dog bet. It is stood down.
-                if _dogPOS == MLB_global.ACTION_LINE_VD:
-                    _scionPOS = MLB_global.ACTION_NOPLAY
-                    _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-                    predsObj.addComment(MLB_global.messageScionNoPlayVisDog, True)
-                else:
-                    # Home dog: closing-price-tiered stars (U-shaped 5*/3*/5*)
-                    # 24 Aug 2026: default home dog for 2026 only profitable within +115 to 150
-                    _scionPOS = MLB_global.ACTION_LINE_HD
-                    _homCLML = round(float(_hBookiePrice))
-                    #24th Aug 2026: the default home dog is only profitable within +115 to 150:
-                    #5-star when 115 to 125 and three star 126 to 150
-                    if MLB_global.HOMEDOG_PRICE_TIER_5STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_5STAR_END:
-                        _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
-                        predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
-                    elif MLB_global.HOMEDOG_PRICE_TIER_3STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_3STAR_END:  
-                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
-                        predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
+                # d. Decision table (section 9.4) - exactly one branch fires
+                if _ens1Flagged and _ens2Flagged:
+                    # Both flag the favourite -> consensus favourite play
+                    _scionPOS = _favePOS
+                    if _ens1State == MLB_global.ENS_STATE_STRONG and _ens2State == MLB_global.ENS_STATE_STRONG:
+                        _starPlay = MLB_global.ModelConfidenceTypes.SEVENSTAR
+                        predsObj.addComment(MLB_global.messageScionConsensusStrong, True)
                     else:
+                        _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
+                        predsObj.addComment(MLB_global.messageScionConsensusFlag, True)
+                elif _ens1Flagged or _ens2Flagged:
+                    # Exactly one ensemble flags the favourite
+                    if _faveIsHome:
+                        # Single HOME-fave flag DOES override -> play HF 3*
+                        _scionPOS = MLB_global.ACTION_LINE_HF
+                        _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+                        predsObj.addComment(MLB_global.messageScionSingleHFOverride, True)
+                    else:
+                        # Single VISITOR-fave flag: NO PLAY (was a 1* home dog).
+                        # This is the home dog that one ensemble actively opposes (it
+                        # backs the visitor favourite). Corrected outsample: the weakest
+                        # home-dog tier (+1.5%, n=58, CI straddling zero). The 1* tier is
+                        # the no-conviction tier and is stood down.
                         _scionPOS = MLB_global.ACTION_NOPLAY
                         _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
-                        predsObj.addComment(MLB_global.messageScionNoDefaultDogPlay_outOfRange, True)
+                        predsObj.addComment(MLB_global.messageScionNoPlaySingleVF, True)
+                else:
+                    # Neither flags -> the DOG is the default, but only the HOME dog
+                    # is played. The visitor dog is the no-conviction 1* tier: corrected
+                    # outsample +0.5% (n=951, CI straddling zero), i.e. no edge over a
+                    # blind visitor-dog bet. It is stood down.
+                    if _dogPOS == MLB_global.ACTION_LINE_VD:
+                        _scionPOS = MLB_global.ACTION_NOPLAY
+                        _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
+                        predsObj.addComment(MLB_global.messageScionNoPlayVisDog, True)
+                    else:
+                        # Home dog: closing-price-tiered stars (U-shaped 5*/3*/5*) NOTE: USING HOMEPRICE ITSELF, NOT VISPRICE WHICH IS DELIBERATE.
+                        # 24 Aug 2026: default home dog for 2026 only profitable within +115 to 150
+                        _scionPOS = MLB_global.ACTION_LINE_HD
+                        _homCLML = round(float(_hBookiePrice))
+                        #24th Aug 2026: the default home dog is only profitable within +115 to 150:
+                        #5-star when 115 to 125 and three star 126 to 150
+                        if MLB_global.HOMEDOG_PRICE_TIER_5STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_5STAR_END:
+                            _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
+                            predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
+                        elif MLB_global.HOMEDOG_PRICE_TIER_3STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_3STAR_END:  
+                            _starPlay = MLB_global.ModelConfidenceTypes.THREESTAR
+                            predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
+                        else:
+                            _scionPOS = MLB_global.ACTION_NOPLAY
+                            _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
+                            predsObj.addComment(MLB_global.messageScionNoDefaultDogPlay_outOfRange, True)
 
-            # 2g. Confidence + reported edge (book_mid-based, on the played side)
-            _scionCONF = round(max(_ensVote.values()), 2)
-            _ens1HomeEdgeMid = _ensHomeEdgeMid[MLB_global.MODEL_PROBENS1]
-            if _scionPOS == MLB_global.ACTION_LINE_HF or _scionPOS == MLB_global.ACTION_LINE_HD:
-                _scionEdge = _ens1HomeEdgeMid
-            else:
-                _scionEdge = -_ens1HomeEdgeMid
+                # e. Confidence + reported edge (book_mid-based, on the played side)
+                _scionCONF = round(max(_ensVote.values()), 2)
+                _ens1HomeEdgeMid = _ensHomeEdgeMid[MLB_global.MODEL_PROBENS1]
+                if _scionPOS == MLB_global.ACTION_LINE_HF or _scionPOS == MLB_global.ACTION_LINE_HD:
+                    _scionEdge = _ens1HomeEdgeMid
+                else:
+                    _scionEdge = -_ens1HomeEdgeMid
 
+            #3.3 If there is no convention play, see if there is a Big Dog play
+            if _scionPOS == MLB_global.ACTION_NOPLAY and _bigDogPlay:
+                _scionPOS = getDefaultDogPlay(_hBookiePrice, _vBookiePrice)
+                _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
+                _scionCONF = 0.5 #???
+                predsObj.addComment(MLB_global.messageScionDefaultBigDog)
+                        
         # 3. Stake + payout multiplier for the played side (stars are the stake scale)
         if _scionPOS != MLB_global.ACTION_NOPLAY:
             _scionMultiplier = MLB_global.getStakeMultiplier(_hBookiePrice, _vBookiePrice, _scionPOS)
