@@ -1,0 +1,11 @@
+|    | Game_Id                      | Play_ML                    | VIS   | HOM   |   ENS1_HPrice |   ENS2_HPrice |   PRED_HPROB_EDGE | NOTES                                                              |
+|---:|:-----------------------------|:---------------------------|:------|:------|--------------:|--------------:|------------------:|:-------------------------------------------------------------------|
+|  1 | 20260901_MWK9.1_SD@CIN_123   | ***** 123.0 HomDog *****   | SD    | CIN   |           127 |           122 |          -0.00188 | 824472. SD-VASQ CIN-LODO.                                          |
+|  2 | 20260901_MWK9.1_SF@PIT_-158  | ^ 145.0 VisDog ^           | SF    | PIT   |          -117 |          -127 |           0       | 823340. SF-WEBB PIT-SKEN. CAUTION URGED as default >150 Dog play.  |
+|  3 | 20260901_MWK9.1_ATL@WAS_154  | ^ 154.0 HomDog ^           | ATL   | WAS   |           113 |          -104 |           0       | 822687. ATL-SMIT WAS-IRVI. CAUTION URGED as default >150 Dog play. |
+|  4 | 20260901_MWK9.1_PHI@ARZ_116  | ^^^^^^ 116.0 HomDog ^^^^^^ | PHI   | ARZ   |           113 |           104 |           0.01532 | 825038. PHI-LUZA ARZ-RODR.                                         |
+|  5 | 20260901_MWK9.1_STL@LA_-187  | ^ 170.0 VisDog ^           | STL   | LA    |          -117 |          -117 |           0       | 823908. STL-MCGR LA-LAUE. CAUTION URGED as default >150 Dog play.  |
+|  6 | 20260901_MWK9.1_TOR@CLE_-172 | ^ 158.0 VisDog ^           | TOR   | CLE   |          -104 |          -117 |           0       | 824391. TOR-MILE CLE-WILL. CAUTION URGED as default >150 Dog play. |
+|  7 | 20260901_MWK9.1_DET@MIN_-106 | *** -106.0 HomFave ***     | DET   | MIN   |          -113 |           104 |           0.02411 | 823661. DET-MELT MIN-MORR.                                         |
+|  8 | 20260901_MWK9.1_NYY@LAA_163  | ^ 163.0 HomDog ^           | NYY   | LAA   |           113 |           127 |           0       | 823984. NYY-COLE LAA-RODR. CAUTION URGED as default >150 Dog play. |
+|  9 | 20260901_MWK9.1_BAL@COL_128  | *** 128.0 HomDog ***       | BAL   | COL   |           117 |           127 |           0.03008 | 824313. BAL-BRAD COL-HUGH.                                         |

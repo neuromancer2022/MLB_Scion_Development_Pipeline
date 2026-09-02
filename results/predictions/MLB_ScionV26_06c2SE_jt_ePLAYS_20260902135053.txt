@@ -1,0 +1,11 @@
+|    | Game_Id          | Play_Team   | Play_ML                    | NOTES                                                              |
+|---:|:-----------------|:------------|:---------------------------|:-------------------------------------------------------------------|
+|  1 | 20260901_SD@CIN  | CIN         | ***** 123.0 HomDog *****   | 824472. SD-VASQ CIN-LODO.                                          |
+|  2 | 20260901_SF@PIT  | SF          | ^ 145.0 VisDog ^           | 823340. SF-WEBB PIT-SKEN. CAUTION URGED as default >150 Dog play.  |
+|  3 | 20260901_ATL@WAS | WAS         | ^ 154.0 HomDog ^           | 822687. ATL-SMIT WAS-IRVI. CAUTION URGED as default >150 Dog play. |
+|  4 | 20260901_PHI@ARZ | ARZ         | ^^^^^^ 116.0 HomDog ^^^^^^ | 825038. PHI-LUZA ARZ-RODR.                                         |
+|  5 | 20260901_STL@LA  | STL         | ^ 170.0 VisDog ^           | 823908. STL-MCGR LA-LAUE. CAUTION URGED as default >150 Dog play.  |
+|  6 | 20260901_TOR@CLE | TOR         | ^ 158.0 VisDog ^           | 824391. TOR-MILE CLE-WILL. CAUTION URGED as default >150 Dog play. |
+|  7 | 20260901_DET@MIN | MIN         | *** -106.0 HomFave ***     | 823661. DET-MELT MIN-MORR.                                         |
+|  8 | 20260901_NYY@LAA | LAA         | ^ 163.0 HomDog ^           | 823984. NYY-COLE LAA-RODR. CAUTION URGED as default >150 Dog play. |
+|  9 | 20260901_BAL@COL | COL         | *** 128.0 HomDog ***       | 824313. BAL-BRAD COL-HUGH.                                         |

@@ -1,4 +1,0 @@
-|    | Game_Id         | Play_Team   | Play_ML                  | NOTES                                                             |
-|---:|:----------------|:------------|:-------------------------|:------------------------------------------------------------------|
-|  0 | 20260901_SD@CIN | CIN         | ***** 123.0 HomDog ***** | 824472. SD-VASQ CIN-LODO.                                         |
-|  0 | 20260901_SF@PIT | SF          | ^ 145.0 VisDog ^         | 823340. SF-WEBB PIT-SKEN. CAUTION URGED as default >150 Dog play. |
