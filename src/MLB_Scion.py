@@ -291,7 +291,9 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
     #   3) VF (visitor-favourite) plays are ALLOWED on consensus (both-flagged,
     #      vis fave).
     #   4) NULL starting-pitcher games are NOT played (checked first).
-    #   5) +-150 GAME SCOPE: both closing prices must be within +-150 inclusive
+    #   5) +-150 GAME SCOPE: the HOME closing price must be within +-150 inclusive
+    #      (home-price-only test - matches the certified outsample basis; see the
+    #      SCOPE_MAX_ABS_PRICE note in MLB_Scion_Globals before ever changing this)
     #      (SCOPE_MAX_ABS_PRICE); out-of-scope games are NoPlay. Enforced in
     #      code from 7 Aug 2026.
     #
@@ -303,6 +305,8 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
         # 1. Key bookie inputs
         _hBookiePrice = predsObj.getPreds_H_Bookie_Bet_Price()    # hom_clml (closing)
         _vBookiePrice = predsObj.getPreds_V_Bookie_Bet_Price()    # vis_clml (closing)
+        _hWinRatePrice = predsObj.getPreds_H_WinningForm_Price()      # hom_winrate (closing)
+        _vWinRatePrice = predsObj.getPreds_V_WinningForm_Price()
         _hSP_Null = predsObj.getPreds_H_SP_Null()
         _vSP_Null = predsObj.getPreds_V_SP_Null()
         _stakeMode = int(sysCfgObj.getSysStakeMode())
@@ -428,13 +432,28 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                         _starPlay = MLB_global.ModelConfidenceTypes.ZEROSTAR
                         predsObj.addComment(MLB_global.messageScionNoPlayVisDog, True)
                     else:
-                        # Home dog: closing-price-tiered stars (U-shaped 5*/3*/5*) NOTE: USING HOMEPRICE ITSELF, NOT VISPRICE WHICH IS DELIBERATE.
+                        # Home dog: two-tier stars, 5* 115-125 / 3* 126-150 (24 Aug 2026; the old U-shape is retired). NOTE: USING HOMEPRICE ITSELF, NOT VISPRICE, WHICH IS DELIBERATE - the in-scope default is defined on the DOG'S OWN price, the # band on the FAVOURITE'S; the two conventions differ because their evidence does.
                         # 24 Aug 2026: default home dog for 2026 only profitable within +115 to 150
+                        # [02 Sep 2026] Record tier: default home dog (+115..+150) whose team
+                        # holds a WINNING season record (record price <= -101, i.e. strictly
+                        # better than .500) prints SIX star - deliberately NOT seven, which
+                        # remains reserved for the double-strong consensus favourite. This is
+                        # a REGISTERED CANDIDATE tier (p~0.06, one of ~18 cuts examined): it
+                        # relabels, it does not change which games play; review/demotion at
+                        # the pre-set forward count, criterion to be registered in writing.
+                        # Fires only when the record price passes the validity gate - missing
+                        # or out-of-range records fall back to the base 5*/3* tiers.
                         _scionPOS = MLB_global.ACTION_LINE_HD
                         _homCLML = round(float(_hBookiePrice))
                         #24th Aug 2026: the default home dog is only profitable within +115 to 150:
                         #5-star when 115 to 125 and three star 126 to 150
-                        if MLB_global.HOMEDOG_PRICE_TIER_5STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_5STAR_END:
+                        if (MLB_global.HOMEDOG_PRICE_TIER_5STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_3STAR_END
+                                and MLB_global.isValidWinRatePrice(_hWinRatePrice)
+                                and float(_hWinRatePrice) <= -101):
+                            _starPlay = MLB_global.ModelConfidenceTypes.SIXSTAR
+                            predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
+                            predsObj.addComment(MLB_global.messageScionDefaultHomeDogWinningStreak, True)   
+                        elif MLB_global.HOMEDOG_PRICE_TIER_5STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_5STAR_END:
                             _starPlay = MLB_global.ModelConfidenceTypes.FIVESTAR
                             predsObj.addComment(MLB_global.messageScionDefaultHomeDog, True)
                         elif MLB_global.HOMEDOG_PRICE_TIER_3STAR_START <= _homCLML <= MLB_global.HOMEDOG_PRICE_TIER_3STAR_END:  
@@ -453,17 +472,39 @@ def determineScionSidePosition(sysCfgObj, predsObj, mupComments):
                 else:
                     _scionEdge = -_ens1HomeEdgeMid
 
-            #3.3 If there is no convention play, see if there is a Big Dog play
+            #3.3 If there is no conventional play, see if there is a Big Dog play.
+            # The # line is MODEL-BLIND by design (blind band rule: favourite closes
+            # -151..-200 inclusive, back the dog). This deliberately includes games the
+            # star table stood down (e.g. a single visitor-fave flag) - that is the
+            # certified candidate population, so do not "fix" it.
             if _scionPOS == MLB_global.ACTION_NOPLAY and _bigDogPlay:
                 _scionPOS = getDefaultDogPlay(_hBookiePrice, _vBookiePrice)
-                _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
-                _scionCONF = 0.5 #???
-                predsObj.addComment(MLB_global.messageScionDefaultBigDog)
+                _scionCONF = 0.5  # neutral display value only - NOT used for staking (see quarter-unit stake below)
+                _faveRecPrice = _vWinRatePrice if _scionPOS == MLB_global.ACTION_LINE_HD else _hWinRatePrice
+                if MLB_global.isValidWinRatePrice(_faveRecPrice) and float(_faveRecPrice) >= 101:
+                    # [02 Sep 2026] Record tier: big dog whose FAVOURITE holds a LOSING
+                    # season record (record price >= +101, strictly worse than .500).
+                    # Registered candidate (p~0.11, one of ~18 cuts): label only - the
+                    # stake stays the same quarter unit as 1* (see routing below);
+                    # review/demotion at the pre-set forward count.
+                    _starPlay = MLB_global.ModelConfidenceTypes.TWOSTAR
+                    predsObj.addComment(MLB_global.messageScionDefaultBigDog)
+                    predsObj.addComment(MLB_global.messageScionDefaultBigDogFaveLosingStreak, True)
+                else:           
+                    _starPlay = MLB_global.ModelConfidenceTypes.ONESTAR
+                    predsObj.addComment(MLB_global.messageScionDefaultBigDog)
                         
         # 3. Stake + payout multiplier for the played side (stars are the stake scale)
         if _scionPOS != MLB_global.ACTION_NOPLAY:
             _scionMultiplier = MLB_global.getStakeMultiplier(_hBookiePrice, _vBookiePrice, _scionPOS)
-            _scionStake = MLB_global.getStakeAmount(_stakeMode, _kellyFrac, _hBookiePrice, _ens1Med, _scionPOS, _scionMultiplier)
+            if _starPlay in (MLB_global.ModelConfidenceTypes.ONESTAR, MLB_global.ModelConfidenceTypes.TWOSTAR):
+                # [02 Sep 2026] Big-dog candidate plays (1* and the 2* record tier):
+                # explicit fixed quarter-unit stake, independent of stake mode - never
+                # Kelly on the 0.5 placeholder. The 2* label tracks the fave-record
+                # split; it does NOT stake more until the count says it may.
+                _scionStake = MLB_global.getBigDogStakeAmount()
+            else:
+                _scionStake = MLB_global.getStakeAmount(_stakeMode, _kellyFrac, _hBookiePrice, _ens1Med, _scionPOS, _scionMultiplier)
 
         # Per-ensemble reporting stake/multiplier - non-zero only when that
         # ensemble flagged the fave. Looped over both ensembles via _ensSet.

@@ -1,8 +1,0 @@
-|    | Game_Id                      | Play_ML                  | VIS   | HOM   |   ENS1_HPrice |   ENS2_HPrice |   PRED_HPROB_EDGE | NOTES                                                             |
-|---:|:-----------------------------|:-------------------------|:------|:------|--------------:|--------------:|------------------:|:------------------------------------------------------------------|
-|  1 | 20260824_MWK8.4_COL@WAS_-186 | ^ 170.0 VisDog ^         | COL   | WAS   |          -133 |          -133 |           0       | 822695. COL-FELT WAS-CAVA. CAUTION URGED as default >150 Dog play |
-|  2 | 20260824_MWK8.4_CHC@ARZ_128  | *** 128.0 HomDog ***     | CHC   | ARZ   |           108 |           117 |           0.05098 | 825041. CHC-GAUS ARZ-KELL.                                        |
-|  3 | 20260824_MWK8.4_CIN@SF_143   | *** 143.0 HomDog ***     | CIN   | SF    |          -100 |          -100 |           0.0961  | 823183. CIN-BURN SF-. H_SP is Null.                               |
-|  4 | 20260824_MWK8.4_TB@DET_118   | ***** 118.0 HomDog ***** | TB    | DET   |           108 |          -100 |           0.02934 | 824235. TB-RASM DET-VALD.                                         |
-|  5 | 20260824_MWK8.4_CLE@LAA_144  | *** 144.0 HomDog ***     | CLE   | LAA   |           117 |           127 |           0.05927 | 823992. CLE-MESS LAA-KLAS.                                        |
-|  6 | 20260824_MWK8.4_MIN@OAK_139  | *** 139.0 HomDog ***     | MIN   | OAK   |           104 |           108 |           0.0798  | 824964. MIN-MATT OAK-SPRI.                                        |

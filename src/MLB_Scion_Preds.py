@@ -103,10 +103,10 @@ class scionPREDS:
 		self._preds_iPos_H_Team_Sname_attrib = "HOM"
 		self._preds_iPos_V_Bookie_Bet_Price_attrib = "VLINE"
 		self._preds_iPos_H_Bookie_Bet_Price_attrib = "HLINE"
-		self._preds_iPos_Defense_HPrice_attrib = "DEF_H"
-		self._preds_iPos_Offense_HPrice_attrib = "OFF_H"
-		self._preds_iPos_Ens1_HPrice_attrib = "ENS1_HPrice"
-		self._preds_iPos_Ens2_HPrice_attrib = "ENS2_HPrice"
+		self._preds_iPos_WinRate_VPrice_attrib = "WINRATE_VPRICE"
+		self._preds_iPos_WinRate_HPrice_attrib = "WINRATE_HPRICE"
+		self._preds_iPos_Ens1_HPrice_attrib = "ENS1_HPRICE"
+		self._preds_iPos_Ens2_HPrice_attrib = "ENS2_HPRICE"
 		self._preds_iPos_Scion_Play_attrib = "PRED"
 		self._preds_iPos_Scion_HProbEdge_attrib = "PRED_HPROB_EDGE"
 		self._preds_iPos_Comments_attrib = "NOTES"
@@ -236,8 +236,8 @@ class scionPREDS:
 										self._preds_iPos_V_Bookie_Bet_Price_attrib,
 										self._preds_iPos_H_Team_Sname_attrib,
 										self._preds_iPos_H_Bookie_Bet_Price_attrib,
-										self._preds_iPos_Defense_HPrice_attrib,
-										self._preds_iPos_Offense_HPrice_attrib,
+										self._preds_iPos_WinRate_VPrice_attrib,
+										self._preds_iPos_WinRate_HPrice_attrib,
 										self._preds_iPos_Ens1_HPrice_attrib,
 										self._preds_iPos_Ens2_HPrice_attrib,
 										self._preds_iPos_Scion_Play_attrib,
@@ -335,8 +335,8 @@ class scionPREDS:
 		self._preds_ipos_float_cols =	[	
 											self._preds_iPos_V_Bookie_Bet_Price_attrib,
 											self._preds_iPos_H_Bookie_Bet_Price_attrib,
-											self._preds_iPos_Defense_HPrice_attrib,
-											self._preds_iPos_Offense_HPrice_attrib,
+											self._preds_iPos_WinRate_VPrice_attrib,
+											self._preds_iPos_WinRate_HPrice_attrib,
 											self._preds_iPos_Ens1_HPrice_attrib,
 											self._preds_iPos_Ens2_HPrice_attrib,
 											self._preds_iPos_Scion_HProbEdge_attrib
@@ -723,8 +723,8 @@ class scionPREDS:
 													self._preds_iPos_H_Team_Sname_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_V_Bookie_Bet_Price_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_H_Bookie_Bet_Price_attrib:str(MLB_dbvar.NO_DATA),
-													self._preds_iPos_Defense_HPrice_attrib:str(MLB_dbvar.NO_DATA),
-													self._preds_iPos_Offense_HPrice_attrib:str(MLB_dbvar.NO_DATA),
+													self._preds_iPos_WinRate_HPrice_attrib:str(MLB_dbvar.NO_DATA),
+													self._preds_iPos_WinRate_VPrice_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Ens1_HPrice_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Ens2_HPrice_attrib:str(MLB_dbvar.NO_DATA),
 													self._preds_iPos_Scion_Play_attrib:str(MLB_dbvar.NO_DATA),
@@ -893,8 +893,8 @@ class scionPREDS:
 	def setPreds_iPos_H_Team_Sname(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_H_Team_Sname_attrib] = newValue
 	def setPreds_iPos_V_Bookie_Price(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_V_Bookie_Bet_Price_attrib] = newValue
 	def setPreds_iPos_H_Bookie_Price(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_H_Bookie_Bet_Price_attrib] = newValue
-	def setPreds_iPos_Defense_HPrice(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Defense_HPrice_attrib] = newValue
-	def setPreds_iPos_Offense_HPrice(self, newValue):self.preds_ipos_current_game_dict[self._preds_iPos_Offense_HPrice_attrib] = newValue
+	def setPreds_iPos_H_WinRate_Price(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_WinRate_HPrice_attrib] = newValue
+	def setPreds_iPos_V_WinRate_Price(self, newValue):self.preds_ipos_current_game_dict[self._preds_iPos_WinRate_VPrice_attrib] = newValue
 	def setPreds_iPos_Ens1_HPrice(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Ens1_HPrice_attrib] = newValue
 	def setPreds_iPos_Ens2_HPrice(self, newValue):self.preds_ipos_current_game_dict[self._preds_iPos_Ens2_HPrice_attrib] = newValue
 	def setPreds_iPos_Scion_Play(self, newValue):self.preds_ipos_current_game_dict[self.preds_iPos_Scion_Play_attrib] = newValue
@@ -983,8 +983,8 @@ class scionPREDS:
 	def getPreds_iPos_H_Team_Sname(self): return self.preds_ipos_current_game_dict[self.preds_iPos_H_Team_Sname_attrib]
 	def getPreds_iPos_V_Bookie_Price(self): return self.preds_ipos_current_game_dict[self.preds_iPos_V_Bookie_Bet_Price_attrib]
 	def getPreds_iPos_H_Bookie_Price(self): return self.preds_ipos_current_game_dict[self.preds_iPos_H_Bookie_Bet_Price_attrib]
-	def getPreds_iPos_Defense_HPrice(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Defense_HPrice_attrib]
-	def getPreds_iPos_Offense_HPrice(self): return self.preds_ipos_current_game_dict[self._preds_iPos_Offense_HPrice_attrib]
+	def getPreds_iPos_H_WinRate_Price(self): return self.preds_ipos_current_game_dict[self.preds_iPos_WinRate_HPrice_attrib]
+	def getPreds_iPos_V_WinRate_Price(self): return self.preds_ipos_current_game_dict[self._preds_iPos_WinRate_VPrice_attrib]
 	def getPreds_iPos_Ens1_HPrice(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Ens1_HPrice_attrib]
 	def getPreds_iPos_Ens2_HPrice(self): return self.preds_ipos_current_game_dict[self._preds_iPos_Ens2_HPrice_attrib]
 	def getPreds_iPos_Scion_Play(self): return self.preds_ipos_current_game_dict[self.preds_iPos_Scion_Play_attrib]
@@ -1179,7 +1179,7 @@ class scionPREDS:
 			#check whether we need to annotate it with 1, 3 or 5 stars
 			_numStars = self.getPreds_Scion_Side_Stars()
 			if _numStars:
-				if _numStars == 1:
+				if _numStars < 3 or _numStars == 6:
 					_starStr = MLB_global.genStarStr(_numStars,"^")
 				else:
 					_starStr = MLB_global.genStarStr(_numStars)
@@ -1246,12 +1246,12 @@ class scionPREDS:
 			if _sidePos != MLB_global.ACTION_NOPLAY:
 				return
 			#3. Store No Play prices
-			_tDefPrice = f"{round(self.getPreds_H_DefensePrice()):.0f}"
-			_tOffPrice = f"{round(self.getPreds_H_OffensePrice()):.0f}"
+			_tWLHPrice = f"{round(self.getPreds_H_WinningForm_Price()):.0f}"
+			_tWLVPrice = f"{round(self.getPreds_V_WinningForm_Price()):.0f}"
 			_ens1HPrice = f"{round(self.getPreds_Ens1_HWinPrice()):.0f}"
 			_ens2HPrice = f"{round(self.getPreds_Ens2_HWinPrice()):.0f}"
-			self.setPreds_iPos_Defense_HPrice(_tDefPrice)
-			self.setPreds_iPos_Offense_HPrice(_tOffPrice)
+			self.setPreds_iPos_H_WinRate_Price(_tWLHPrice)
+			self.setPreds_iPos_V_WinRate_Price(_tWLVPrice)
 			self.setPreds_iPos_Ens1_HPrice(_ens1HPrice)
 			self.setPreds_iPos_Ens2_HPrice(_ens2HPrice)
 			self.setPreds_iPos_Scion_HProbEdge(0)
@@ -1323,11 +1323,13 @@ class scionPREDS:
 					self.setPreds_iPos_Ens2_HPrice(round(self.getPreds_Ens2_HWinPrice()))
 					self.setPreds_iPos_Scion_HProbEdge(self.getPreds_Scion_HProbabilityEdge())
 					self.setPreds_iPlay_HPRobEdge(self.getPreds_Scion_HProbabilityEdge())
+					_tWLHPrice = f"{round(self.getPreds_H_WinningForm_Price()):.0f}"
+					_tWLVPrice = f"{round(self.getPreds_V_WinningForm_Price()):.0f}"
+					self.setPreds_iPos_H_WinRate_Price(_tWLHPrice)
+					self.setPreds_iPos_V_WinRate_Price(_tWLVPrice)
 					#store KEY home team prices (incl off, def, offdef)
 					_tSname, _tDefPrice, _tOffPrice = self.getPlayTeamData(MLB_global.HOME)
 					self.setPreds_iPlay_H_Team_Sname(_tSname)
-					self.setPreds_iPos_Defense_HPrice(_tDefPrice)
-					self.setPreds_iPos_Offense_HPrice(_tOffPrice)
 					#get Vis play data
 					_tSname, _tDefPrice, _tOffPrice = self.getPlayTeamData(MLB_global.VISITOR)
 					self.setPreds_iPlay_V_Team_Sname(_tSname)
@@ -1536,9 +1538,9 @@ class scionPREDS:
 	@property		
 	def preds_iPos_H_Bookie_Bet_Price_attrib(self):return self._preds_iPos_H_Bookie_Bet_Price_attrib
 	@property		
-	def preds_iPos_Defense_HPrice_attrib(self):return self._preds_iPos_Defense_HPrice_attrib
+	def preds_iPos_WinRate_HPrice_attrib(self):return self._preds_iPos_WinRate_HPrice_attrib
 	@property		
-	def preds_iPos_Offense_HPrice_attrib(self):return self._preds_iPos_Offense_HPrice_attrib
+	def preds_iPos_WinRate_VPrice_attrib(self):return self._preds_iPos_WinRate_VPrice_attrib
 	@property		
 	def preds_iPos_Ens1_HPrice_attrib(self):return self._preds_iPos_Ens1_HPrice_attrib
 	@property		

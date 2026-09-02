@@ -1,8 +1,0 @@
-|    | Game_Id          | Play_Team   | Play_ML                  | NOTES                                                             |
-|---:|:-----------------|:------------|:-------------------------|:------------------------------------------------------------------|
-|  1 | 20260824_COL@WAS | COL         | ^ 170.0 VisDog ^         | 822695. COL-FELT WAS-CAVA. CAUTION URGED as default >150 Dog play |
-|  2 | 20260824_CHC@ARZ | ARZ         | *** 128.0 HomDog ***     | 825041. CHC-GAUS ARZ-KELL.                                        |
-|  3 | 20260824_CIN@SF  | SF          | *** 143.0 HomDog ***     | 823183. CIN-BURN SF-. H_SP is Null.                               |
-|  4 | 20260824_TB@DET  | DET         | ***** 118.0 HomDog ***** | 824235. TB-RASM DET-VALD.                                         |
-|  5 | 20260824_CLE@LAA | LAA         | *** 144.0 HomDog ***     | 823992. CLE-MESS LAA-KLAS.                                        |
-|  6 | 20260824_MIN@OAK | OAK         | *** 139.0 HomDog ***     | 824964. MIN-MATT OAK-SPRI.                                        |

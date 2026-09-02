@@ -12,8 +12,8 @@ import shlex #for splitting strings by white space but preserving words within q
 import MLB_dbvar as MLB_dbvar
 
 # Define key global vars
-APP_VER = "V26.06c (Standard Edition)"
-APP_VER_SHORT = "V26_06cSE"
+APP_VER = "V26.06c2 (Standard Edition)"
+APP_VER_SHORT = "V26_06c2SE"
 APP_NAME = "MLB Scion" 
 APP_NAME_SHORT = "Scion" 
 APP_BANNER = "** " + APP_NAME + " " + APP_VER + " **"
@@ -102,6 +102,32 @@ VIS_VIG_PRICE_PERC = 5
 OPT_MEDIAN = 8.5
 DEFAULT_SPAN_CENTS = 5
 DEFAULT_FLAT_STAKE_UNITS = 1.0
+
+# [02 Sep 2026] 1-star big-dog candidate line: explicit quarter-unit stake.
+# The # line is bet at a FIXED fraction of the flat unit - never Kelly - because
+# for out-of-scope games the ensembles are not consulted (median placeholder
+# 0.5), and a Kelly computed from a placeholder manufactures a phantom edge
+# against any big-dog price. Promotion of the stake is a pre-registered
+# decision at the 200-play count, not a code default.
+BIGDOG_STAKE_FRACTION = 0.25
+
+def isValidWinRatePrice(price):
+    """[02 Sep 2026] Validity gate for the iPOS win-rate (season record) prices.
+    Record-based star tiers may ONLY fire when this returns True: the attribute
+    is initialised to MLB_dbvar.NO_DATA, and depending on that sentinel's value
+    a raw comparison against 0 would either crash or silently treat missing
+    data as a winning record. Sanity range keeps early-season extremes out too:
+    an American record-price outside +/-100..+/-1500 means a record too skewed
+    or too young to trust for tiering (a .500 record is exactly +/-100)."""
+    try:
+        _p = float(price)
+    except (TypeError, ValueError):
+        return False
+    return 100.0 <= abs(_p) <= 1500.0
+
+def getBigDogStakeAmount():
+    """Fixed quarter-unit stake for 1-star big-dog candidate plays."""
+    return round(DEFAULT_FLAT_STAKE_UNITS * BIGDOG_STAKE_FRACTION, 5)
 DEFAULT_FRACT_KELLY = 0.25
 BOOKIEPROBADJVAL = 0.15
 BOOKIETOTADJVAL = 3.0
@@ -186,12 +212,11 @@ ENS_STATE_STRONG = "STRONG-FLAG"
 ENS_FLAGGED_STATES = [ENS_STATE_FLAG, ENS_STATE_STRONG]
 
 # Pre 24th Aug 2026: default home dog was considered profitable across the full +100 to 150 range, but this was based on incorrect prices. 
-# Home-dog closing-line price tiers (PDF §9.3 / §9.5 note 3). U-shaped, NOT
-# monotone: the middle band is the weak one. hom_clml is the home CLOSING money
-# line (positive for a home dog).
-#   hom_clml <  +100                        -> 5 star
-#   HOMEDOG_PRICE_TIER_LOW <= hom_clml <= HOMEDOG_PRICE_TIER_HIGH -> 3 star
-#   hom_clml >= +120                        -> 5 star
+# [Retired 24 Aug 2026] The old U-shaped 5*/3*/5* tier structure was based on
+# the incorrect pre-audit prices and no longer exists. Current structure below
+# is two-tier and interior to the certified 115-150 core; the 125 boundary is
+# PROVISIONAL (stake tiers only - it does not change which games are played)
+# and is reviewed at a pre-set count, not on results.
 
 #Post 24th Aug 2026, the default home dog is only profitable within +115 to 150:
 # So 5-star when 115 to 125 and three star 126 to 150
@@ -202,11 +227,16 @@ HOMEDOG_PRICE_TIER_3STAR_END    = 150
 BIGDOG_FAVEPRICE_TIER_1STAR_START  = -151
 BIGDOG_FAVEPRICE_TIER_1STAR_END    = -200
 
-# Game scope (23 Jul 2026 trade report / outsample definition): a game is only
-# in scope when BOTH closing prices sit within +-150 INCLUSIVE (|price| <= 150,
-# so +150/-150 are in scope and +151/-151 are out). Enforced ahead of the
-# decision table in determineScionSidePosition() so that NO branch (fave flag,
-# default dog or otherwise) can fire on an out-of-scope game.
+# Game scope [comment corrected 02 Sep 2026]: a game is in scope when the HOME
+# closing price sits within +-150 INCLUSIVE (+150/-150 in scope; +151/-151 out).
+# The HOME price ALONE is the test - this matches the training/outsample builds
+# and the certified counterfactual record, which are all home-price-scoped.
+# DO NOT "fix" this to a both-price test without re-running the counterfactual:
+# a both-price test silently ejects the seam games (home dog <=150 vs away
+# favourite >=151) that the certified record includes. Enforced ahead of the
+# decision table in determineScionSidePosition() so that no star branch can
+# fire on an out-of-scope game; out-of-scope games remain eligible for the
+# 1-star big-dog candidate line only.
 # +-150 scope enforced in code from 7 Aug 2026.
 SCOPE_MAX_ABS_PRICE = 150
 
@@ -284,7 +314,9 @@ messageScionSingleHFOverride = "Single ensemble FLAGs the HomFave (3-star play. 
 messageScionSingleVFNoOverride = "Single ensemble FLAGs the VisFave BUT not enough to override default HomDog (1-star) "
 messageScionDefaultVisDog   = "No ensemble flag: default 1-star VisDog play. "
 messageScionDefaultHomeDog  = "No ensemble flag: default HomDog play based on bookie price tier. "
-messageScionDefaultBigDog   = "CAUTION URGED as default >150 Dog play "
+messageScionDefaultHomeDogWinningStreak  = "Home team has a winning season record (>.500). "
+messageScionDefaultBigDog   = "CAUTION URGED as default >150 Dog play. "
+messageScionDefaultBigDogFaveLosingStreak   = "Fave team has a losing season record (<.500). "
 messageScionNoPlaySingleVF = "No play - single VisFave flag; home dog opposed by an ensemble (1-star tier stood down). "
 messageScionNoPlayVisDog = "No play - both SILENT, visitor dog (1-star no-conviction tier stood down). "
 #default DOG play   
@@ -850,6 +882,7 @@ def getStakeAmount(stakeMode, kellyFrac, hBookiePrice, ensHProb, ensPos, stakeMu
         else:
             _kellyStake = kellyFrac * max(0, (1-ensHProb) - ensHProb/stakeMultiplier)
             _kellyStake = round(_kellyStake, 5)
+        _stakeAmount = _kellyStake  # [02 Sep 2026] BUGFIX: was never assigned, so Kelly mode returned 0.0
     else:
         print("\nMLB_Scion_Globals.getStakeAmount: Unrecognised stake model!")
         raise Exception

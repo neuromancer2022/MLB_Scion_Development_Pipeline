@@ -1,5 +1,0 @@
-|    | Game_Id          | Play_Team   | Play_ML          | NOTES                                                                   |
-|---:|:-----------------|:------------|:-----------------|:------------------------------------------------------------------------|
-|  1 | 20260822_ATL@MLW | ATL         | ^ 156.0 VisDog ^ | 823743. ATL-PERE MLW-HEND. OBSERVE ONLY as default 1-star >150 Dog play |
-|  2 | 20260822_WAS@FLO | WAS         | ^ 157.0 VisDog ^ | 823831. WAS-IRVI FLO-PERE. OBSERVE ONLY as default 1-star >150 Dog play |
-|  3 | 20260822_CIN@ARZ | CIN         | ^ 152.0 VisDog ^ | 825044. CIN-LOWD ARZ-SORO. OBSERVE ONLY as default 1-star >150 Dog play |

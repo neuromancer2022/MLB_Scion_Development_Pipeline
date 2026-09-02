@@ -1,5 +1,0 @@
-|    | Game_Id                      | Play_ML          | VIS   | HOM   |   ENS1_HPrice |   ENS2_HPrice |   PRED_HPROB_EDGE | NOTES                                                             |
-|---:|:-----------------------------|:-----------------|:------|:------|--------------:|--------------:|------------------:|:------------------------------------------------------------------|
-|  1 | 20260822_MWK8.4_ATL@MLW_-175 | ^ 156.0 VisDog ^ | ATL   | MLW   |          -113 |          -117 |                 0 | 823743. ATL-PERE MLW-HEND. CAUTION URGED as default >150 Dog play |
-|  2 | 20260822_MWK8.4_WAS@FLO_-176 | ^ 157.0 VisDog ^ | WAS   | FLO   |          -108 |          -113 |                 0 | 823831. WAS-IRVI FLO-PERE. CAUTION URGED as default >150 Dog play |
-|  3 | 20260822_MWK8.4_CIN@ARZ_-170 | ^ 152.0 VisDog ^ | CIN   | ARZ   |          -117 |          -127 |                 0 | 825044. CIN-LOWD ARZ-SORO. CAUTION URGED as default >150 Dog play |

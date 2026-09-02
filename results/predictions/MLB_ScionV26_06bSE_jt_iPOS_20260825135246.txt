@@ -1,5 +1,0 @@
-|    | GID              | VIS     |   VLINE | HOM   |   HLINE | DEF_H   | OFF_H   |   ENS1_HPrice |   ENS2_HPrice | PRED             |   PRED_HPROB_EDGE | NOTES                                                             |
-|---:|:-----------------|:--------|--------:|:------|--------:|:--------|:--------|--------------:|--------------:|:-----------------|------------------:|:------------------------------------------------------------------|
-|  1 | 20260822_ATL@MLW | * ATL * |     156 | MLW   |    -175 | -174 #  | -115 #  |          -113 |          -117 | ^ 156.0 VisDog ^ |                 0 | 823743. ATL-PERE MLW-HEND. CAUTION URGED as default >150 Dog play |
-|  2 | 20260822_WAS@FLO | * WAS * |     157 | FLO   |    -176 | -132    | -103    |          -108 |          -113 | ^ 157.0 VisDog ^ |                 0 | 823831. WAS-IRVI FLO-PERE. CAUTION URGED as default >150 Dog play |
-|  3 | 20260822_CIN@ARZ | * CIN * |     152 | ARZ   |    -170 | -126    | -101    |          -117 |          -127 | ^ 152.0 VisDog ^ |                 0 | 825044. CIN-LOWD ARZ-SORO. CAUTION URGED as default >150 Dog play |
